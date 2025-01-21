@@ -25,3 +25,10 @@ In order to get started with Easy Cribs you must have ... TBC.
 ## Testing
 
 The testing we have used on this project is ... TBC.
+
+
+## License
+
+### Any licensing that has been used will be documented below
+
+License: TBC.
