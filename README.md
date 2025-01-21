@@ -50,4 +50,7 @@ License: TBC.
 
 ### Listed below is all the members of the group who have contributed to the creation of the software
 
-TBC.
+
+- @Tomukas10 - Tomas Pavan
+- @euan6 - Euan Conlon
+- @Daniel-Fejdych - Daniel Fejdych
