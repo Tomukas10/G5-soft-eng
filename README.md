@@ -46,7 +46,7 @@ The testing we have used on this project is ... TBC.
 License: TBC.
 
 
-## Credits
+## Contributors
 
 ### Listed below is all the members of the group who have contributed to the creation of the software
 
