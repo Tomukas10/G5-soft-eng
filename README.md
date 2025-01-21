@@ -1,5 +1,10 @@
-# G5-soft-eng
+# 3rd Year Group Project | Easy Cribs
 
-## Testing
+## Table of Contents
 
-Test Push
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Usage](#usage)
+9. [Testing](#testing)
+10. [License](#license)
+
