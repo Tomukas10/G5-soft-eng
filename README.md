@@ -5,9 +5,10 @@
 
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
-3. [Usage](#usage)
+3. [Branches](#branches)
 4. [Testing](#testing)
 5. [License](#license)
+6. [Contributors](#contributors)
 
 
 ## Introduction
@@ -19,10 +20,21 @@ Easy Cribs is our smart home system that we are developing for F29PD. It is used
 
 ## Getting Started
 
+### Explanation of how to set up our software
+
 In order to get started with Easy Cribs you must have ... TBC.
 
 
+## Branches
+
+### A list and decription of all branches used on this repository will be listed here
+
+Branch: TBC.
+
+
 ## Testing
+
+### All the testing completed will be documented here
 
 The testing we have used on this project is ... TBC.
 
@@ -32,3 +44,10 @@ The testing we have used on this project is ... TBC.
 ### Any licensing that has been used will be documented below
 
 License: TBC.
+
+
+## Credits
+
+### Listed below is all the members of the group who have contributed to the creation of the software
+
+TBC.
