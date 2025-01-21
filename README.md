@@ -20,3 +20,8 @@ Easy Cribs is our smart home system that we are developing for F29PD. It is used
 ## Getting Started
 
 In order to get started with Easy Cribs you must have ... TBC.
+
+
+## Testing
+
+The testing we have used on this project is ... TBC.
