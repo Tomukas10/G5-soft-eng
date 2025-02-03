@@ -80,7 +80,7 @@ header {
 	
   }
   
-#sidenav #home {
+#sidenav #selected {
 	background: grey;
 	border-radius: 15px;
   }
