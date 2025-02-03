@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="./CSS/home.css" /> 
+	<link rel="stylesheet" href="../CSS/home.css" /> 
     <title>Smarthome System</title>
 </head>
 <body>
@@ -13,7 +13,7 @@
 <main>
   <div id="page">
     <div id="sidenav">
-        <a class="sidenavItems" href="home.html" style="border: solid;">Home</a>
+        <a id="home" class="sidenavItems" href="home.html" style="opacity: 100%;">Home</a>
         <hr>
         <a class="sidenavItems" href="appliances.html">Appliances</a>
         <hr>
@@ -24,23 +24,27 @@
         <a class="sidenavItems" href="settings.html">Settings</a>
         <hr>
     </div>
-
       <div id="boxes">
-      
         <div>
-          <img class="icon" src="images/kitchen.png">
-          <h4>Kitchen</h4>
+          <img class="icon" src="../images/kitchen.png">
+          <h4>KITCHEN</h4>
         </div>
         <div>
-          <img class="icon" src="images/living room.png">
-          <h4>Living Room</h4>
+          <img class="icon" src="../images/living room.png">
+          <h4>LIVING ROOM</h4>
         </div>
         <div>
-          <img class="icon" src="images/bedroom.png">
-          <h4>Bedroom 1</h4>
+          <img class="icon" src="../images/bedroom.png">
+          <h4>BEDROOM 1</h4>
         </div>
       </div>
+      <div class="button-container">
+        <button class="circle-btn" id="plus-btn">+</button>
+        <p class="temp" >20</p>
+        <button class="circle-btn" id="minus-btn">-</button>
+      </div>
     </div>
+
 </main>
 </body>
 </html>
