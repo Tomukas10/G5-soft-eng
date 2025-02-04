@@ -29,7 +29,7 @@ In order to get started with Easy Cribs you must have ... TBC.
 
 ### A list and decription of all branches used on this repository will be listed here
 
-Branch: TBC.
+- main: Our main branch which is used for the production version of our product. This should always be the latest version of our functioning product.
 
 
 ## Testing
