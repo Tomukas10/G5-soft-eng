@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../CSS/home.css" /> 
+    <link rel="stylesheet" href="../CSS/home1.css" /> 
     <title>Smarthome System</title>
 </head>
 <body>
@@ -26,23 +26,12 @@
                 <a class="sidenavItems logout-btn" href="login.html">Log Out</a>
                 <hr>
             </div>
-
             <div id="boxes">
-                <div>
-                    <img class="icon" src="../images/kitchen.png">
-                    <h4>Kitchen</h4>
-                </div>
-                <div>
-                    <img class="icon" src="../images/living room.png">
-                    <h4>Living Room</h4>
-                </div>
-                <div>
-                    <img class="icon" src="../images/bedroom.png">
-                    <h4>Bedroom 1</h4>
-                </div>
-                <button id="addRoomButton">+ Add Room</button>
+                <button class="roomButton">Kitchen</button>
+                <button class="roomButton">Living Room</button>
+                <button class="roomButton">Bedroom 1</button>
+                <button class="roomButton" id="addRoomButton">+ Add Room</button>
             </div>
-
             <!-- Dropdown menu for adding a new room -->
             <div id="addRoomModal" style="display: none;">
                 <div id="addRoomForm">
@@ -51,6 +40,11 @@
                     <button id="cancelRoomButton">Cancel</button>
                 </div>
             </div>
+            <div class="button-container">
+                <button class="circle-btn" id="plus-btn">+</button>
+                <p class="temp" >20</p>
+                <button class="circle-btn" id="minus-btn">-</button>
+              </div>
         </div>
 
         <script>
