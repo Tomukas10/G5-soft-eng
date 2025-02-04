@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="./CSS/home.css" /> 
+	<link rel="stylesheet" href="../CSS/home.css" /> 
     <title>Smarthome System</title>
 </head>
 <body>
@@ -13,7 +13,7 @@
 <main>
   <div id="page">
     <div id="sidenav">
-        <a class="sidenavItems" href="home.html" style="border: solid;">Home</a>
+        <a class="sidenavItems" href="index.html" >Home</a>
         <hr>
         <a class="sidenavItems" href="appliances.html">Appliances</a>
         <hr>
@@ -21,26 +21,25 @@
         <hr>
         <a class="sidenavItems" href="security.html">Security</a>
         <hr>
-        <a class="sidenavItems" href="settings.html">Settings</a>
+        <a id="selected" class="sidenavItems" href="settings.html" style="opacity: 100%;">Settings</a>
         <hr>
     </div>
-
       <div id="boxes">
-      
         <div>
-          <img class="icon" src="images/kitchen.png">
-          <h4>Kitchen</h4>
+         <a href="userProfile.html" ><h4>User Profile</h4></a>
         </div>
         <div>
-          <img class="icon" src="images/living room.png">
-          <h4>Living Room</h4>
+          
+          <h4>Notifications</h4>
         </div>
         <div>
-          <img class="icon" src="images/bedroom.png">
-          <h4>Bedroom 1</h4>
+         
+          <h4>Energy Management</h4>
         </div>
       </div>
+
     </div>
+
 </main>
 </body>
 </html>

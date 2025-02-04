@@ -29,7 +29,8 @@ In order to get started with Easy Cribs you must have ... TBC.
 
 ### A list and decription of all branches used on this repository will be listed here
 
-Branch: TBC.
+- main: Our main branch which is used for the production version of our product. This should always be the latest version of our functioning product.
+- Ali's-version: A version of our main which Ali has been using to create the login, sign up and welcome pages of our website.
 
 
 ## Testing
@@ -55,3 +56,4 @@ License: TBC.
 - @euan6 - Euan Conlon
 - @Daniel-Fejdych - Daniel Fejdych
 - @thenamesdonnie - Donnie Stark
+- @Afraser8765 - Adam Fraser
