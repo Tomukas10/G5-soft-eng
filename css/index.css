@@ -1,0 +1,105 @@
+/* Apple-like sleek design */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #f5f5f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    animation: fadeIn 1s ease-out;
+}
+
+/* Animation for body fade-in */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    opacity: 0;
+    animation: containerAnimation 1s ease-out forwards;
+}
+
+/* Animation for container entrance */
+@keyframes containerAnimation {
+    0% {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    opacity: 0;
+    animation: textFadeIn 1.5s 0.5s ease-out forwards;
+}
+
+h1 span {
+    color: #0071e3;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 10px 0 20px;
+    opacity: 0;
+    animation: textFadeIn 1.5s 1s ease-out forwards;
+}
+
+@keyframes textFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn {
+    background: #0071e3;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s ease, transform 0.2s ease;
+    will-change: transform;
+}
+
+.btn:hover {
+    background: #005bb5;
+    transform: scale(1.05);
+}
+
+/* Smooth Scroll for links (if any) */
+html {
+    scroll-behavior: smooth;
+}
+

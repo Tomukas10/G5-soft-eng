@@ -13,7 +13,7 @@
 <main>
   <div id="page">
     <div id="sidenav">
-        <a class="sidenavItems" href="index.html" >Home</a>
+        <a id="selected" class="sidenavItems" href="index.html" style="opacity: 100%;">Home</a>
         <hr>
         <a class="sidenavItems" href="appliances.html">Appliances</a>
         <hr>
@@ -21,20 +21,28 @@
         <hr>
         <a class="sidenavItems" href="security.html">Security</a>
         <hr>
-        <a id="selected" class="sidenavItems" href="settings.html" style="opacity: 100%;">Settings</a>
+        <a class="sidenavItems" href="settings.html">Settings</a>
         <hr>
     </div>
       <div id="boxes">
         <div>
-         <a href="userProfile.html" ><h4>User Profile</h4></a>
+          <img class="icon" src="../images/kitchen.png">
+          <h4>Kitchen</h4>
         </div>
-
-        <div class="logoutButton">
-            <a><h4>LOG OUT</h4></a>
+        <div>
+          <img class="icon" src="../images/living room.png">
+          <h4>Living Room</h4>
         </div>
-
+        <div>
+          <img class="icon" src="../images/bedroom.png">
+          <h4>Bedroom 1</h4>
+        </div>
       </div>
-
+      <div class="button-container">
+        <button class="circle-btn" id="plus-btn">+</button>
+        <p class="temp" >20</p>
+        <button class="circle-btn" id="minus-btn">-</button>
+      </div>
     </div>
 
 </main>
