@@ -12,8 +12,9 @@
     </header>
     <main>
         <div id="page">
+            <div>
             <div id="sidenav">
-                <a class="sidenavItems" href="home.html" style="border: solid;">Home</a>
+                <a id="selected" class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
                 <hr>
                 <a class="sidenavItems" href="appliances.html">Appliances</a>
                 <hr>
@@ -23,14 +24,26 @@
                 <hr>
                 <a class="sidenavItems" href="settings.html">Settings</a>
                 <hr>
-                <a class="sidenavItems logout-btn" href="login.html">Log Out</a>
-                <hr>
+            </div>
+            <a class="sidenavItems logout-btn" href="login.html">Log Out</a>
             </div>
             <div id="boxes">
-                <button class="roomButton">Kitchen</button>
-                <button class="roomButton">Living Room</button>
-                <button class="roomButton">Bedroom 1</button>
-                <button class="roomButton" id="addRoomButton">+ Add Room</button>
+                <button class="roomButton">
+                    <img class="icon" src="../images/kitchen.png" alt="Kitchen Icon">
+                    Kitchen
+                </button>
+                <button class="roomButton">
+                    <img class="icon" src="../images/living room.png" alt="Living Room Icon">
+                    Living Room
+                </button>
+                <button class="roomButton">
+                    <img class="icon" src="../images/bedroom.png" alt="Bedroom Icon">
+                    Bedroom 1
+                </button>
+                <button class="roomButton" id="addRoomButton">
+                    <span class="plus-sign">+</span>
+                    <span class="button-text">Add Room</span>
+                </button>
             </div>
             <!-- Dropdown menu for adding a new room -->
             <div id="addRoomModal" style="display: none;">
