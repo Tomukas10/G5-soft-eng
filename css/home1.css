@@ -1,15 +1,19 @@
 
 /* CSS for general website as a whole */
 
-body{
+body {
     background: linear-gradient(to bottom, #232733 0%, #3A4153 50%, #697599 100%);
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    color: white;
 }
 * {
 	font-family: "Montseratt", sans-serif;
 	box-sizing: border-box
 }
 
- html, body {
+ html{
     height: 100%;
     margin: 0;
     padding: 0;
@@ -33,25 +37,6 @@ header {
      margin-bottom: 2%;
 }
 
-/* #############################################################################################################*/
-/* #############################################################################################################*/
-
-
-
-
-/* CSS for Body of website */
-
-.home body {
-	height: 2500px;
-	background-repeat:no-repeat;
-    margin: 0;
-	padding: 0;
-}
-
-#sidenav, hr {
-    color: white;
-	padding: 0;
-}
 
 /* #############################################################################################################*/
 /* #############################################################################################################*/
@@ -80,7 +65,7 @@ header {
 	
   }
   
-#sidenav #home {
+#sidenav #selected {
 	background: grey;
 	border-radius: 15px;
   }
@@ -100,7 +85,6 @@ header {
 	margin-right: 5%;
 	margin-top: 5%;
 }
-
 
 
 .circle-btn {

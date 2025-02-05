@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/home1.css" /> 
+    <title>Smarthome System</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+            <div id="sidenav">
+                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                <hr>
+                <a id="selected" class="sidenavItems" href="appliances.html">Appliances</a>
+                <hr>
+                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                <hr>
+                <a class="sidenavItems" href="security.html">Security</a>
+                <hr>
+                <a class="sidenavItems" href="settings.html">Settings</a>
+                <hr>
+            </div>
+            <a class="sidenavItems logout-btn" href="login.html">Log Out</a>
+            </div>
+            <div id="boxes">
+                <button class="roomButton">
+                    <img class="icon" src="" alt="">
+                    Lights
+                </button>
+                <button class="roomButton">
+                    <img class="icon" src="" alt="">
+                    Vacuum
+                </button>
+                <button class="roomButton" id="addRoomButton">
+                    <span class="plus-sign">+</span>
+                    <span class="button-text">Add appliance</span>
+                </button>
+            </div>
+            <!-- Dropdown menu for adding a new room -->
+            <div id="addRoomModal" style="display: none;">
+                <div id="addRoomForm">
+                    <input type="text" id="roomName" placeholder="Enter appliance name">
+                    <button id="createRoomButton">Create</button>
+                    <button id="cancelRoomButton">Cancel</button>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="circle-btn" id="plus-btn">+</button>
+                <p class="temp" >20</p>
+                <button class="circle-btn" id="minus-btn">-</button>
+              </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Check if user is logged in
+                if (localStorage.getItem("loggedIn") !== "true") {
+                    window.location.href = "login.html"; // Send back to login page
+                }
+
+                // Add Room Button Click Event
+                const addRoomButton = document.getElementById("addRoomButton");
+                const addRoomModal = document.getElementById("addRoomModal");
+                const createRoomButton = document.getElementById("createRoomButton");
+                const cancelRoomButton = document.getElementById("cancelRoomButton");
+                const roomNameInput = document.getElementById("roomName");
+
+                addRoomButton.addEventListener("click", () => {
+                    addRoomModal.style.display = "block"; // Show the modal
+                });
+
+                cancelRoomButton.addEventListener("click", () => {
+                    addRoomModal.style.display = "none"; // Hide the modal
+                    roomNameInput.value = ""; // Clear input
+                });
+
+                createRoomButton.addEventListener("click", () => {
+                    const roomName = roomNameInput.value.trim();
+                    if (roomName) {
+                        // Create a new room element
+                        const newRoom = document.createElement("div");
+                        newRoom.innerHTML = `
+                            <img class="icon" src="../images/bedroom.png">
+                            <h4>${roomName}</h4>
+                        `;
+                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
+                        addRoomModal.style.display = "none"; // Hide the modal
+                        roomNameInput.value = ""; // Clear input
+                    } else {
+                        alert("Please enter a appliance name.");
+                    }
+                });
+            });
+        </script>
+    </main>
+</body>
+</html>
