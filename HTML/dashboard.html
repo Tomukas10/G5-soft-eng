@@ -25,7 +25,28 @@
                 <a class="sidenavItems" href="settings.html">Settings</a>
                 <hr>
             </div>
-            <a class="sidenavItems logout-btn" href="login.html">Log Out</a>
+            <svg class="speedometer" viewBox="0 0 100 60">
+                <!-- Background Arc -->
+                <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
+                
+                <!-- Colored Arc -->
+                <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
+                
+                <!-- Needle -->
+                <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
+            
+                <!-- Percentage Text -->
+                <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
+            
+                <!-- Gradient Definition -->
+                <defs>
+                    <linearGradient id="gradient">
+                        <stop offset="0%" stop-color="#00c853" /> <!-- Green -->
+                        <stop offset="50%" stop-color="#ffd600" /> <!-- Yellow -->
+                        <stop offset="100%" stop-color="#ff1744" /> <!-- Red -->
+                    </linearGradient>
+                </defs>
+            </svg>
             </div>
             <div id="boxes">
                 <button class="roomButton">
@@ -57,7 +78,13 @@
                 <button class="circle-btn" id="plus-btn">+</button>
                 <p class="temp" >20</p>
                 <button class="circle-btn" id="minus-btn">-</button>
-              </div>
+            </div>
+
+
+
+
+        
+
         </div>
 
         <script>
@@ -100,6 +127,16 @@
                     }
                 });
             });
+
+            function updateSpeedometer(percentage) {
+    let value = Math.max(0, Math.min(100, percentage)); 
+    let dashOffset = 125 - (value / 100) * 125; 
+    let rotation = -90 + (value / 100) * 180; 
+
+    document.getElementById("gauge").style.strokeDashoffset = dashOffset;
+    document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
+    document.getElementById("percentage").textContent = `${value}%`;
+}
         </script>
     </main>
 </body>
