@@ -1,0 +1,213 @@
+
+/* CSS for general website as a whole */
+
+body {
+    background: linear-gradient(to bottom, #232733 0%, #3A4153 50%, #697599 100%);
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    color: white;
+}
+* {
+	font-family: "Montseratt", sans-serif;
+	box-sizing: border-box
+}
+
+ html{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  #homeTitle{
+    font-size: 45px;
+    margin-top: 8%;
+  }
+
+/* #############################################################################################################*/
+/* #############################################################################################################*/
+
+
+/* CSS for the header section of website */
+
+header {
+	 padding: 30px;
+     display: flex;
+     justify-content: center; 
+     align-items: center; 
+     height: 10vh; 
+     text-align: center; 
+     color: white;
+     margin-bottom: 2%;
+}
+
+
+/* #############################################################################################################*/
+/* #############################################################################################################*/
+
+#page{
+	display: flex;
+	
+}
+
+#apartments{
+	margin-left: 7%;
+	display: flex;
+	width: 90%;
+	height: 100%;
+    margin-top: 5%;
+}
+
+.icon {
+	width: 15vh;
+	height: auto;
+}
+
+#addRoomButton .plus-sign {
+    font-size: 10vh;  /* Large plus sign */
+    font-weight: bold;
+    line-height: 1;
+}
+
+.apartment {
+    background-color: white;
+    border-radius: 15px;
+    width: 50vh;
+    height: 30vh;
+	margin-right: 6%;
+    font-size: 2vh;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+}
+
+.apartment:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+
+/* #############################################################################################################*/
+/* #############################################################################################################*/
+
+/* CSS for the "Add Room" button */
+
+
+
+#addRoomButton:active {
+    background-color: #bbb;
+    transform: scale(0.95);
+}
+
+/* CSS for the logout button */
+.logout-btn {
+    background: #ff4d4d;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    width: 20vw;
+    height: 20vh;
+    margin-top: 13%;
+    margin-left: 40%;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #cc0000;
+}
+
+/* CSS for scrollbar customization */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Modal Background */
+#addRoomModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+#addRoomForm {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Input Field */
+#roomName {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* Buttons */
+#addRoomForm button {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#createRoomButton {
+    background-color: #28a745;
+    color: white;
+}
+
+#cancelRoomButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+#addRoomForm button:hover {
+    opacity: 0.8;
+}
+
+
+
+
+

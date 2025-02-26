@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
     <link rel="stylesheet" href="../CSS/home1.css" /> 
-    <title>Smarthome System</title>
 </head>
 <body>
     <header>
@@ -26,30 +26,25 @@
                 <hr>
             </div>
             <svg class="speedometer" viewBox="0 0 100 60">
-                <!-- Background Arc -->
                 <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
                 
-                <!-- Colored Arc -->
                 <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
                 
-                <!-- Needle -->
                 <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
             
-                <!-- Percentage Text -->
                 <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
             
-                <!-- Gradient Definition -->
                 <defs>
                     <linearGradient id="gradient">
-                        <stop offset="0%" stop-color="#00c853" /> <!-- Green -->
-                        <stop offset="50%" stop-color="#ffd600" /> <!-- Yellow -->
-                        <stop offset="100%" stop-color="#ff1744" /> <!-- Red -->
+                        <stop offset="0%" stop-color="#00c853" /> 
+                        <stop offset="50%" stop-color="#ffd600" /> 
+                        <stop offset="100%" stop-color="#ff1744" /> 
                     </linearGradient>
                 </defs>
             </svg>
             </div>
             <div id="boxes">
-                <button class="roomButton">
+                <button class="roomButton" onclick="location.href='Room(EXAMPLE).html'">
                     <img class="icon" src="../images/kitchen.png" alt="Kitchen Icon">
                     Kitchen
                 </button>
@@ -66,7 +61,6 @@
                     <span class="button-text">Add Room</span>
                 </button>
             </div>
-            <!-- Dropdown menu for adding a new room -->
             <div id="addRoomModal" style="display: none;">
                 <div id="addRoomForm">
                     <input type="text" id="roomName" placeholder="Enter room name">
