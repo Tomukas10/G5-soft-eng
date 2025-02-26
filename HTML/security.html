@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/home1.css" /> 
+    <title>Smarthome System</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+            <div id="sidenav">
+                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                <hr>
+                <a class="sidenavItems" href="appliances.html">Appliances</a>
+                <hr>
+                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                <hr>
+                <a id="selected" class="sidenavItems" href="security.html">Security</a>
+                <hr>
+                <a class="sidenavItems" href="settings.html">Settings</a>
+                <hr>
+            </div>
+            <svg class="speedometer" viewBox="0 0 100 60">
+                <!-- Background Arc -->
+                <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
+                
+                <!-- Colored Arc -->
+                <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
+                
+                <!-- Needle -->
+                <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
+            
+                <!-- Percentage Text -->
+                <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
+            
+                <!-- Gradient Definition -->
+                <defs>
+                    <linearGradient id="gradient">
+                        <stop offset="0%" stop-color="#00c853" /> <!-- Green -->
+                        <stop offset="50%" stop-color="#ffd600" /> <!-- Yellow -->
+                        <stop offset="100%" stop-color="#ff1744" /> <!-- Red -->
+                    </linearGradient>
+                </defs>
+            </svg>
+            </div>
+            <div id="boxes">
+                <button class="roomButton">
+                    <img class="icon" src="../images/" alt="Alarm icon">
+                    Alarm
+                </button>
+                <button class="roomButton">
+                    <img class="icon" src="../images/" alt="Front door camera">
+                    Front camera
+                </button>
+                <button class="roomButton" id="addRoomButton">
+                    <span class="plus-sign">+</span>
+                    <span class="button-text">Add security</span>
+                </button>
+            </div>
+            <!-- Dropdown menu for adding a new room -->
+            <div id="addRoomModal" style="display: none;">
+                <div id="addRoomForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="createRoomButton">Create</button>
+                    <button id="cancelRoomButton">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Check if user is logged in
+                if (localStorage.getItem("loggedIn") !== "true") {
+                    window.location.href = "login.html"; // Send back to login page
+                }
+
+                // Add Room Button Click Event
+                const addRoomButton = document.getElementById("addRoomButton");
+                const addRoomModal = document.getElementById("addRoomModal");
+                const createRoomButton = document.getElementById("createRoomButton");
+                const cancelRoomButton = document.getElementById("cancelRoomButton");
+                const roomNameInput = document.getElementById("roomName");
+
+                addRoomButton.addEventListener("click", () => {
+                    addRoomModal.style.display = "block"; // Show the modal
+                });
+
+                cancelRoomButton.addEventListener("click", () => {
+                    addRoomModal.style.display = "none"; // Hide the modal
+                    roomNameInput.value = ""; // Clear input
+                });
+
+                createRoomButton.addEventListener("click", () => {
+                    const roomName = roomNameInput.value.trim();
+                    if (roomName) {
+                        // Create a new room element
+                        const newRoom = document.createElement("div");
+                        newRoom.innerHTML = `
+                            <img class="icon" src="../images/bedroom.png">
+                            <h4>${roomName}</h4>
+                        `;
+                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
+                        addRoomModal.style.display = "none"; // Hide the modal
+                        roomNameInput.value = ""; // Clear input
+                    } else {
+                        alert("Please enter a room name.");
+                    }
+                });
+            });
+
+            function updateSpeedometer(percentage) {
+    let value = Math.max(0, Math.min(100, percentage)); 
+    let dashOffset = 125 - (value / 100) * 125; 
+    let rotation = -90 + (value / 100) * 180; 
+
+    document.getElementById("gauge").style.strokeDashoffset = dashOffset;
+    document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
+    document.getElementById("percentage").textContent = `${value}%`;
+}
+        </script>
+    </main>
+</body>
+</html>
