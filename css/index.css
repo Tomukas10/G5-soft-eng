@@ -1,4 +1,3 @@
-/* Apple-like sleek design */
 * {
     margin: 0;
     padding: 0;
@@ -98,7 +97,6 @@ p {
     transform: scale(1.05);
 }
 
-/* Smooth Scroll for links (if any) */
 html {
     scroll-behavior: smooth;
 }

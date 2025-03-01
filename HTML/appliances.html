@@ -3,8 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../CSS/home1.css" /> 
-    <title>Smarthome System</title>
+    <link rel="stylesheet" href="../CSS/home1.css" />
+    <title>Appliances</title>
+    <style>
+        /* Add some basic styles for the on/off toggle and animations */
+        .appliance {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .graph-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .graph-button:hover {
+            background-color: #45a049;
+        }
+        .remove-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -13,28 +85,40 @@
     <main>
         <div id="page">
             <div>
-            <div id="sidenav">
-                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
-                <hr>
-                <a id="selected" class="sidenavItems" href="appliances.html">Appliances</a>
-                <hr>
-                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
-                <hr>
-                <a class="sidenavItems" href="security.html">Security</a>
-                <hr>
-                <a class="sidenavItems" href="settings.html">Settings</a>
-                <hr>
-            </div>
+                <div id="sidenav">
+                    <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                    <hr>
+                    <a id="selected" class="sidenavItems" href="appliances.html">Appliances</a>
+                    <hr>
+                    <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                    <hr>
+                    <a class="sidenavItems" href="security.html">Security</a>
+                    <hr>
+                    <a class="sidenavItems" href="settings.html">Settings</a>
+                    <hr>
+                </div>
             </div>
             <div id="boxes">
-                <button class="roomButton">
-                    <img class="icon" src="" alt="">
-                    Lights
-                </button>
-                <button class="roomButton">
-                    <img class="icon" src="" alt="">
-                    Vacuum
-                </button>
+                <div class="appliance">
+                    <img class="icon" src="../images/light.png" alt="Lights">
+                    <h4>Lights</h4>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="graph-button">View Energy Usage</button>
+                    <button class="remove-button">Remove</button>
+                </div>
+                <div class="appliance">
+                    <img class="icon" src="../images/vacuum.png" alt="Vacuum">
+                    <h4>Vacuum</h4>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="graph-button">View Energy Usage</button>
+                    <button class="remove-button">Remove</button>
+                </div>
                 <button class="roomButton" id="addRoomButton">
                     <span class="plus-sign">+</span>
                     <span class="button-text">Add appliance</span>
@@ -76,19 +160,60 @@
                 createRoomButton.addEventListener("click", () => {
                     const roomName = roomNameInput.value.trim();
                     if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
+                        // Create a new appliance element
+                        const newAppliance = document.createElement("div");
+                        newAppliance.className = "appliance";
+                        newAppliance.innerHTML = `
+                            <img class="icon" src="../images/default.png" alt="${roomName}">
                             <h4>${roomName}</h4>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <button class="graph-button">View Energy Usage</button>
+                            <button class="remove-button">Remove</button>
                         `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
+                        document.getElementById("boxes").insertBefore(newAppliance, addRoomButton);
                         addRoomModal.style.display = "none"; // Hide the modal
                         roomNameInput.value = ""; // Clear input
+
+                        // Add event listeners for the new appliance
+                        addApplianceEventListeners(newAppliance);
                     } else {
-                        alert("Please enter a appliance name.");
+                        alert("Please enter an appliance name.");
                     }
                 });
+
+                // Function to add event listeners for an appliance
+                function addApplianceEventListeners(appliance) {
+                    const toggleSwitch = appliance.querySelector(".toggle-switch input");
+                    const graphButton = appliance.querySelector(".graph-button");
+                    const removeButton = appliance.querySelector(".remove-button");
+
+                    // Toggle switch event
+                    toggleSwitch.addEventListener("change", () => {
+                        if (toggleSwitch.checked) {
+                            console.log(`${appliance.querySelector("h4").textContent} is ON`);
+                        } else {
+                            console.log(`${appliance.querySelector("h4").textContent} is OFF`);
+                        }
+                    });
+
+                    // Graph button event
+                    graphButton.addEventListener("click", () => {
+                        const applianceName = appliance.querySelector("h4").textContent;
+                        alert(`Showing energy usage for ${applianceName}`);
+                        // Here you can add logic to display a graph for the appliance
+                    });
+
+                    // Remove button event
+                    removeButton.addEventListener("click", () => {
+                        appliance.remove(); // Remove the appliance from the DOM
+                    });
+                }
+
+                // Add event listeners to existing appliances
+                document.querySelectorAll(".appliance").forEach(addApplianceEventListeners);
             });
         </script>
     </main>

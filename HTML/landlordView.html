@@ -3,55 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security</title>
-    <link rel="stylesheet" href="../CSS/security.css" /> 
+    <title>Apartments</title>
+    <link rel="stylesheet" href="../CSS/landlord.css" /> 
 </head>
 <body>
     <header>
-        <h1 id="homeTitle"><b>Security</b></h1>
+        <h1 id="homeTitle"><b>Apartments</b></h1>
     </header>
     <main>
         <div id="page">
-            <div>
-            <div id="sidenav">
-                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
-                <hr>
-                <a class="sidenavItems" href="appliances.html">Appliances</a>
-                <hr>
-                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
-                <hr>
-                <a class="sidenavItems" href="security.html">Security</a>
-                <hr>
-                <a class="sidenavItems" href="settings.html">Settings</a>
-                <hr>
-            </div>
-            <svg class="speedometer" viewBox="0 0 100 60">
-                <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
-                
-                <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
-                
-                <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
-            
-                <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
-            
-                <defs>
-                    <linearGradient id="gradient">
-                        <stop offset="0%" stop-color="#00c853" /> 
-                        <stop offset="50%" stop-color="#ffd600" /> 
-                        <stop offset="100%" stop-color="#ff1744" /> 
-                    </linearGradient>
-                </defs>
-            </svg>
-            </div>
-            <div id="security">
-                <button id="Alarm" class="security" >  
-                    Alarm
+            <div id="apartments">
+                <button class="apartment" onclick="location.href='Room(EXAMPLE).html'">
+                    <img class="icon" src="../images/" alt="Apartment 1">
+                    Apartment 1
                 </button>
-                <button id="Cameras" class="security">
-                    Cameras
+                <button class="apartment">
+                    <img class="icon" src="../images/" alt="Apartment 2">
+                    Apartment 2
                 </button>
-                <button class="security" id="addRoomButton">
+                <button class="apartment">
+                    <img class="icon" src="../images/" alt="Apartment 3">
+                    Apartment 3
+                </button>
+                <button class="apartment" id="addRoomButton">
                     <span class="plus-sign">+</span>
+                    <span class="button-text">Add Apartment</span>
                 </button>
             </div>
             <div id="addRoomModal" style="display: none;">
@@ -61,10 +37,9 @@
                     <button id="cancelRoomButton">Cancel</button>
                 </div>
             </div>
-            
             <script src="../JS/home.js"></script>
         </div>
-
+        <a class="logout-btn" href="login.html">Log Out</a>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 // Check if user is logged in
@@ -105,16 +80,6 @@
                     }
                 });
             });
-
-            function updateSpeedometer(percentage) {
-    let value = Math.max(0, Math.min(100, percentage)); 
-    let dashOffset = 125 - (value / 100) * 125; 
-    let rotation = -90 + (value / 100) * 180; 
-
-    document.getElementById("gauge").style.strokeDashoffset = dashOffset;
-    document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
-    document.getElementById("percentage").textContent = `${value}%`;
-}
         </script>
     </main>
 </body>
