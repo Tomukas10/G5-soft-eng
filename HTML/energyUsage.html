@@ -3,85 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../CSS/home1.css" /> 
-    <title>Energy usage</title>
+    <link rel="stylesheet" href="../CSS/home1.css">
+    <link rel="stylesheet" href="../CSS/energyUsage.css"> 
+    <title>Energy Usage</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <h1 id="homeTitle"><b>Energy usage graph</b></h1>
+        <h1 id="homeTitle"><b>Energy Usage Graph</b></h1>
     </header>
     <main>
         <div id="page">
             <div>
-            <div id="sidenav">
-                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
-                <hr>
-                <a class="sidenavItems" href="appliances.html">Appliances</a>
-                <hr>
-                <a id="selected" class="sidenavItems" href="energyUsage.html">Energy Usage</a>
-                <hr>
-                <a class="sidenavItems" href="security.html">Security</a>
-                <hr>
-                <a class="sidenavItems" href="settings.html">Settings</a>
-                <hr>
-            </div>
+                <div id="sidenav">
+                    <a class="sidenavItems" href="dashboard.html">Home</a>
+                    <hr>
+                    <a class="sidenavItems" href="appliances.html">Appliances</a>
+                    <hr>
+                    <a id="selected" class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                    <hr>
+                    <a class="sidenavItems" href="security.html">Security</a>
+                    <hr>
+                    <a class="sidenavItems" href="settings.html">Settings</a>
+                    <hr>
+                </div> 
             </div>
             <div id="energyGraph">
-                <button class="graph">
-                    <img class="graph" src="https://blog.abodit.com/images/uploads/2010/05/HomeEnergyConsumption.png">
-                </button>
+                <canvas id="energyChart"></canvas>
             </div>
-            <!-- Dropdown menu for adding a new room -->
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
-                    <input type="text" id="roomName" placeholder="Enter room name">
-                    <button id="createRoomButton">Create</button>
-                    <button id="cancelRoomButton">Cancel</button>
-                </div>
+            <div id="graphButtons">
+                <button class="graphButton" data-graph="overview">Overview</button>
+                <button class="graphButton" data-graph="fridge">Fridge</button>
+                <button class="graphButton" data-graph="ac">Air Conditioner</button>
+                <button class="graphButton" data-graph="washingMachine">Washing Machine</button>
             </div>
         </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // Check if user is logged in
-                if (localStorage.getItem("loggedIn") !== "true") {
-                    window.location.href = "login.html"; // Send back to login page
-                }
-
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
-
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-            });
-        </script>
     </main>
+    <script src="../JS/energyUsage.js"></script>
 </body>
 </html>

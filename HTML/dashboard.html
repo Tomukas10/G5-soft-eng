@@ -13,35 +13,31 @@
     <main>
         <div id="page">
             <div>
-            <div id="sidenav">
-                <a id="selected" class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
-                <hr>
-                <a class="sidenavItems" href="appliances.html">Appliances</a>
-                <hr>
-                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
-                <hr>
-                <a class="sidenavItems" href="security.html">Security</a>
-                <hr>
-                <a class="sidenavItems" href="settings.html">Settings</a>
-                <hr>
-            </div>
-            <svg class="speedometer" viewBox="0 0 100 60">
-                <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
-                
-                <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
-                
-                <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
-            
-                <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
-            
-                <defs>
-                    <linearGradient id="gradient">
-                        <stop offset="0%" stop-color="#00c853" /> 
-                        <stop offset="50%" stop-color="#ffd600" /> 
-                        <stop offset="100%" stop-color="#ff1744" /> 
-                    </linearGradient>
-                </defs>
-            </svg>
+                <div id="sidenav">
+                    <a id="selected" class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                    <hr>
+                    <a class="sidenavItems" href="appliances.html">Appliances</a>
+                    <hr>
+                    <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                    <hr>
+                    <a class="sidenavItems" href="security.html">Security</a>
+                    <hr>
+                    <a class="sidenavItems" href="settings.html">Settings</a>
+                    <hr>
+                </div>
+                <svg class="speedometer" viewBox="0 0 100 60">
+                    <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
+                    <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
+                    <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
+                    <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
+                    <defs>
+                        <linearGradient id="gradient">
+                            <stop offset="0%" stop-color="#00c853" /> 
+                            <stop offset="50%" stop-color="#ffd600" /> 
+                            <stop offset="100%" stop-color="#ff1744" /> 
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
             <div id="boxes">
                 <button class="roomButton" onclick="location.href='Room(EXAMPLE).html'">
@@ -70,10 +66,9 @@
             </div>
             <div class="button-container">
                 <button class="circle-btn" id="plus-btn">+</button>
-                <p class="temp" >20</p>
+                <p class="temp">20</p>
                 <button class="circle-btn" id="minus-btn">-</button>
             </div>
-            <script src="../JS/home.js"></script>
         </div>
 
         <script>
@@ -102,15 +97,20 @@
                 createRoomButton.addEventListener("click", () => {
                     const roomName = roomNameInput.value.trim();
                     if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
+                        // Create a new room button element
+                        const newRoomButton = document.createElement("button");
+                        newRoomButton.className = "roomButton"; // Add the same class as existing buttons
+                        newRoomButton.innerHTML = `
+                            <img class="icon" src="../images/bedroom.png" alt="${roomName} Icon">
+                            ${roomName}
                         `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
+
+                        // Insert the new room button before the "Add Room" button
+                        document.getElementById("boxes").insertBefore(newRoomButton, addRoomButton);
+
+                        // Hide the modal and clear the input
+                        addRoomModal.style.display = "none";
+                        roomNameInput.value = "";
                     } else {
                         alert("Please enter a room name.");
                     }
@@ -118,14 +118,14 @@
             });
 
             function updateSpeedometer(percentage) {
-    let value = Math.max(0, Math.min(100, percentage)); 
-    let dashOffset = 125 - (value / 100) * 125; 
-    let rotation = -90 + (value / 100) * 180; 
+                let value = Math.max(0, Math.min(100, percentage)); 
+                let dashOffset = 125 - (value / 100) * 125; 
+                let rotation = -90 + (value / 100) * 180; 
 
-    document.getElementById("gauge").style.strokeDashoffset = dashOffset;
-    document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
-    document.getElementById("percentage").textContent = `${value}%`;
-}
+                document.getElementById("gauge").style.strokeDashoffset = dashOffset;
+                document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
+                document.getElementById("percentage").textContent = `${value}%`;
+            }
         </script>
     </main>
 </body>
