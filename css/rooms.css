@@ -114,10 +114,183 @@ header {
     cursor: not-allowed;
 }
 
+/* CSS for the 'light' section buttons. */
+.light-btn {
+    width: 120%; /* Adjust width to match design */
+    padding: 15px;
+	white-space: nowrap; /* Prevents the "COUNTER LIGHTS" button's text from wrapping. */
+    font-size: 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center text */
+    border: 2px solid #555; /* Border to make buttons stand out */
+    transition: background 0.3s ease;
+    margin-bottom: 10px;
+    position: relative; /* Allows absolute positioning inside */
+}
+
+.light-btn.green {
+    background: linear-gradient(to right, #0d5c1f, #0aff4d);
+    color: white;
+}
+
+.light-btn.red {
+    background: linear-gradient(to right, #7a0000, #ff1e1e);
+    color: white;
+}
+
+.gear-icon {
+    font-size: 20px;
+    opacity: 0.8;
+    position: absolute;
+    right: -30px; /* Moves it outside the button */
+    top: 50%;
+    transform: translateY(-50%); /* Ensures vertical alignment */
+}
+
+
+.light-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
 /* #############################################################################################################*/
 /* #############################################################################################################*/
 
+/* CSS for the 'temperature' section. */
+.temperature-container
+{
+	display: flex;
+	justify-content: center;
+	gap: 40px;
+	align-items: center;
+	width: 100%;
+}
 
+.temp-column
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+ .room-header 
+{
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.temp-control 
+{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80px;
+        height: 200px;
+        background: linear-gradient(to bottom, #5a1e00, #cc4400);
+        padding: 10px;
+        border-radius: 15px;
+        justify-content: space-between;
+		border: 1.2px solid white;
+}
+
+.temp-btn 
+{
+        width: 100%;
+        height: 65px;
+        font-size: 28px;
+        font-weight: bold;
+        background: transparent;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.temp-btn:hover 
+{
+    background: linear-gradient(to bottom, #ff4500, #ff0000);
+}
+
+.temp-btn:active 
+{
+    transform: scale(0.9);
+}
+
+.temp-display 
+{
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+.temp-actual 
+{
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+.temp-labels 
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.target-label 
+{
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-left: 20px;
+}
+
+.actual-temp 
+{
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+    color: white;
+    margin-top: 25px;
+}
+
+/* Handles the 5th column containing the 'Target' and 'Actual' labels. */
+.temp-info-column 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 320px; 
+}
+
+.target-Label 
+{
+    flex-grow: 1; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	margin-top: 40px;
+}
+
+.actual-Label 
+{
+    align-self: flex-end;
+    margin-bottom: 6px; 
+}
+
+/* #############################################################################################################*/
+/* #############################################################################################################*/
 
 #page{
 	display: flex;
@@ -127,12 +300,43 @@ header {
 #appliances{
 	margin-left: 7%;
 	display: flex;
-	width: 80%;
+	width: 40%;
 	height: 100%;
     display: flex;
     flex-direction: column;
+	align-items: flex-start;
     float: left;
 }
+
+#appliances-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 60%;
+}
+
+#divider {
+    width: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    height: auto;
+    flex-grow: 1;
+    min-height: 100%;
+    align-self: stretch;
+    margin: 0 3vh;
+}
+
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
 
 .icon {
 	width: 15vh;
@@ -151,7 +355,7 @@ header {
 
 .appliance {
     margin-top: 10px;
-    background-color: white;
+    background-color: #ccc; /* Default greyed-out */
     border-radius: 15px;
     width: 40vh;
     height: 10vh;
@@ -167,6 +371,11 @@ header {
 	display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+}
+
+.appliance.active {
+    background-color: white; /* When active */
+    border: 2px solid black;
 }
 
 .appliance:hover {
@@ -379,6 +588,7 @@ text {
     border: solid;
     margin-left: 10%;
 }
+
 
 
 
