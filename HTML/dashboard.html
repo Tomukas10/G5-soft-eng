@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="../CSS/home1.css" /> 
+    <script src="../JS/fetch.js"></script>
 </head>
 <body>
     <header>
@@ -40,18 +41,6 @@
                 </svg>
             </div>
             <div id="boxes">
-                <button class="roomButton" onclick="location.href='Room(EXAMPLE).html'">
-                    <img class="icon" src="../images/kitchen.png" alt="Kitchen Icon">
-                    Kitchen
-                </button>
-                <button class="roomButton">
-                    <img class="icon" src="../images/living room.png" alt="Living Room Icon">
-                    Living Room
-                </button>
-                <button class="roomButton">
-                    <img class="icon" src="../images/bedroom.png" alt="Bedroom Icon">
-                    Bedroom 1
-                </button>
                 <button class="roomButton" id="addRoomButton">
                     <span class="plus-sign">+</span>
                     <span class="button-text">Add Room</span>
@@ -72,50 +61,7 @@
         </div>
 
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // Check if user is logged in
-                if (localStorage.getItem("loggedIn") !== "true") {
-                    window.location.href = "login.html"; // Send back to login page
-                }
 
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
-
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room button element
-                        const newRoomButton = document.createElement("button");
-                        newRoomButton.className = "roomButton"; // Add the same class as existing buttons
-                        newRoomButton.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png" alt="${roomName} Icon">
-                            ${roomName}
-                        `;
-
-                        // Insert the new room button before the "Add Room" button
-                        document.getElementById("boxes").insertBefore(newRoomButton, addRoomButton);
-
-                        // Hide the modal and clear the input
-                        addRoomModal.style.display = "none";
-                        roomNameInput.value = "";
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-            });
 
             function updateSpeedometer(percentage) {
                 let value = Math.max(0, Math.min(100, percentage)); 
