@@ -44,82 +44,108 @@
                 </defs>
             </svg>
             </div>
-            <div id="appliances">
-                <button id="kitchenTemp" class="appliance" >  
-                    Temperature
-                </button>
-                <button id="kitchenLights" class="appliance">
-                    Lights
-                </button>
-                <button id="kitchenOven" class="appliance">
-                    Oven
-                </button>
-                <button class="appliance" id="addRoomButton">
-                    <span class="plus-sign">+</span>
-                </button>
-            </div>
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
+			
+			<div id="addRoomModal" style="display: none;">
+				<div id="addRoomForm">
                     <input type="text" id="roomName" placeholder="Enter room name">
                     <button id="createRoomButton">Create</button>
                     <button id="cancelRoomButton">Cancel</button>
                 </div>
             </div>
+			
+			<!-- Hosts the primary appliances buttons. -->
+            <div id="appliances-container">
+				<div id="appliances">
+					<button id="kitchenTemperature" class="appliance">Temperature</button>
+					<button id="kitchenLights" class="appliance">Lights</button>
+					<button id="kitchenOven" class="appliance">Oven</button>
+					<button class="appliance" id="addRoomButton">
+					<span class="plus-sign">+</span>
+					</button>
+				</div>
+				
+				<!-- Acts as a vertical separator between the Temp/Light/Oven buttons and the contents. -->
+				<div id="divider"></div>
+
+				<!-- Contains everything opposite the primary buttons. -->
+				<div id="right-panel">
+					<!-- Implements the 'lights' section. -->
+					<div id="lights-section" class="dynamic-section hidden">
+						<button class="light-btn green">MAIN LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button class="light-btn red">TABLE LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button class="light-btn green">BAR LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button class="light-btn red">COUNTER LIGHTS <span class="gear-icon">⚙️</span></button>
+					</div>
+					
+					<!-- Implements the 'temperature' section. -->
+					<div id="temperature-section" class="dynamic-section hidden">
+						<h2 class = "temp">Temperature (&deg;c)</h2>
+							<div class = "temperature-container">
+								<!-- Living Room section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Living Room</h3>
+										<div class = "temp-control">
+											<button class = "temp-btn" onclick = "adjustTemperature('living', 1)">+</button>
+											<span class="temp-display" id="living-temp">20</span>
+											<button class = "temp-btn" onclick = "adjustTemperature('living', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Living">18°</span>
+								</div>
+								
+								<!-- Kitchen section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Kitchen</h3>
+										<div class = "temp-control">
+											<button class = "temp-btn" onclick = "adjustTemperature('kitchen', 1)">+</button>
+											<span class="temp-display" id="kitchen-temp">20</span>
+											<button class = "temp-btn" onclick = "adjustTemperature('kitchen', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Kitchen">15°</span>
+								</div>
+								
+								<!-- Bedroom 1 section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Bedroom 1</h3>
+										<div class = "temp-control">
+											<button class = "temp-btn" onclick = "adjustTemperature('bedroom1', 1)">+</button>
+											<span class="temp-display" id="bedroom1-temp">20</span>
+											<button class = "temp-btn" onclick = "adjustTemperature('bedroom1', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Bedroom1">19°</span>
+								</div>
+								
+								<!-- Bedroom 2 section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Bedroom 2</h3>
+										<div class = "temp-control">
+											<button class = "temp-btn" onclick = "adjustTemperature('bedroom2', 1)">+</button>
+											<span class="temp-display" id="bedroom2-temp">20</span>
+											<button class = "temp-btn" onclick = "adjustTemperature('bedroom2', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Bedroom2">23°</span>
+								</div>
+								
+								<div class="temp-column temp-info-column">
+									<span class = "target-Label">Target</span>
+									<span class = "actual-Label">Actual</span>
+								</div>
+							</div>
+							
+					</div>
+
+					<!-- Implements the 'oven' section. -->
+					<div id="oven-section" class="dynamic-section hidden">
+						Oven Content
+					</div>
+				</div>
+			</div>
             
-            <script src="../JS/home.js"></script>
+			<!-- Unsure what this script is for particularly? -CS. -->
+           <script src="../JS/home.js"></script>
         </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // Check if user is logged in
-                if (localStorage.getItem("loggedIn") !== "true") {
-                    window.location.href = "login.html"; // Send back to login page
-                }
-
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
-
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-            });
-
-            function updateSpeedometer(percentage) {
-    let value = Math.max(0, Math.min(100, percentage)); 
-    let dashOffset = 125 - (value / 100) * 125; 
-    let rotation = -90 + (value / 100) * 180; 
-
-    document.getElementById("gauge").style.strokeDashoffset = dashOffset;
-    document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
-    document.getElementById("percentage").textContent = `${value}%`;
-}
-        </script>
+		<!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
+        <script src="../JS/roomExample.js"></script>
     </main>
 </body>
 </html>
