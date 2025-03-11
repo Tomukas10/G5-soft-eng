@@ -90,6 +90,18 @@ app.post('/houses/:houseId/rooms', async (req, res) => {
     }
 });
 
+app.delete('/houses/:houseId/rooms/:roomId', async (req, res) => {
+    const { houseId, roomId } = req.params;
+
+    try {
+        await query('DELETE FROM rooms WHERE house_id = ? AND id = ?', [houseId, roomId]);
+        res.status(200).send({ message: 'Room deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: 'Failed to delete room' });
+    }
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

@@ -1,0 +1,789 @@
+
+/* CSS for general website as a whole */
+
+* {
+	font-family: "Montseratt", sans-serif;
+	box-sizing: border-box
+}
+
+html {
+  scroll-behavior: smooth;
+ }
+
+
+/* CSS for the header section of website */
+
+.home header {
+	 padding: 30px;
+}
+
+.home header h1 {
+	font-size: 75px;
+	color: white;
+	right: 10%;
+    top: 20%;
+	position: absolute;
+	
+
+}
+
+
+
+/* CSS for Body of website */
+
+.home body {
+	height: 2500px;
+	background-repeat:no-repeat;
+    margin: 0;
+	padding: 0;
+}
+
+
+
+
+/* CSS for the top section of the home page*/
+
+#title {
+	text-align: right;
+	float: left;
+}
+
+.home #topPage {
+	background-attachment: fixed;
+	background-image: url('images/cross.jpg');
+	background-size: cover;
+	background-position: center center;
+	position: relative;
+	height: 40%;
+	margin: 0;
+}
+
+.home #topPage p {
+	font-size: 20px;
+	color: white;
+	left: 70%;
+    top: 44%;
+	position: absolute;
+	float: right;
+	
+}
+
+/* CSS for the navigation bars and title within the website Home Page*/
+
+
+#sidenav {
+  width: 300px;
+  position: absolute;
+  z-index: 1;
+  top: 20%;
+  left: 10px;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+#sidenav a {
+  padding: 6px 8px 26px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #fff;
+  display: block;
+}
+
+nav {
+  overflow: hidden;
+  position: absolute;
+  width: 600px;
+  height: 100px;
+  right: 10px;
+  top: 2.5%;
+}
+
+nav a {
+  margin: 10px;
+  margin-bottom: 30px;
+  padding: 0;
+  font-size: 25px;	
+  color: #fff;
+  display: block;
+  float: right;
+  text-decoration: none;
+
+}
+
+#infoTitle {
+	font-size: 75px;
+	color: #666667;
+	margin: 20px;
+
+}
+
+/* CSS for the scroll button */
+
+
+#topPage a {
+  padding: 6px 8px 26px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #fff;
+  display: block;
+}
+
+#scrollText {
+	margin-top: 80vh;
+}
+
+
+/* CSS for the middle section of home page */
+
+.home #middlePage {
+	position: relative;
+	height: 20%;
+}
+
+.home #middlePage p {
+	font-size: 20px;
+	color: #666667;
+	margin-left: 10px;
+}
+
+.home #middlePage h2{
+	font-size: 30px;
+	color: #6d402a;
+	margin-left: 10px;
+	right: 10px;
+
+}
+
+.icon {
+	height: 100px;
+	width: 100px;
+	margin-left: 10px;
+}
+
+
+/* CSS for the lower section of the home page*/
+
+.home #lowerPage {
+	background-attachment: fixed;
+	background-image: url('images/building.jpg');
+	background-size: cover;
+	background-position: center center;
+	position: relative;
+	height: 40%;
+}
+
+.home #lowerPage p {
+	font-size: 20px;
+	color: #666667;
+}
+.home #lowerPage h1 {
+	color: #6d402a;
+}
+
+.column {
+	float: left;
+  width: 30%;
+  padding: 10px;
+  height: 300px;
+  text-align: center;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.row {
+	display: flex;
+}
+
+
+/* CSS for the Information and News sections in lower page */
+
+section {
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  background-color: #FAF9F6;
+  display: inline-block;
+  padding: 1rem 1rem;
+  vertical-align: middle;
+  width: 50%;
+  height: 800px;
+  margin: 10px;
+}
+
+
+.row {
+  margin: 1rem;
+  padding: 2rem 2rem;
+  text-align: center;
+  display: flex;
+}
+
+#eventsTitle {
+	font-size: 50px;
+	color: #3892C9;
+}
+
+.button {
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.flex-container {
+  display: flex;
+}
+
+
+/* CSS to add animation to the Home Page navigation buttons */
+
+
+
+.sidenavItems {
+	transition: opacity 400ms ease;
+}
+
+#sidenav:hover > .sidenavItems {
+	opacity: 0.3;
+	
+}
+
+#sidenav:hover > .sidenavItems:hover{
+	opacity: 1;
+}
+
+
+
+.navItems {
+	transition: opacity 400ms ease;
+}
+
+nav:hover > .navItems {
+	opacity: 0.3;
+	
+}
+
+nav:hover > .navItems:hover{
+	opacity: 1;
+}
+
+
+
+/* CSS to customise the Scrollbar within the wesbite */
+
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+/* Gallery CSS */
+
+  .galleryHeader {
+	height: 100%;
+	background-image: url("images/cross.jpg");
+	background-size: cover;
+	object-fit: fill;
+  }
+
+/* Gallery front page */
+
+.galleryHeader {
+	padding: 30px;
+   background-attachment: fixed;
+   background-size: cover;
+   background-position: center center;
+   height: 300px;
+}
+
+.galleryimg {
+	display: block;
+	width: 250px;
+	height: 700px;
+	object-fit: cover;
+}
+
+ /* Four image containers */
+ .g-column {
+	float: left;
+	display: relative;
+	position: relative;
+	transition: transform 0.3s ease;
+	z-index: 2;
+  }
+
+    .overlay {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color:rgba(0, 0, 0, 0.60);
+	overflow: hidden;
+	width: 100%;
+	height: 0;
+	transition: .5s ease;
+  } 
+  
+  .g-column:hover .overlay {
+	height: 100%;
+  }
+  
+  .text {
+	color: white;
+	font-size: 30px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	text-align: center;
+  }
+
+  /* Menu styles */
+.menu {
+	position: absolute;
+	top: 0;
+	right: 0px;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.3s ease;
+}
+
+.menu a {
+	margin: 10px;
+	margin-bottom: 30px;
+	padding: 0;
+	font-size: 50px;	
+	color: rgb(60,64,67);
+	transition: 0.4s;
+	display: block;
+	float: right;
+	text-decoration: none;
+  }
+
+  .menu a:hover {
+	color: rgb(26,115,232);
+	transition: 0.4s;
+  }
+
+.g-column:hover .menu {
+	transform: translateX(200px);
+}
+
+/* Push other columns to the right */
+.g-column:hover ~ .g-column {
+	transform: translateX(250px);
+}
+  
+
+/* Gallery Pages */
+
+
+.activeLink {
+	color:rgb(26,115,232) !important;
+}
+
+#imageGallery {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	float: left;
+	width: 60%;
+  }
+  
+  #imageGallery img {
+	margin: 10px;
+	height: 300px;
+	width: auto;
+  }
+  
+  #imageGallery img:hover {
+	box-shadow: 0px 0px 10px rgb(0, 0, 0);
+	transition: 0.3s;
+  }
+
+/* The sidebar menu */
+
+#g-sidebar {
+	height: 100%;
+	width: 15%; 
+	z-index: 1;
+	float: right;
+	overflow-x: hidden;
+	padding-top: 20px;
+	position: sticky;
+	top: 0;
+  }
+  
+  /* The navigation menu links */
+  #g-sidebar a {
+	padding: 6px 8px 6px 16px;
+	text-decoration: none;
+	font-size: 25px;
+	color: rgb(60,64,67);
+	transition: 0.4s;
+	display: block;
+  }
+  
+  /* When you mouse over the navigation links, change their color */
+  #g-sidebar a:hover {
+	color: rgb(26,115,232);
+	transition: 0.4s;
+  }
+
+  .photoInformation {
+	float: left;
+	width: 20%;
+	height: 100%;
+	background: white;
+	border-radius: 10px;
+	top: 0;
+	position: sticky;
+  }
+
+  #galleryTitle {
+	font-size: 50px;
+	color: #6d402a;
+	text-align: center;
+}
+
+#photoDescription {
+	font-size: 1.5vw;
+	color: #555;
+	padding: 15px;
+	float: left;
+	transition: opacity 0.18s ease-in-out;
+}
+
+/* Other Pages CSS */
+
+
+
+
+/* Other Pages Header */
+
+
+.otherHeader {
+	 padding: 30px;
+	background-attachment: fixed;
+	background-image: url('images/cross.jpg');
+	background-size: cover;
+	background-position: center center;
+	height: 300px;
+}
+
+
+#otherMainTitle {
+	font-size: 30px;
+	color: white;
+	position: absolute;
+	float: right;
+	
+
+}
+
+#secondTitle {
+	font-size: 50px;
+	color: white;
+	margin-top: 200px;
+}
+
+
+
+
+
+/* CSS for the navigation bars within the website's other pages*/
+
+
+#nav2 {
+  overflow: hidden;
+  position: absolute;
+  width: 80%;
+  height: 100px;
+  right: 10px;
+  top: 5%;
+}
+
+#nav2 a {
+  margin: 10px;
+  margin-bottom: 30px;
+  padding: 0;
+  font-size: 25px;	
+  color: #fff;
+  display: block;
+  float: right;
+  text-decoration: none;
+
+}
+
+
+
+/* CSS to add animation to the Other Page navigation buttons */
+
+.navItems2 {
+	transition: opacity 400ms ease;
+}
+
+
+#nav2:hover > .navItems2 {
+	opacity: 0.3;
+	
+}
+
+#nav2:hover > .navItems2:hover{
+	opacity: 1;
+}
+
+
+/* CSS for standard of external page from home */
+
+.other body {
+	background-repeat:no-repeat;
+    margin: 0;
+	padding: 0;
+}
+
+
+.other h2 {
+	font-size: 50px;
+	color: #666667;
+	margin: 20px;
+}
+
+
+
+
+.other p {
+	font-size: 20px;
+	color: #666667;
+	margin-left: 10px;
+}
+
+
+/* CSS for aboutUs page */
+
+.divider {
+	height:50px;
+}
+
+
+#aboutSection1 {
+	height: 500px;
+}
+
+
+.aboutColumn {
+  display: inline-block;
+  padding: 1.5rem 1.5rem;
+  vertical-align: middle;
+  width: 50%;
+  height: 600px;
+}
+
+.aboutRow:after {
+    margin: 1rem;
+  padding: 2rem 2rem;
+  text-align: center;
+}
+
+.aboutRow {
+	display: flex;
+}
+
+#aboutSection3 {
+	height: 1000px;
+}
+
+#aboutSection3 h2 {
+	font-size: 40px;
+	color: #666667;
+	margin: 20px;
+}
+
+#aboutSection3 p {
+	font-size: 22px;
+	color: #666667;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+/* CSS for the prayers page */
+
+
+#dailyPrayerTitle {
+	margin: 50px;
+}
+
+#prayerBubbleSection {
+	height: 300px;
+}
+#prayerBubbleSection p {
+	font-size: 20px;
+	color: #666667;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+#prayerSection2 {
+	height: 700px;
+	background-attachment: fixed;
+	background-image: url('images/forest.jpg');
+	background-size: cover;
+	background-position: center center;
+}
+
+#prayerSection2 h2 {
+	font-size: 50px;
+	color: #fff;
+	margin: 20px;
+}
+
+#prayerSection2 p {
+	font-size: 40px;
+	color: #fff;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+
+.prayerColumn {
+  display: inline-block;
+  padding: 1.5rem 1.5rem;
+  vertical-align: middle;
+  width: 50%;
+  height: 600px;
+}
+
+.prayerRow:after {
+    margin: 1rem;
+  padding: 2rem 2rem;
+  text-align: center;
+}
+
+.prayerRow {
+	display: flex;
+}
+
+
+#prayerSection4 {
+	height: 700px;
+	background-attachment: fixed;
+	background-image: url('images/city.jpg');
+	background-size: cover;
+	background-position: center center;
+}
+
+#prayerSection4 h2 {
+	font-size: 50px;
+	color: #fff;
+	margin: 60px;
+}
+
+#prayerSection4 p {
+	font-size: 40px;
+	color: #fff;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.prayerColumn2 {
+  display: inline-block;
+  padding: 1rem 1rem;
+  vertical-align: middle;
+  width: 80%;
+  height: 600px;
+}
+
+/* CSS for Key Leaders Page */
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 200px;
+  margin: auto;
+  text-align: center;
+  float: left;
+  margin-left: 190px;
+}
+
+.title {
+  color: #666667;
+  font-size: 18px;
+}
+
+
+.aCard {
+  text-decoration: none;
+  font-size: 22px;
+  color: #666667;
+}
+
+#cardButton:hover, .aCard:hover {
+  opacity: 0.7;
+}
+
+#mainPeople {
+	display:flex;
+	height: 600px;
+}
+
+#middleTitle {
+	height: 200px;
+	background-attachment: fixed;
+	background-image: url('images/forest.jpg');
+	background-size: cover;
+	background-position: center center;
+	padding-top: 100px;
+}
+
+#elderTitle {
+	font-size: 50px;
+	color: white;
+}
+
+.elderPeople {
+	display:flex;
+	height: 600px;
+}
+
+/* CSS for the Contacts Page */
+
+#pageSection {
+	height: 100px;
+}
+
+#contactButton {
+	text-align: center;
+	width: 300px;
+	float: right;
+	margin-bottom: 500px;
+	
+}
+
+#contactTitle {
+	margin-top: 50px;
+	text-decoration: none;
+}
+
+#pageSection2 {
+	height: 400px;
+	background-attachment: fixed;
+	background-image: url('images/forest.jpg');
+	background-size: cover;
+	background-position: center center;
+}

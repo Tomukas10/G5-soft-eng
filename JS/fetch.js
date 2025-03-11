@@ -1,69 +1,91 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-async function fetchRooms() {
-    try {
-        const response = await fetch('/houses/1/rooms'); // Replace 1 with the house ID
-        if (!response.ok) {
-            throw new Error('Failed to fetch rooms');
-        }
-        const rooms = await response.json();
-
-        // Get the rooms container
-   /*     const roomsContainer = document.getElementById('boxes');
-                        // Add the "Add Room" button
-                        const addRoomButton = document.createElement('button');
-                        addRoomButton.className = 'roomButton';
-                        addRoomButton.id = 'addRoomButton';
-                
-                        // Add the plus sign
-                        const plusSign = document.createElement('span');
-                        plusSign.className = 'plus-sign';
-                        plusSign.textContent = '+';
-                
-                        // Add the button text
-                        const buttonText = document.createElement('span');
-                        buttonText.className = 'button-text';
-                        buttonText.textContent = 'Add Room';
-                
-                        // Append the plus sign and button text to the button
-                        addRoomButton.appendChild(plusSign);
-                        addRoomButton.appendChild(buttonText);
-                
-                        // Append the "Add Room" button to the rooms container
-                        roomsContainer.appendChild(addRoomButton); */
-
-
-        // Add a button for each room
-        rooms.forEach(room => {
-            const button = document.createElement('button');
-            button.className = 'roomButton';
+    async function fetchRooms() {
+        try {
+            const response = await fetch('/houses/1/rooms'); // Replace 1 with the house ID
+            if (!response.ok) {
+                throw new Error('Failed to fetch rooms');
+            }
+            const rooms = await response.json();
+    
             const addRoomButton = document.getElementById("addRoomButton");
+            const roomsContainer = document.getElementById("boxes");
+    
+            // Clear existing rooms (to avoid duplicates on reload)
+            roomsContainer.innerHTML = "";
+            roomsContainer.appendChild(addRoomButton); // Re-add "Add Room" button
+    
+            // Add a button for each room
+            rooms.forEach(room => {
+                const button = document.createElement('div'); // Change to div for better layout control
+                button.className = 'roomButton';
+                button.setAttribute('data-id', room.id);
+    
+                // Add an icon
+                const icon = document.createElement('img');
+                icon.className = 'icon';
+                icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`; // Dynamic icon path
+                icon.alt = `${room.name} Icon`;
+    
+                // Add the room name
+                const roomName = document.createElement('span');
+                roomName.textContent = room.name;
+    
+                // Add the delete button
+                const deleteButton = document.createElement('span');
+                deleteButton.className = 'deleteRoom';
+                deleteButton.innerHTML = '&times;';
+                deleteButton.setAttribute('data-id', room.id);
+    
+                // Add delete event listener
+                deleteButton.addEventListener('click', async (event) => {
+                    event.stopPropagation(); // Prevent triggering other button events
+                    const roomId = event.target.getAttribute('data-id');
+                    deleteRoom(roomId, button);
 
+                });
+    
+                // Append elements to the button
+                button.appendChild(deleteButton);
+                button.appendChild(icon);
+                button.appendChild(roomName);
+    
+                // Insert the new room button before the "Add Room" button
+                roomsContainer.insertBefore(button, addRoomButton);
+            });
+    
+        } catch (error) {
+            console.error('Error fetching rooms:', error);
+            const roomsContainer = document.getElementById('boxes');
+            roomsContainer.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
+        }
+    }
+    
+    async function deleteRoom(roomId, button) {
+    
+        // Show the confirmation modal
+        const modal = document.getElementById('confirmationModal');
+        const confirmButton = document.getElementById('confirmDelete');
+        const cancelButton = document.getElementById('cancelDelete');
 
-            // Add an icon
-            const icon = document.createElement('img');
-            icon.className = 'icon';
-            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`; // Dynamic icon path
-            icon.alt = `${room.name} Icon`;
+        modal.style.display = 'flex'; // Show the modal
 
-            // Add the room name
-            const roomName = document.createTextNode(room.name);
+        // If user confirms, delete the room
+        confirmButton.addEventListener('click', async () => {
+            await fetch(`/houses/1/rooms/${roomId}`, { // Replace 1 with actual houseId
+                method: 'DELETE'
+            });
 
-            // Append the icon and room name to the button
-            button.appendChild(icon);
-            button.appendChild(roomName);
-
-            // Append the button to the rooms container
-            document.getElementById("boxes").insertBefore(button, addRoomButton);
+            // Close the modal and remove the room button from the UI
+            modal.style.display = 'none';
+            button.remove();
         });
 
-
-    } catch (error) {
-        console.error('Error fetching rooms:', error);
-        const roomsContainer = document.getElementById('boxes');
-        roomsContainer.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
+        // If user cancels, just close the modal
+        cancelButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
     }
-}
 
 // Fetch rooms when the page loads
 fetchRooms();
@@ -100,7 +122,7 @@ fetchRooms();
             // Send the new room data to the server
             const newRoom = {
                 id: id,
-                name: name
+                name: roomName
             };
     
             await fetch('/houses/1/rooms', { // Use actual houseId
@@ -111,16 +133,7 @@ fetchRooms();
                 body: JSON.stringify(newRoom)
             });
     
-            // Create the new room button element
-            const newRoomButton = document.createElement("button");
-            newRoomButton.className = "roomButton"; // Add the same class as existing buttons
-            newRoomButton.innerHTML = `
-                <img class="icon" src="./images/${room.name.toLowerCase().replace(' ', '-')}.png" alt="${name} Icon">
-                ${name}
-            `;
-    
-            // Insert the new room button before the "Add Room" button
-            document.getElementById("boxes").insertBefore(newRoomButton, addRoomButton);
+        fetchRooms();
     
             // Hide the modal and clear the input
             addRoomModal.style.display = "none";
@@ -130,37 +143,3 @@ fetchRooms();
         }
     });
 });
-
-                // Fetch users from the API and display them
-/*async function fetchUsers() {
-    try {
-        const response = await fetch('http://localhost:3000/users');
-        if (!response.ok) {
-            throw new Error('Failed to fetch users');
-        }
-        const users = await response.json();
-
-        // Get the user list element
-        const userList = document.getElementById('user-list');
-
-        // Clear any existing content
-        userList.innerHTML = '';
-
-        // Add each user to the list
-        users.forEach(user => {
-            const li = document.createElement('li');
-            li.textContent = `${user.fname} (${user.Email})`;
-            userList.appendChild(li);
-        });
-                // Re-add the "Add Room" button after all rooms
-                const addRoomButton = document.getElementById('addRoomButton');
-                roomContainer.appendChild(addRoomButton);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        const userList = document.getElementById('user-list');
-        userList.innerHTML = '<li>Error loading users. Please try again later.</li>';
-    }
-}
-
-// Fetch users when the page loads
-fetchUsers(); */
