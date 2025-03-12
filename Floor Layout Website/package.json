@@ -1,0 +1,24 @@
+{
+  "name": "g5-soft-eng",
+  "version": "1.0.0",
+  "description": "1. [Introduction](#introduction)\r 2. [Getting Started](#getting-started)\r 3. [Branches](#branches)\r 4. [Testing](#testing)\r 5. [License](#license)\r 6. [Contributors](#contributors)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tomukas10/G5-soft-eng.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tomukas10/G5-soft-eng/issues"
+  },
+  "homepage": "https://github.com/Tomukas10/G5-soft-eng#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "mariadb": "^3.4.0"
+  }
+}
