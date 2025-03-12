@@ -68,6 +68,7 @@ header {
 #sidenav #selected {
 	background: grey;
 	border-radius: 15px;
+    cursor: pointer;
   }
 
 .temp {

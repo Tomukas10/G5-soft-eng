@@ -276,6 +276,9 @@ async function assignDeviceToRoom(roomId) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+document.getElementById('selected').addEventListener("click", () => {
+    fetchRooms();
+})
 
 // Fetch rooms when the page loads
 fetchRooms();
