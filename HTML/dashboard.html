@@ -35,11 +35,18 @@
                 <div id="divider"></div>
                 <div id="right-panel"></div>
             </div>
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
+            <div id="addRoomModal" class="addModal" style="display: none;">
+                <div class="addForm">
                     <input type="text" id="roomName" placeholder="Enter room name">
-                    <button id="createRoomButton">Create</button>
-                    <button id="cancelRoomButton">Cancel</button>
+                    <button class="createButton">Create</button>
+                    <button class="cancelButton">Cancel</button>
+                </div>
+            </div>
+            <div id="addDeviceModal" class="addModal" style="display: none;">
+                <div class="addForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="addDeviceButton" class="createButton">Add</button>
+                    <button class="cancelButton">Cancel</button>
                 </div>
             </div>
         </div>

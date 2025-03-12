@@ -218,31 +218,32 @@ header {
     display: grid;
     align-items: flex-start;
     justify-content: space-between;
-    width: 40%;
+    width: 30%;
 }
 
 #divider {
     width: 2px;
-    background: rgba(255, 255, 255, 0.5);
+    background: white;
     height: auto;
-    flex-grow: 1;
     min-height: 100%;
     align-self: stretch;
     margin: 0 3vh;
+    border: white;
 }
 
 #right-panel {
-    display: grid;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 50%;
+    width: auto;
 }
 
 .appliance {
     margin-top: 10px;
     margin-left: 10px;
-    background-color: #ccc; /* Default greyed-out */
+    background-color: white; /* Default greyed-out */
     border-radius: 15px;
+    border: white;
     width: 40vh;
     height: 10vh;
 	margin-right: 6%;
@@ -335,7 +336,7 @@ nav:hover > .navItems:hover{
 }
 
 /* Modal Background */
-#addRoomModal {
+.addModal {
     position: fixed;
     top: 0;
     left: 0;
@@ -349,7 +350,7 @@ nav:hover > .navItems:hover{
 }
 
 /* Modal Content */
-#addRoomForm {
+.addForm {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -375,7 +376,7 @@ nav:hover > .navItems:hover{
 }
 
 /* Buttons */
-#addRoomForm button {
+.addForm button {
     padding: 10px;
     font-size: 16px;
     border: none;
@@ -384,7 +385,7 @@ nav:hover > .navItems:hover{
     transition: 0.3s;
 }
 
-#createRoomButton {
+.createButton {
     background-color: #28a745;
     color: white;
 }
@@ -394,7 +395,7 @@ nav:hover > .navItems:hover{
     color: white;
 }
 
-#addRoomForm button:hover {
+.addForm button:hover {
     opacity: 0.8;
 }
 
