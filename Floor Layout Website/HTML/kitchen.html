@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../CSS/kitchen.css" /> 
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment 1</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+				<!-- Sidebar & functionality. -->
+                <div id="sidenav">
+                    <a class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a id="selected" class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+                </div>
+            </div>
+			
+			<!-- Room Layouts. -->
+			<div id = "houseLayout"> 
+				<!-- Main Light details. -->
+				<div class = "room" id = "kitchen">
+					<h2>Main Lights!</h2>
+					<div class = "roomBox">
+						<img id = "kitchen-mainLight" class = "lightOnOff" src = "images/kitchen.jpg" alt = "Kitchen" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+				</div>
+			
+				<!-- Table Lights details Details. -->
+				<div class = "room" id = "livingRoom">
+					<h2>Table Lights!</h2>
+					<div class = "roomBox">
+						<img id = "kitchen-tableLight" class = "lightOnOff" src = "images/tableLights.jpg" alt = "Table Lights" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+				</div>
+				
+				<!-- Bar Lights Details. -->
+				<div class = "room" id = "bedroomOne">
+					<h2>Bar Lights!</h2>
+					<div class = "roomBox">
+						<img id = "kitchen-barLight" class = "lightOnOff" src = "images/barLights.webp" alt = "Bar Lights" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+				</div>
+				
+				<!-- Counter Lights Details. -->
+				<div class = "room" id = "bedroomTwo">
+					<h2>Counter Lights!</h2>
+					<div class = "roomBox">
+						<img id = "kitchen-counterLight" class = "lightOnOff" src = "images/counterLights.jpg" alt = "Counter Lights" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+				</div>
+			
+				<div id = "notificationsContainer">
+					<div id = "temperatureNotification">
+						<p><b>Current Temperature:</b> <span id = "currentTemp">20°C</span></p>
+					</div>
+			
+					<div id = "disabledAppliances">
+						<p><b>Disabled Appliances:</b> None</p>
+					</div>
+				</div>
+			</div> 
+        </div>
+    </main>
+	
+<script src="../JS/kitchen.js"></script> <!-- Fetches the relevant data from the database. -->
+</body>
+</html>

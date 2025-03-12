@@ -51,16 +51,6 @@
 				document.getElementById("kitchenOven").addEventListener("click", () => showSection("oven"));
 			});
 
-            function updateSpeedometer(percentage) 
-			{
-				let value = Math.max(0, Math.min(100, percentage)); 
-				let dashOffset = 125 - (value / 100) * 125; 
-				let rotation = -90 + (value / 100) * 180; 
-
-				document.getElementById("gauge").style.strokeDashoffset = dashOffset;
-				document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
-				document.getElementById("percentage").textContent = `${value}%`;
-			}
 
 			// Handles the 'invisible' property of each section.
 			function showSection(section) 
