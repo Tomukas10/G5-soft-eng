@@ -143,3 +143,12 @@ fetchRooms();
         }
     });
 });
+
+function swapCSS(cssFile) {
+    const linkElement = document.getElementById("theme-link");
+    if (linkElement) {
+        linkElement.href = cssFile;
+    } else {
+        console.error("Link element with id 'theme-link' not found.");
+    }
+}
