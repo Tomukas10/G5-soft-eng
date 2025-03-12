@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room: Kitchen</title>
+    <title>Heating</title>
     <link rel="stylesheet" href="../CSS/rooms.css" /> 
     <title>Smarthome System</title>
 </head>
 <body>
     <header>
-        <h1 id="homeTitle"><b>Kitchen</b></h1>
+        <h1 id="homeTitle"><b>Heating</b></h1>
     </header>
     <main>
         <div id="page">
@@ -19,8 +19,8 @@
                 <hr>
                 <a class="sidenavItems" href="appliances.html">Appliances</a>
                 <hr>
-				<a class="sidenavItems" href="Heating.html">Heating</a>
-				<hr>
+                <a id="selected" class="sidenavItems" href="Heating.html">Heating</a>
+                <hr>
                 <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
                 <hr>
                 <a class="sidenavItems" href="security.html">Security</a>
@@ -39,22 +39,10 @@
                 </div>
             </div>
 			
-			<!-- Hosts the primary appliances buttons. -->
-            <div id="appliances-container">
-				<div id="appliances">
-					<button id="kitchenTemperature" class="appliance">Temperature</button>
-					<button id="kitchenLights" class="appliance">Lights</button>
-					<button id="kitchenOven" class="appliance">Oven</button>
-					<button class="appliance" id="addRoomButton">
-					<span class="plus-sign">+</span>
-					</button>
-				</div>
-				
-				<!-- Acts as a vertical separator between the Temp/Light/Oven buttons and the contents. -->
-				<div id="divider"></div>
+			
 
 				<!-- Contains everything opposite the primary buttons. -->
-				<div id="right-panel">
+				<div id="right-panel" style="margin-left: 20%;">
 					<!-- Implements the 'lights' section. -->
 					<div id="lights-section" class="dynamic-section hidden">
 						<button class="light-btn green">MAIN LIGHTS <span class="gear-icon">⚙️</span></button>
@@ -64,7 +52,7 @@
 					</div>
 					
 					<!-- Implements the 'temperature' section. -->
-					<div id="temperature-section" class="dynamic-section hidden">
+					<div id="temperature-section" >
 						<h2 class = "temp">Temperature (&deg;c)</h2>
 							<div class = "temperature-container">
 								<!-- Living Room section. -->
