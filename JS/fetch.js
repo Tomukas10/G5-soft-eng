@@ -268,4 +268,15 @@ fetchRooms();
     });
 });
 
+<<<<<<< HEAD
+function swapCSS(cssFile) {
+    const linkElement = document.getElementById("theme-link");
+    if (linkElement) {
+        linkElement.href = cssFile;
+    } else {
+        console.error("Link element with id 'theme-link' not found.");
+    }
+}
+=======
 
+>>>>>>> d1698d729440daf1faa26ecd4ce479b13301f3b1
