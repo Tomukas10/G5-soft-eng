@@ -125,7 +125,7 @@ header {
 	
 }
 
-#boxes{
+#mainPanel{
 	margin-left: 7%;
 	width: 80%;
 	height: 100%;
@@ -143,12 +143,13 @@ header {
 
 .icon {
 	width: 15vh;
-	height: auto;
+	height: 15vh;
+    object-fit: contain;
 }
 
 #addRoomButton .plus-sign {
-    font-size: 10vh;  /* Large plus sign */
-    font-weight: bold;
+    font-weight: 140;
+    font-size: 15vh;
     line-height: 1;
 }
 
@@ -158,7 +159,7 @@ header {
     border-radius: 15px;
     width: 20vh;
     height: 20vh;
-	margin: 40px 10px 0px 30px;
+	margin: 30px 10px 10px 30px;
     font-size: 2vh;
     font-weight: bold;
     text-align: center;
@@ -169,6 +170,7 @@ header {
     color: black;
 	display: flex;
     flex-direction: column;
+    border: white;
 }
 
 .roomButton:hover {
@@ -200,6 +202,76 @@ header {
 
 /* #############################################################################################################*/
 /* #############################################################################################################*/
+
+#appliances{
+	margin-left: 7%;
+	display: flex;
+	width: 40%;
+	height: 100%;
+    display: flex;
+    flex-direction: column;
+	align-items: flex-start;
+    float: left;
+}
+
+#appliances-container {
+    display: grid;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 40%;
+}
+
+#divider {
+    width: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    height: auto;
+    flex-grow: 1;
+    min-height: 100%;
+    align-self: stretch;
+    margin: 0 3vh;
+}
+
+#right-panel {
+    display: grid;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+}
+
+.appliance {
+    margin-top: 10px;
+    margin-left: 10px;
+    background-color: #ccc; /* Default greyed-out */
+    border-radius: 15px;
+    width: 40vh;
+    height: 10vh;
+	margin-right: 6%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.appliance.active {
+    background-color: white; /* When active */
+    border: 2px solid black;
+}
+
+.appliance:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+
+/* #############################################################################################################*/
+/* #############################################################################################################*/
+
 
 
 /* CSS to add animation to the Home Page navigation buttons */

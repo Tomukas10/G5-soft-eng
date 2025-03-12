@@ -102,6 +102,20 @@ app.delete('/houses/:houseId/rooms/:roomId', async (req, res) => {
     }
 });
 
+app.get('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
+    const { houseId, roomId } = req.params; // Get houseId and roomId from the URL params
+    
+    try {
+        // Query the devices based on room_id
+        const devices = await query('SELECT * FROM devices WHERE room_id = ?', [roomId]);
+
+        res.json(devices); // Send the devices as JSON response
+    } catch (error) {
+        console.error('Error fetching devices:', error);
+        res.status(500).send('Error fetching devices');
+    }
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
