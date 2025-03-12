@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../CSS/home1.css" /> 
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment 1</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+				<!-- Sidebar & functionality. -->
+                <div id="sidenav">
+                    <a id="selected" class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+                </div>
+            </div>
+			
+			<!-- Room Layouts. -->
+			<div id = "houseLayout">
+				<!-- Kitchen Details. -->
+				<div class = "room" id = "kitchen">
+					<h2>Kitchen!</h2>
+					<div class = "roomBox">
+						<img id = "kitchen-mainLight" class = "lightOnOff" src = "images/kitchen.jpg" alt = "Kitchen" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+					<p class = "temperature" id = "kitchen-temp">20°C</p> 
+				</div>
+			
+				<!-- Living Room Details. -->
+				<div class = "room" id = "livingRoom">
+					<h2>Living Room!</h2>
+					<div class = "roomBox">
+						<img id = "living-room-mainLight" class = "lightOnOff" src = "images/livingRoom.jpeg" alt = "Living Room" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+					<p class = "temperature" id = "living-room-temp">20°C</p> 
+				</div>
+				
+				<!-- Bedroom One Details. -->
+				<div class = "room" id = "bedroomOne">
+					<h2>Bedroom One!</h2>
+					<div class = "roomBox">
+						<img id = "bedroom-1-mainLight" class = "lightOnOff" src = "images/bedroomOne.jpeg" alt = "Bedroom One" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+					<p class = "temperature" id = "bedroom-1-temp">20°C</p> 
+				</div>
+				
+				<!-- Bedroom Two Details. -->
+				<div class = "room" id = "bedroomTwo">
+					<h2>Bedroom Two!</h2>
+					<div class = "roomBox">
+						<img id = "bedroom-2-mainLight" class = "lightOnOff" src = "images/bedroomOne.jpeg" alt = "Bedroom Two" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
+					</div>
+					<p class = "temperature" id = "bedroom-2-temp">20°C</p> 
+				</div>
+			</div>
+        </div>
+    </main>
+	<!-- Fetches the relevant data from the database. -->
+	<script src="../JS/overview.js"></script>
+</body>
+</html>

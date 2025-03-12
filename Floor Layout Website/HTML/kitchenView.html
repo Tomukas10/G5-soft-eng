@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room: Kitchen</title>
+    <link rel="stylesheet" href="../CSS/kitchenView.css" /> 
+    <title>Smarthome System</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Kitchen</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+            <div id="sidenav">
+                    <a class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a id="selected" class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+            </div>
+
+            </div>
+			
+			<div id="addRoomModal" style="display: none;">
+				<div id="addRoomForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="createRoomButton">Create</button>
+                    <button id="cancelRoomButton">Cancel</button>
+                </div>
+            </div>
+			
+			<!-- Hosts the primary appliances buttons. -->
+            <div id="appliances-container">
+				<div id="appliances">
+					<button id="kitchenTemperature" class="appliance">Temperature</button>
+					<button id="kitchenLights" class="appliance">Lights</button>
+					<button id="kitchenOven" class="appliance">Oven</button>
+					<button class="appliance" id="addRoomButton">
+					<span class="plus-sign">+</span>
+					</button>
+				</div>
+				
+				<!-- Acts as a vertical separator between the Temp/Light/Oven buttons and the contents. -->
+				<div id="divider"></div>
+
+				<!-- Contains everything opposite the primary buttons. -->
+				<div id="right-panel">
+					<!-- Implements the 'lights' section. -->
+					<div id="lights-section" class="dynamic-section hidden">
+						<button id = "kitchen-mainLight" class="light-btn green" onclick = "toggleLights('Kitchen')">MAIN LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id = "kitchen-tableLight" class="light-btn red" onclick = "toggleKitchenLights('tableLight')">TABLE LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id = "kitchen-barLight" class="light-btn green" onclick = "toggleKitchenLights('barLight')">BAR LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id = "kitchen-counterLight" class="light-btn red" onclick = "toggleKitchenLights('counterLight')">COUNTER LIGHTS <span class="gear-icon">⚙️</span></button>
+					</div>
+					
+					<!-- Implements the 'temperature' section. -->
+					<div id="temperature-section" class="dynamic-section hidden">
+						<h2 class="temp">Temperature (&deg;c)</h2>
+						<div class="temperature-container-horizontal">
+							<button class="circle-btn" id="minus-btn" onclick="changeTemperature('Kitchen', -1)">-</button>
+							<span class="temp-display" id="kitchen-temp">23</span>
+							<button class="circle-btn" id="plus-btn" onclick="changeTemperature('Kitchen', 1)">+</button>
+						</div>
+					</div>
+
+					<!-- Implements the 'oven' section. -->
+					<div id="oven-section" class="dynamic-section hidden">
+						Oven Content
+					</div>
+				</div>
+			</div>
+        </div>
+
+		<!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
+        <script src="../JS/kitchenView.js" defer></script> 
+    </main>
+</body>
+</html>

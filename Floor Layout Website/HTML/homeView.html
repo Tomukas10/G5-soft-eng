@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room: Kitchen</title>
+    <link rel="stylesheet" href="../CSS/rooms.css" /> 
+    <title>Smarthome System</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Home Manager</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+            <div id="sidenav">
+                    <a class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a id="selected" class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+            </div>
+            </div>
+			
+			<div id="addRoomModal" style="display: none;">
+				<div id="addRoomForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="createRoomButton">Create</button>
+                    <button id="cancelRoomButton">Cancel</button>
+                </div>
+            </div>
+			
+			<!-- Hosts the primary appliances buttons. -->
+            <div id="appliances-container">
+				<div id="appliances">
+					<button id="kitchenTemperature" class="appliance">Temperature</button>
+					<button id="kitchenLights" class="appliance">Lights</button>
+					<button id="kitchenOven" class="appliance">Oven</button>
+					<button class="appliance" id="addRoomButton">
+					<span class="plus-sign">+</span>
+					</button>
+				</div>
+				
+				<!-- Acts as a vertical separator between the Temp/Light/Oven buttons and the contents. -->
+				<div id="divider"></div>
+
+				<!-- Contains everything opposite the primary buttons. -->
+				<div id="right-panel">
+					<!-- Implements the 'lights' section. -->
+					<div id="lights-section" class="dynamic-section hidden">
+						<button id="living-room-mainLight" class="light-btn green" onclick="toggleLights('Living Room')">Living Room <span class="gear-icon">⚙️</span></button>
+						<button id="kitchen-mainLight" class="light-btn red" onclick="toggleLights('Kitchen')">Kitchen <span class="gear-icon">⚙️</span></button>
+						<button id="bedroom-1-mainLight" class="light-btn green" onclick="toggleLights('Bedroom 1')">Bedroom 1 <span class="gear-icon">⚙️</span></button>
+						<button id="bedroom-2-mainLight" class="light-btn red" onclick="toggleLights('Bedroom 2')">Bedroom 2 <span class="gear-icon">⚙️</span></button>
+					</div>
+					
+					<!-- Implements the 'temperature' section. -->
+					<div id="temperature-section" class="dynamic-section hidden">
+						<h2 class = "temp">Temperature (&deg;c)</h2>
+							<div class = "temperature-container">
+								<!-- Living Room section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Living Room</h3>
+										<div class = "temp-control">
+											<button class="temp-btn" onclick="changeTemperature('Living Room', 1)">+</button>
+											<span class="temp-display" id="living-room-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('Living Room', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Living">18°</span>
+								</div>
+								
+								<!-- Kitchen section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Kitchen</h3>
+										<div class = "temp-control">
+											<button class="temp-btn" onclick="changeTemperature('Kitchen', 1)">+</button>
+											<span class="temp-display" id="kitchen-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('Kitchen', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Kitchen">15°</span>
+								</div>
+								
+								<!-- Bedroom 1 section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Bedroom 1</h3>
+										<div class = "temp-control">
+											<button class="temp-btn" onclick="changeTemperature('Bedroom 1', 1)">+</button>
+											<span class="temp-display" id="bedroom-1-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('Bedroom 1', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Bedroom1">19°</span>
+								</div>
+								
+								<!-- Bedroom 2 section. -->
+								<div class = "temp-column">
+									<h3 class = "room-header">Bedroom 2</h3>
+										<div class = "temp-control">
+											<button class="temp-btn" onclick="changeTemperature('Bedroom 2', 1)">+</button>
+											<span class="temp-display" id="bedroom-2-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('Bedroom 2', -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-Bedroom2">23°</span>
+								</div>
+								
+								<div class="temp-column temp-info-column">
+									<span class = "target-Label">Target</span>
+									<span class = "actual-Label">Actual</span>
+								</div>
+							</div>
+							
+					</div>
+
+					<!-- Implements the 'oven' section. -->
+					<div id="oven-section" class="dynamic-section hidden">
+						Oven Content
+					</div>
+				</div>
+			</div>
+        </div>
+
+		<!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
+        <script src="../JS/homeView.js" defer></script> <!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
+    </main>
+</body>
+</html>

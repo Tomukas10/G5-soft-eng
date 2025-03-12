@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1 id="homeTitle"><b>Apartment</b></h1>
+        <h1 id="homeTitle" style="padding-right:38%; margin-left: 38%;"><b>Apartment</b></h1> <a style="position:relative; "><img src="G5-soft-eng/HTML/images/disabled.png" width="50" height="60"></a>
     </header>
     <main>
         <div id="page">
@@ -19,60 +19,38 @@
                     <hr>
                     <a class="sidenavItems" href="appliances.html">Appliances</a>
                     <hr>
+                    <a class="sidenavItems" href="Heating.html">Heating</a>
+                    <hr>
                     <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
                     <hr>
                     <a class="sidenavItems" href="security.html">Security</a>
                     <hr>
                     <a class="sidenavItems" href="settings.html">Settings</a>
                     <hr>
+                   
                 </div>
-                <svg class="speedometer" viewBox="0 0 100 60">
-                    <path d="M10,50 A40,40 0 0,1 90,50" stroke="#e0e0e0" stroke-width="5" fill="none" stroke-linecap="round" />
-                    <path id="gauge" d="M10,50 A40,40 0 0,1 90,50" stroke="url(#gradient)" stroke-width="5" fill="none" stroke-dasharray="125" stroke-dashoffset="75" />
-                    <line id="needle" x1="50" y1="40" x2="50" y2="20" stroke="black" stroke-width="3" stroke-linecap="round" transform="rotate(0, 50, 50)" />
-                    <text x="50" y="55" text-anchor="middle" font-size="8" font-weight="bold" id="percentage" fill="white" font-family="Arial, sans-serif">50%</text>
-                    <defs>
-                        <linearGradient id="gradient">
-                            <stop offset="0%" stop-color="#00c853" /> 
-                            <stop offset="50%" stop-color="#ffd600" /> 
-                            <stop offset="100%" stop-color="#ff1744" /> 
-                        </linearGradient>
-                    </defs>
-                </svg>
             </div>
-            <div id="boxes">
-                <button class="roomButton" id="addRoomButton">
-                    <span class="plus-sign">+</span>
-                    <span class="button-text">Add Room</span>
-                </button>
+            <div id="mainPanel">
+                <div id="appliances"></div>
+                <div id="divider"></div>
+                <div id="right-panel"></div>
             </div>
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
+            <div id="addRoomModal" class="addModal" style="display: none;">
+                <div class="addForm">
                     <input type="text" id="roomName" placeholder="Enter room name">
-                    <button id="createRoomButton">Create</button>
-                    <button id="cancelRoomButton">Cancel</button>
+                    <button class="createButton">Create</button>
+                    <button class="cancelButton">Cancel</button>
                 </div>
             </div>
-            <div class="button-container">
-                <button class="circle-btn" id="plus-btn">+</button>
-                <p class="temp">20</p>
-                <button class="circle-btn" id="minus-btn">-</button>
+            <div id="addDeviceModal" class="addModal" style="display: none;">
+                <div class="addForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="addDeviceButton" class="createButton">Add</button>
+                    <button class="cancelButton">Cancel</button>
+                </div>
             </div>
         </div>
 
-        <script>
-
-
-            function updateSpeedometer(percentage) {
-                let value = Math.max(0, Math.min(100, percentage)); 
-                let dashOffset = 125 - (value / 100) * 125; 
-                let rotation = -90 + (value / 100) * 180; 
-
-                document.getElementById("gauge").style.strokeDashoffset = dashOffset;
-                document.getElementById("needle").setAttribute("transform", `rotate(${rotation}, 50, 50)`);
-                document.getElementById("percentage").textContent = `${value}%`;
-            }
-        </script>
 
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
