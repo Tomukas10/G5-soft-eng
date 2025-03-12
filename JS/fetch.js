@@ -1,3 +1,5 @@
+let currentRoomId;
+
 // #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
@@ -101,6 +103,8 @@ async function fetchRooms() {
 
 async function fetchDevices(roomId) {
     try {
+        loadUnassignedDevices()
+        currentRoomId = roomId;
         const response = await fetch(`/houses/1/rooms/${roomId}/devices`); // Assuming roomId is passed and using houseId as 1
         if (!response.ok) {
             throw new Error('Failed to fetch devices');
@@ -109,7 +113,6 @@ async function fetchDevices(roomId) {
         const devices = await response.json(); // Parse devices JSON from server
         
         const mainPanel = document.getElementById("mainPanel");
-        const title = document.getElementById("homeTitle");
         
         mainPanel.innerHTML = ""; // Clears the existing appliance list
 
@@ -171,7 +174,6 @@ function handleRoomButtonClick(event) {
 // #####################################################################
 
 async function deleteRoom(roomId, button) {
-
     // Show the confirmation modal
     const modal = document.getElementById('confirmationModal');
     const confirmButton = document.getElementById('confirmDelete');
@@ -179,21 +181,93 @@ async function deleteRoom(roomId, button) {
 
     modal.style.display = 'flex'; // Show the modal
 
-    // If user confirms, delete the room
+    // If user confirms, delete the room and update devices
     confirmButton.addEventListener('click', async () => {
-        await fetch(`/houses/1/rooms/${roomId}`, { // Replace 1 with actual houseId
-            method: 'DELETE'
-        });
+        try {
+            // Step 1: Set room_id to NULL for all devices in this room
+            await fetch(`/houses/1/rooms/${roomId}/devices`, { // Replace 1 with actual houseId
+                method: 'PATCH', // Use PATCH for updating
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ room_id: null }) // Set to null
+            });
 
-        // Close the modal and remove the room button from the UI
-        modal.style.display = 'none';
-        button.remove();
+            // Step 2: Delete the room
+            await fetch(`/houses/1/rooms/${roomId}`, { // Replace 1 with actual houseId
+                method: 'DELETE'
+            });
+
+            // Close the modal and remove the room button from the UI
+            modal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting room or updating devices:', error);
+            alert('Failed to delete room. Please try again.');
+        }
     });
 
     // If user cancels, just close the modal
     cancelButton.addEventListener('click', () => {
         modal.style.display = 'none';
     });
+}
+
+
+// #####################################################################
+//                          LOAD UNASSIGNED DEVICES
+// #####################################################################
+
+async function loadUnassignedDevices() {
+    try {
+        const response = await fetch('/devices/unassigned');
+        if (!response.ok) throw new Error('Failed to fetch devices');
+
+        const devices = await response.json();
+        const dropdown = document.getElementById('deviceDropdown');
+
+        // Clear existing options except the placeholder
+        dropdown.innerHTML = '<option value="">Select a device</option>';
+
+        // Populate the dropdown with unassigned devices
+
+        devices.forEach(device => {
+            const option = document.createElement('option');
+            option.value = device.id;
+            option.textContent = device.name;
+            dropdown.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading unassigned devices:', error);
+    }
+}
+
+// #####################################################################
+//                          ASSIGN DEVICE TO ROOM
+// #####################################################################
+
+async function assignDeviceToRoom(roomId) {
+    const dropdown = document.getElementById('deviceDropdown');
+    const selectedDeviceId = dropdown.value;
+
+    if (!selectedDeviceId) {
+        alert('Please select a device.');
+        return;
+    }
+
+    try {
+        // Send a request to update the device with the current room_id
+        const response = await fetch(`/devices/${selectedDeviceId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room_id: roomId })
+        });
+
+        if (!response.ok) throw new Error('Failed to update device');
+
+        fetchDevices(roomId);
+        loadUnassignedDevices(); // Refresh dropdown
+    } catch (error) {
+        console.error('Error assigning device to room:', error);
+    }
 }
 
 // ################################################################################################# //
@@ -214,12 +288,16 @@ fetchRooms();
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
     const cancelRoomButton = document.getElementById("cancelRoomButton");
+    const cancelDeviceButton = document.getElementById("cancelDeviceButton");
     const roomNameInput = document.getElementById("roomName");
-
 
     cancelRoomButton.addEventListener("click", () => {
         addRoomModal.style.display = "none"; // Hide the modal
         roomNameInput.value = ""; // Clear input
+    });
+
+    cancelDeviceButton.addEventListener("click", () => {
+        addDeviceModal.style.display = "none"; // Hide the modal
     });
 
     createRoomButton.addEventListener("click", async () => {
@@ -266,17 +344,34 @@ fetchRooms();
             alert('Please enter a room name.');
         }
     });
+
+    const deviceInput = document.getElementById('deviceName');
+
+    // Attach event listener to the Add Device button
+    document.getElementById('confirmDeviceButton').addEventListener('click', () => {
+        assignDeviceToRoom(currentRoomId);
+        addDeviceModal.style.display = 'none';
+    });
+
+    // Initial load of unassigned devices
+    loadUnassignedDevices();
+
+
+    function swapCSS() {
+        const linkElement = document.getElementById("main");
+        if (linkElement.href = "../css/home1.css") {
+            linkElement.href = "../css/accessability.css";
+        } else if (linkElement.href = "../css/accessability.css") {
+            linkElement.href = "../css/home1.css";
+        }
+    }
+    
+    const swap = document.getElementById('swap');
+    swap.addEventListener("click", function(event) {
+        swapCSS(); 
+    });
 });
 
-<<<<<<< HEAD
-function swapCSS(cssFile) {
-    const linkElement = document.getElementById("theme-link");
-    if (linkElement) {
-        linkElement.href = cssFile;
-    } else {
-        console.error("Link element with id 'theme-link' not found.");
-    }
-}
-=======
 
->>>>>>> d1698d729440daf1faa26ecd4ce479b13301f3b1
+
+

@@ -116,6 +116,43 @@ app.get('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
     }
 });
 
+app.get('/devices/unassigned', async (req, res) => {
+    try {
+        const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL');
+        res.json(devices);
+    } catch (error) {
+        console.error('Error fetching unassigned devices:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.patch('/devices/:deviceId', async (req, res) => {
+    const { deviceId } = req.params;
+    const { room_id } = req.body;
+
+    try {
+        await query('UPDATE devices SET room_id = ? WHERE id = ?', [room_id, deviceId]);
+        res.send('Device updated successfully');
+    } catch (error) {
+        console.error('Error updating device:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Set room_id to NULL for devices when a room is deleted
+app.patch('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
+    const { houseId, roomId } = req.params;
+
+    try {
+        await query('UPDATE devices SET room_id = NULL WHERE room_id = ?', [roomId]);
+        res.status(200).send('Devices updated successfully.');
+    } catch (error) {
+        console.error('Error updating devices:', error);
+        res.status(500).send('Error updating devices.');
+    }
+});
+
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
