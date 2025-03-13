@@ -277,6 +277,7 @@ async function assignDeviceToRoom(roomId) {
 document.addEventListener("DOMContentLoaded", () => {
 
 document.getElementById('selected').addEventListener("click", () => {
+    document.getElementById('homeTitle').innerHTML = 'Apartment';
     fetchRooms();
 })
 
