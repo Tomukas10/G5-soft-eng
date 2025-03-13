@@ -30,12 +30,16 @@ async function getLights()
         const response = await fetch('/rooms/lights');
         const data = await response.json();
 
+        console.log("Light data from server:", data); // Log server response
+
         data.forEach(room => 
 		{
-            const lightImage = document.getElementById(`${room.roomName.toLowerCase().replace(/\s+/g, '-')}-mainLight`);
-            if (lightImage) 
+            const lightOverlay = document.getElementById(`${room.roomName.toLowerCase().replace(/\s+/g, '-')}-mainLight`);
+            console.log(`Processing ${room.roomName}: light state = ${room.mainLight}`);
+
+            if (lightOverlay) 
 			{
-                lightImage.style.filter = room.mainLight ? "brightness(100%)" : "brightness(30%)";
+                lightOverlay.classList.toggle('on', room.mainLight);
             }
         });
     } catch (error) 
@@ -43,6 +47,7 @@ async function getLights()
         console.error("Error fetching light states.", error);
     }
 }
+
 
 // Incrementally pings the database for any updates to its contents.
 function startAutoUpdate() 

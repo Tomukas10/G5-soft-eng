@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="../CSS/home1.css" /> 
+    <link rel="stylesheet" href="../CSS/overview.css" /> 
 </head>
 <body>
     <header>
@@ -25,46 +25,20 @@
                     <hr>
                 </div>
             </div>
-			
 			<!-- Room Layouts. -->
-			<div id = "houseLayout">
-				<!-- Kitchen Details. -->
-				<div class = "room" id = "kitchen">
-					<h2>Kitchen!</h2>
-					<div class = "roomBox">
-						<img id = "kitchen-mainLight" class = "lightOnOff" src = "images/kitchen.jpg" alt = "Kitchen" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
-					</div>
-					<p class = "temperature" id = "kitchen-temp">20°C</p> 
-				</div>
-			
-				<!-- Living Room Details. -->
-				<div class = "room" id = "livingRoom">
-					<h2>Living Room!</h2>
-					<div class = "roomBox">
-						<img id = "living-room-mainLight" class = "lightOnOff" src = "images/livingRoom.jpeg" alt = "Living Room" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
-					</div>
-					<p class = "temperature" id = "living-room-temp">20°C</p> 
-				</div>
-				
-				<!-- Bedroom One Details. -->
-				<div class = "room" id = "bedroomOne">
-					<h2>Bedroom One!</h2>
-					<div class = "roomBox">
-						<img id = "bedroom-1-mainLight" class = "lightOnOff" src = "images/bedroomOne.jpeg" alt = "Bedroom One" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
-					</div>
-					<p class = "temperature" id = "bedroom-1-temp">20°C</p> 
-				</div>
-				
-				<!-- Bedroom Two Details. -->
-				<div class = "room" id = "bedroomTwo">
-					<h2>Bedroom Two!</h2>
-					<div class = "roomBox">
-						<img id = "bedroom-2-mainLight" class = "lightOnOff" src = "images/bedroomOne.jpeg" alt = "Bedroom Two" style = "max-width: 350px; max-height: 300px; object-fit: contain; opacity: 1;">
-					</div>
-					<p class = "temperature" id = "bedroom-2-temp">20°C</p> 
-				</div>
+			<div id="houseLayout">
+				<!-- DIV overlays featuring the lights. -->
+				<div id="kitchen-mainLight" class="room-overlay"></div>
+				<div id="living-room-mainLight" class="room-overlay"></div>
+				<div id="bedroom-1-mainLight" class="room-overlay"></div>
+				<div id="bedroom-2-mainLight" class="room-overlay"></div>
+
+				<!-- Temperature overlays featuring the temps. -->
+				<span id="kitchen-temp" class="temperature">20°C</span>
+				<span id="living-room-temp" class="temperature">20°C</span>
+				<span id="bedroom-1-temp" class="temperature">20°C</span>
+				<span id="bedroom-2-temp" class="temperature">20°C</span>
 			</div>
-        </div>
     </main>
 	<!-- Fetches the relevant data from the database. -->
 	<script src="../JS/overview.js"></script>

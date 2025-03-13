@@ -118,8 +118,11 @@ header {
 /* #############################################################################################################*/
 /* #############################################################################################################*/
 
+
+
 #page{
 	display: flex;
+	
 }
 
 #boxes{
@@ -428,7 +431,7 @@ text {
     position: relative;
     width: 800px;
     height: 600px;
-	background: url('/images/kitchenFloorPlan.png') no-repeat center;
+	background: url('/images/houseFloorPlan.jpg') no-repeat center;
     background-size: contain;
     margin: auto;
     margin-left: 12vw;
@@ -453,18 +456,34 @@ text {
     background-color: rgba(0, 0, 0, 0.0); 
 }
 
-/* Defines the room positions via DIV manipulation. */
-#kitchen-mainLight { top: 49.1%; left: 51%; width: 30%; height: 15.1%; }
-#kitchen-tableLight { top: 43.8%; left: 16.9%; width: 9.5%; height: 24%; }
-#kitchen-barLight { top: 28.8%; left: 46%; width: 46%; height: 7.3%; }
-#kitchen-counterLight { top: 16%; left: 2%; width: 27.9%; height: 15.7%; }
+/* Manually positions each DIV box to simulate proper lights on/off functionality in the right rooms. */
+#kitchen-mainLight { top: 57%; left: 55%; width: 25.5%; height: 38%; }
+#living-room-mainLight { top: 56%; left: 18.8%; width: 35%; height: 39%; }
+#bedroom-1-mainLight { top: 4%; left: 18.8%; width: 25.1%; height: 41%; }
+#bedroom-2-mainLight { top: 4%; left: 55%; width: 25.1%; height: 33%; }
 
-/* Displays the temperature visibly. */
+/* Temperature Display */
 .temperature {
     position: absolute;
-    color: red; 
+    color: red; /* Changed from white to red */
     font-weight: bold;
-    font-size: 3vh; 
+    font-size: 3vh; /* Adjusted for visibility */
 }
 
-#kitchen-temp { top: 18%; left: 62%; }
+/* Manually positions the temperatures in the right rooms. */
+#kitchen-temp { top: 68%; left: 62%; }
+#living-room-temp { top: 60%; left: 32%; }
+#bedroom-1-temp { top: 8%; left: 27%; }
+#bedroom-2-temp { top: 8%; left: 65%; }
+
+
+/* Handles the opacity based on the value stored in the DB, simulating on/off functionality. */
+.lightOnOff {
+    filter: brightness(30%); /* Darker appearance */
+    transition: filter 0.3s ease-in-out;
+}
+
+/* Simulated "Lights On" effect when hovered for testing. */
+.lightOnOff:hover {
+    filter: brightness(100%);
+}
