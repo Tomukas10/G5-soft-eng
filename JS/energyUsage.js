@@ -11,47 +11,29 @@ document.addEventListener("DOMContentLoaded", () => {
 	
     let energyChart;
     const ctx = document.getElementById("energyChart").getContext("2d");
-	let test = [];
-	let testl = [-1];
 
 	
     // Data for different appliances
     let graphData = {
         overview: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: [],
             datasets: [
                 {
                     label: 'Electricity Usage (kWh)',
-                    data: [6, 5, 8, 8, 5, 5, 40, 50, 60, 70, 75, 80],
+                    data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: 'Gas Usage (kWh)',
-                    data: [30, 40, 35, 50, 45, 60, 55, 65, 70, 75, 80, 85],
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: 'Solar Energy (kWh)',
-                    data: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65],
-                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                    borderColor: 'rgba(255, 206, 86, 1)',
                     borderWidth: 2,
                     tension: 0.4
                 }
             ]
         },
-        fridge: {
-            labels: testl,
+        barlight: {
+            labels: [],
             datasets: [
                 {
                     label: 'Fridge Usage (kWh)',
-                    data: test,
+                    data: [],
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 2,
@@ -59,12 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             ]
         },
-        ac: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        hoover: {
+            labels: [],
             datasets: [
                 {
                     label: 'AC Usage (kWh)',
-                    data: [50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105],
+                    data: [],
                     backgroundColor: 'rgba(255, 159, 64, 0.2)',
                     borderColor: 'rgba(255, 159, 64, 1)',
                     borderWidth: 2,
@@ -72,21 +54,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             ]
         },
-        washingMachine: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        washingmachine: {
+            labels: [],
             datasets: [
                 {
                     label: 'Washing Machine Usage (kWh)',
-                    data: [15, 18, 20, 22, 25, 28, 30, 32, 35, 38, 40, 42],
+                    data: [],
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 2,
                     tension: 0.4
                 }
             ]
+        },
+		oven: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Oven Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(0, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
         }
     };
-
+	
     // Function to update the chart
     const updateChart = (data) => {
         if (energyChart) {
@@ -120,7 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize with the overview graph
     updateChart(graphData.overview);
 	
-	let cGraph;
+	let cGraph = null;
+	//simple delay function to repeat the request every 1000ms
 	const delay = ms => new Promise(res => setTimeout(res, ms));
 	async function getDevices(){
 	while (true) {
@@ -130,24 +126,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 		//console.log(response.json());
 		const devices = await response.json();
-		
+		let l = graphData.overview.datasets[0].data.length; //to be implemented in DB
+		graphData.overview.labels.push(l);
+		graphData.overview.datasets[0].data.push(0);
+
 		// Display the devices
         devices.forEach(device => {
-			console.log(device.name);
-			let l = graphData.fridge.datasets[0].data.length;
-			graphData.fridge.datasets[0].data.push(l);
-			testl.push(l);
+			//eval("let test = graphData." + device.name.replace(/\s/g, '') + ".labels");
+			//if (typeof test == "undefined"){
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".labels = [];");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets = [];");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.label = 'Power Usage (kWh)';");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.data = [];");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.backgroundColor = 'rgba(54, 162, 235, 0.2)';");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.borderColor = 'rgba(0, 162, 235, 1)';");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.borderWidth = 2;");
+			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.tension = 0.4;");				
+			//}
+			try {
+			let p = l * device.state * device.powerusage;
+			//l = graphData.hoover.datasets[0].data.length * device.state * device.powerUsage;
+			eval("graphData." + device.name.replace(/\s/g, '') + ".labels.push(l);"); //set labels
+			eval("graphData." + device.name.replace(/\s/g, '') + ".datasets[0].data.push(p);"); //set data
+			//graphData.oven.datasets[0].data.push(l);
+			graphData.overview.datasets[0].data[graphData.overview.datasets[0].data.length - 1] += p;
+	
+			//graphData.oven.labels.push(l);
+			} 
+			catch{
+				//requested device has yet to be added.
+			}
         });
-	updateChart(graphData[cGraph]);	
+
+	if( cGraph == null) {
+		updateChart(graphData.overview);
+	}
+	else{
+		updateChart(graphData[cGraph]);
+	}
 		    // Event listeners for graph buttons
     document.querySelectorAll(".graphButton").forEach(button => {
         button.addEventListener("click", () => {
             const graphType = button.getAttribute("data-graph");
 			cGraph = graphType;
-            updateChart(graphData[graphType]);
+            updateChart(graphData[cGraph]);
         });
     });
-	await delay(1000);
+	await delay(1000); //delay function call
 	}
 }
 	getDevices();
