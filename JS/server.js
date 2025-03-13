@@ -155,6 +155,17 @@ app.delete('/houses/:houseId/rooms/:roomId', async (req, res) => {
         res.status(500).send({ error: 'Failed to delete room' });
     }
 });
+
+app.get('/devices', async (req, res) => {
+    try {
+        const devices = await query('SELECT id, name, state, powerusage FROM devices');
+        res.json(devices);
+    } catch (error) {
+        console.error('Error fetching devices:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.get('/devices/unassigned', async (req, res) => {
     try {
         const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL');
