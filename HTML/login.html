@@ -25,13 +25,17 @@
             <p id="toggle-text">Don't have an account? <a href="#" id="toggle-form">Sign up</a></p>
         </div>
     </div>
+
+    <!-- ⬇️ Move the script to the bottom -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            console.log("✅ Script Loaded!");
+
+            // Ensure all elements exist before using them
             const formTitle = document.getElementById("form-title");
             const form = document.getElementById("auth-form");
             const confirmPasswordGroup = document.getElementById("confirm-password-group");
             const toggleText = document.getElementById("toggle-text");
-            const toggleForm = document.getElementById("toggle-form");
             const submitBtn = document.querySelector(".btn");
             const emailInput = document.getElementById("email");
             const passwordInput = document.getElementById("password");
@@ -39,39 +43,89 @@
 
             let isSignup = false;
 
-            toggleForm.addEventListener("click", (e) => {
+            function updateToggleForm() {
+                const toggleForm = document.getElementById("toggle-form");
+                if (!toggleForm) {
+                    console.error("❌ Element with ID 'toggle-form' not found!");
+                    return;
+                }
+
+                toggleForm.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    isSignup = !isSignup;
+
+                    emailInput.value = "";
+                    passwordInput.value = "";
+                    confirmPasswordInput.value = "";
+
+                    formTitle.textContent = isSignup ? "Sign Up" : "Login";
+                    confirmPasswordGroup.style.display = isSignup ? "block" : "none";
+                    submitBtn.textContent = isSignup ? "Sign Up" : "Login";
+                    toggleText.innerHTML = isSignup
+                        ? 'Already have an account? <a href="#" id="toggle-form">Login</a>'
+                        : 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
+
+                    updateToggleForm(); // Re-bind event listener after modifying innerHTML
+                });
+            }
+
+            updateToggleForm(); // Initial binding
+
+            form.addEventListener("submit", async (e) => {
                 e.preventDefault();
-                isSignup = !isSignup;
 
-                // Reset form fields when toggling
-                emailInput.value = "";
-                passwordInput.value = "";
-                confirmPasswordInput.value = "";
-
-                // Update form title, confirm password field visibility, and button text
-                formTitle.textContent = isSignup ? "Sign Up" : "Login";
-                confirmPasswordGroup.style.display = isSignup ? "block" : "none";
-                submitBtn.textContent = isSignup ? "Sign Up" : "Login";
-                toggleText.innerHTML = isSignup
-                    ? 'Already have an account? <a href="#" id="toggle-form">Login</a>'
-                    : 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
-            });
-
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
 
                 if (isSignup) {
-                    // Simulate account creation
-                    alert("Account created! Now log in.");
-                    isSignup = false;
-                    formTitle.textContent = "Login";
-                    confirmPasswordGroup.style.display = "none";
-                    submitBtn.textContent = "Login";
-                    toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
+                    if (password !== confirmPassword) {
+                        alert("❌ Passwords do not match!");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch("http://localhost:3000/auth/register", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ username: email.split("@")[0], email, password })
+                        });
+
+                        const data = await response.json();
+                        alert(data.message);
+
+                        if (response.ok) {
+                            isSignup = false;
+                            formTitle.textContent = "Login";
+                            confirmPasswordGroup.style.display = "none";
+                            submitBtn.textContent = "Login";
+                            toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
+                            updateToggleForm();
+                        }
+                    } catch (error) {
+                        console.error("❌ Error:", error);
+                        alert("❌ Registration failed!");
+                    }
+
                 } else {
-                    // Simulate successful login
-                    localStorage.setItem("loggedIn", "true");
-                    window.location.href = "dashboard.html"; // Redirect to dashboard after login
+                    try {
+                        const response = await fetch("http://localhost:3000/auth/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, password })
+                        });
+
+                        const data = await response.json();
+                        alert(data.message);
+
+                        if (response.ok) {
+                            localStorage.setItem("token", data.token);
+                            window.location.href = "dashboard.html";
+                        }
+                    } catch (error) {
+                        console.error("❌ Error:", error);
+                        alert("❌ Login failed!");
+                    }
                 }
             });
         });
