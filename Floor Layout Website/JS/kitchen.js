@@ -12,7 +12,7 @@ console.log("kitchen.js has loaded!");
 					{
 						if (room.roomName === "Kitchen")
 						{
-						const tempElement = document.getElementById("currentTemp");
+						const tempElement = document.getElementById("kitchen-temp");
 						if (tempElement) 
 						{
 							tempElement.textContent = `${room.temperature}°C`;
@@ -36,10 +36,10 @@ console.log("kitchen.js has loaded!");
 					
 					data.forEach(room =>
 					{
-						const lightImage = document.getElementById(`kitchen-mainLight`);
-						if (room.roomName === "Kitchen" && lightImage)
+						const lightOverlay = document.getElementById(`kitchen-mainLight`);
+						if (room.roomName === "Kitchen" && lightOverlay)
 						{
-							lightImage.style.filter = room.mainLight ? "brightness(100%)" : "brightness(30%)";
+							lightOverlay.classList.toggle('on', room.mainLight);
 						}
 					});
 					
@@ -50,10 +50,10 @@ console.log("kitchen.js has loaded!");
 					
 					lightTypes.forEach(type =>
 					{
-						const kitchenImage = document.getElementById(`kitchen-${type}`);
-						if (kitchenImage && kitchenData.length > 0 && kitchenData[0].hasOwnProperty(type))
+						const kitchenOverlay = document.getElementById(`kitchen-${type}`);
+						if (kitchenOverlay && kitchenData.length > 0 && kitchenData[0].hasOwnProperty(type))
 						{
-							kitchenImage.style.filter = kitchenData[0][type] ? "brightness(100%)" : "brightness(30%)";
+							kitchenOverlay.classList.toggle('on', kitchenData[0][type]);
 						}
 					});
 				}	
