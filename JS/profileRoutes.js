@@ -22,9 +22,9 @@ router.put("/profile", authenticate, async (req, res) => {
 
     try {
         await db.query("UPDATE users SET name = ?, email = ? WHERE id = ?", [username, email, req.user.id]);
-        res.json({ message: "✅ Profile updated successfully!" });
+        res.json({ message: "Profile updated successfully!" });
     } catch (err) {
-        res.status(500).json({ message: "❌ Error updating profile", error: err });
+        res.status(500).json({ message: "Error updating profile", error: err });
     }
 });
 

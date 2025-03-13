@@ -103,8 +103,8 @@ async function fetchRooms() {
 
 async function fetchDevices(roomId) {
     try {
-        loadUnassignedDevices()
         currentRoomId = roomId;
+        console.log(currentRoomId);
         const response = await fetch(`/houses/1/rooms/${roomId}/devices`); // Assuming roomId is passed and using houseId as 1
         if (!response.ok) {
             throw new Error('Failed to fetch devices');
@@ -147,6 +147,7 @@ async function fetchDevices(roomId) {
 
         const addDeviceModal = document.getElementById("addDeviceModal");
         addDeviceButton.addEventListener("click", () => {
+            loadUnassignedDevices();
             addDeviceModal.style.display = "block"; // Show the modal
         });
 
@@ -264,7 +265,6 @@ async function assignDeviceToRoom(roomId) {
         if (!response.ok) throw new Error('Failed to update device');
 
         fetchDevices(roomId);
-        loadUnassignedDevices(); // Refresh dropdown
     } catch (error) {
         console.error('Error assigning device to room:', error);
     }
@@ -355,10 +355,6 @@ fetchRooms();
         assignDeviceToRoom(currentRoomId);
         addDeviceModal.style.display = 'none';
     });
-
-    // Initial load of unassigned devices
-    loadUnassignedDevices();
-
 
     function swapCSS() {
         const linkElement = document.getElementById("main");

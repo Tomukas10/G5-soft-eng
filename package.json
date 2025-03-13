@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/Tomukas10/G5-soft-eng#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.4.0"
   }
 }

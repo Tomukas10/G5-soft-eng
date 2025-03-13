@@ -13,7 +13,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exists
         const existingUser = await db.query("SELECT * FROM users WHERE email = ?", [email]);
         if (existingUser.length > 0) {
-            return res.status(400).json({ message: "❌ Email already registered!" });
+            return res.status(400).json({ message: "Email already registered!" });
         }
 
         // Hash password before saving
@@ -22,9 +22,9 @@ router.post("/register", async (req, res) => {
         // Insert user into the database
         await db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [username, email, hashedPassword]);
 
-        res.status(201).json({ message: "✅ User registered successfully!" });
+        res.status(201).json({ message: "User registered successfully!" });
     } catch (err) {
-        res.status(500).json({ message: "❌ Error registering user", error: err });
+        res.status(500).json({ message: "Error registering user", error: err });
     }
 });
 
@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
         // Find user in database
         const users = await db.query("SELECT * FROM users WHERE email = ?", [email]);
         if (users.length === 0) {
-            return res.status(401).json({ message: "❌ Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         const user = users[0];
@@ -44,15 +44,15 @@ router.post("/login", async (req, res) => {
         // Compare stored hashed password with provided password
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            return res.status(401).json({ message: "❌ Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Generate JWT Token
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || "default_secret", { expiresIn: "1h" });
 
-        res.json({ message: "✅ Login successful!", token });
+        res.json({ message: "Login successful!", token });
     } catch (err) {
-        res.status(500).json({ message: "❌ Error logging in", error: err });
+        res.status(500).json({ message: "Error logging in", error: err });
     }
 });
 
