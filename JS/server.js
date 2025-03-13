@@ -99,6 +99,17 @@ app.delete('/houses/:houseId/rooms/:roomId', async (req, res) => {
   }
 });
 
+app.get('/devices', async (req, res) => {
+    try {
+        const devices = await query('SELECT id, name, state, powerusage FROM devices');
+        res.json(devices);
+    } catch (error) {
+        console.error('Error fetching devices:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 // Get devices for a room
 app.get('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
   const { roomId } = req.params;
