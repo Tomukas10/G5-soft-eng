@@ -108,7 +108,7 @@ app.delete('/rooms/:roomId', async (req, res) => {
 
 app.get('/totPower/device/month', async (req, res) => {
   try {
-    const totPower = await query('SELECT sessions.deviceid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend)) FROM sessions WHERE sesend IS NOT NULL GROUP BY sessions.deviceid, MONTH(sesstart);');
+    const totPower = await query('SELECT sessions.deviceid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend)) FROM sessions INNER JOIN devices ON devices.id = sessions.deviceid  WHERE sesend IS NOT NULL GROUP BY sessions.deviceid, MONTH(sesstart);');
     res.json(devices);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -120,7 +120,7 @@ app.get('/totPower/device/month', async (req, res) => {
 
 app.get('/totPower/user/month', async (req, res) => {
   try {
-    const totPower = await query('SELECT sessions.userid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend)) FROM sessions WHERE sesend IS NOT NULL GROUP BY sessions.userid, MONTH(sesstart);');
+    const totPower = await query('SELECT sessions.userid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend)) FROM sessions  INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY sessions.userid, MONTH(sesstart);');
     res.json(devices);
   } catch (error) {
     console.error('Error fetching total power:', error);
