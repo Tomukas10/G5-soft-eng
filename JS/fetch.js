@@ -275,97 +275,39 @@ async function loadUnassignedDevices() {
 
 async function fetchHouses() {
     try {
-        const token = localStorage.getItem('token');  // Retrieve token from localStorage
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error("No token found. User might be logged out.");
+            return;
+        }
+
+        console.log("Fetching houses with token:", token);
+
         const response = await fetch('/houses', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
         });
 
+        console.log("Response status:", response.status);
+
         if (!response.ok) {
-            throw new Error('Failed to fetch houses');
+            const errorText = await response.text(); // Get error details from response
+            throw new Error(`Failed to fetch houses: ${response.status} ${response.statusText} - ${errorText}`);
         }
-    
-            const mainPanel = document.getElementById('mainPanel');
-            const title = document.getElementById('homeTitle')
-            
-            mainPanel.innerHTML = "";
-    
-            const button = document.createElement('button');
-            button.classList.add('houseButton');
-            button.id = 'addHouseButton';
-        
-            // Create the plus-sign span
-            const plusSign = document.createElement('span');
-            plusSign.classList.add('plus-sign');
-            plusSign.textContent = '+';
-        
-            // Create the button-text span
-            const buttonText = document.createElement('span');
-            buttonText.classList.add('button-text');
-            buttonText.textContent = 'Add house';
-        
-            // Append the spans to the button
-            button.appendChild(plusSign);
-            button.appendChild(buttonText);
-        
-            // Append the button to the container
-            mainPanel.appendChild(button);
-    
-            
-        const addRoomModal = document.getElementById("addHouseModal");
-            addRoomButton.addEventListener("click", () => {
-                addRoomModal.style.display = "block"; // Show the modal
-            });
-    
-            // Add a button for each room
-            rooms.forEach(room => {
-                const button = document.createElement('div'); // Change to div for better layout control
-                button.className = 'houseButton';
-                button.setAttribute('data-id', houses.id);
-                button.setAttribute('data-name', houses.adress);
-    
-    
-                // Add the room name
-                const roomName = document.createElement('span');
-                roomName.textContent = houses.name;
-    
-                // Add the delete button
-                const deleteButton = document.createElement('span');
-                deleteButton.className = 'deleteHouseButton';
-                deleteButton.innerHTML = '&times;';
-                deleteButton.setAttribute('data-id', houses.id);
-    
-                // Add delete event listener
-                deleteButton.addEventListener('click', async (event) => {
-                    event.stopPropagation(); 
-                    const roomId = event.target.getAttribute('data-id');
-                    deleteRoom(roomId, button);
-    
-                });
-    
-                // Add event listener to take user to room devices
-                button.addEventListener('click', async (event) => {    
-                    event.stopPropagation(); 
-                    const housesID = event.currentTarget.getAttribute('data-id');   
-                    title.innerHTML = event.currentTarget.getAttribute('data-name'); 
-                        fetchDevices(housesID);
-                });
-    
-                button.appendChild(deleteButton);
-                button.appendChild(icon);
-                button.appendChild(houseName);
-    
-                mainPanel.insertBefore(button, addHouseButton);
-            });
-    
-        } catch (error) {
-            console.error('Error fetching houses:', error);
-            const mainPanel = document.getElementById('mainPanel');
-            mainPanel.innerHTML = '<p>Error loading houses. Please try again later.</p>';
-        }
+
+        const houses = await response.json();
+        console.log("Fetched houses:", houses);
+        return houses;
+
+    } catch (error) {
+        console.error('Error fetching houses:', error);
     }
+}
+
 
 
 // #####################################################################
@@ -459,41 +401,42 @@ fetchRooms();
                 if (!response.ok) {
                     throw new Error('Failed to fetch rooms');
                 }
-            const rooms = await roomsResponse.json();
-            console.log(rooms);
+                const rooms = await response.json();
+                console.log(rooms);
     
-            // Check if the room name already exists
-            const roomExists = rooms.some(room => room.name.toLowerCase() === roomName.toLowerCase());
-            
-            if (roomExists) {
-                alert("Room name already in use. Please choose a different name.");
-                return; // Prevent further execution if room name is taken
+                // Check if the room name already exists
+                const roomExists = rooms.some(room => room.name.toLowerCase() === roomName.toLowerCase());
+                
+                if (roomExists) {
+                    alert("Room name already in use. Please choose a different name.");
+                    return; // Prevent further execution if room name is taken
+                }
+    
+                // Send the new room data to the server
+                const newRoom = {
+                    name: roomName
+                };
+    
+                await fetch('/houses/1/rooms', { // Use actual house_id
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newRoom)
+                });
+                
+                fetchRooms();
+    
+                // Hide the modal and clear the input
+                addRoomModal.style.display = "none";
+                roomNameInput.value = "";
+            } catch (error) {
+                console.error('Error fetching rooms:', error);
+                const mainPanel = document.getElementById('mainPanel');
+                mainPanel.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
             }
-    
-            // Send the new room data to the server
-            const newRoom = {
-                name: roomName
-            };
-    
-            await fetch('/houses/1/rooms', { // Use actual house_id
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newRoom)
-            });
-            
-        fetchRooms();
-    
-            // Hide the modal and clear the input
-            addRoomModal.style.display = "none";
-            roomNameInput.value = "";
         } else {
             alert('Please enter a room name.');
-        }  catch (error) {
-            console.error('Error fetching rooms:', error);
-            const mainPanel = document.getElementById('mainPanel');
-            mainPanel.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
         }
     });
 
