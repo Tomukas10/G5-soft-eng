@@ -284,11 +284,6 @@ document.getElementById('selected').addEventListener("click", () => {
 // Fetch rooms when the page loads
 fetchRooms();
 
-    // Check if user is logged in
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html"; // Send back to login page
-    }
-
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
     const cancelRoomButton = document.getElementById("cancelRoomButton");

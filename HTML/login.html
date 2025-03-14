@@ -26,10 +26,10 @@
         </div>
     </div>
 
-    <!-- ⬇️ Move the script to the bottom -->
+    <!--  Move the script to the bottom -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("✅ Script Loaded!");
+            console.log(" Script Loaded!");
 
             // Ensure all elements exist before using them
             const formTitle = document.getElementById("form-title");
@@ -46,7 +46,7 @@
             function updateToggleForm() {
                 const toggleForm = document.getElementById("toggle-form");
                 if (!toggleForm) {
-                    console.error("❌ Element with ID 'toggle-form' not found!");
+                    console.error(" Element with ID 'toggle-form' not found!");
                     return;
                 }
 
@@ -80,7 +80,7 @@
 
                 if (isSignup) {
                     if (password !== confirmPassword) {
-                        alert("❌ Passwords do not match!");
+                        alert(" Passwords do not match!");
                         return;
                     }
 
@@ -103,8 +103,8 @@
                             updateToggleForm();
                         }
                     } catch (error) {
-                        console.error("❌ Error:", error);
-                        alert("❌ Registration failed!");
+                        console.error(" Error:", error);
+                        alert(" Registration failed!");
                     }
 
                 } else {
@@ -123,8 +123,8 @@
                             window.location.href = "dashboard.html";
                         }
                     } catch (error) {
-                        console.error("❌ Error:", error);
-                        alert("❌ Login failed!");
+                        console.error(" Error:", error);
+                        alert(" Login failed!");
                     }
                 }
             });
