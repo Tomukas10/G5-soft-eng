@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 // Get list of landlords
 app.get('/users', async (req, res) => {
   try {
-    const rows = await query('SELECT * FROM landlords');
+    const rows = await query('SELECT * FROM users WHERE user_type = landlord');
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -67,21 +67,8 @@ app.get('/houses', authenticate, async (req, res) => {
   const house_id = req.user.house_id;  // Access house_id from the authenticated user's token
 
   try {
-    const houses = await query('SELECT * FROM houses WHERE house_id = ?', [house_id]);
-    res.json(house);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Get the next available room ID
-app.get('/houses/:house_id/nextRoomId', async (req, res) => {
-  const { house_id } = req.params;
-  try {
-    const rooms = await query('SELECT id FROM rooms WHERE house_id = ?', [house_id]);
-    const nextRoomId = rooms.length > 0 ? Math.max(...rooms.map(room => room.id)) + 1 : 1;
-    res.json({ nextRoomId });
+    const houses = await query('SELECT * FROM houses WHERE id = ?', [house_id]);
+    res.json(houses);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -89,8 +76,8 @@ app.get('/houses/:house_id/nextRoomId', async (req, res) => {
 });
 
 // Add a new room
-app.post('/houses/:house_id/rooms', async (req, res) => {
-  const { house_id } = req.params;
+app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;
   const { name } = req.body; 
   try {
     const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
@@ -130,8 +117,9 @@ app.get('/devices', async (req, res) => {
 
 
 // Get devices for a room
-app.get('/houses/:house_id/rooms/:roomId/devices', async (req, res) => {
-  const { roomId, house_id } = req.params;
+app.get('/houses/houseId/rooms/:roomId/devices', authenticate, async (req, res) => {
+  const { roomId } = req.params;
+  const house_id = req.user.house_id;
   try {
     const devices = await query('SELECT * FROM devices WHERE room_id = ? AND house_id = ?', [roomId, house_id]);
     res.json(devices);
