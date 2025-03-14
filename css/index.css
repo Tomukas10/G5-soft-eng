@@ -33,8 +33,6 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     width: 90%;
-    opacity: 0;
-    animation: containerAnimation 1s ease-out forwards;
 }
 
 /* Animation for container entrance */
@@ -53,8 +51,6 @@ h1 {
     font-size: 2rem;
     font-weight: 600;
     color: #333;
-    opacity: 0;
-    animation: textFadeIn 1.5s 0.5s ease-out forwards;
 }
 
 h1 span {
@@ -65,8 +61,6 @@ p {
     font-size: 1.2rem;
     color: #666;
     margin: 10px 0 20px;
-    opacity: 0;
-    animation: textFadeIn 1.5s 1s ease-out forwards;
 }
 
 @keyframes textFadeIn {
@@ -88,8 +82,6 @@ p {
     font-size: 1rem;
     border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s ease, transform 0.2s ease;
-    will-change: transform;
 }
 
 .btn:hover {

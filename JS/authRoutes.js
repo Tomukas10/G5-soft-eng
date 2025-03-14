@@ -7,7 +7,7 @@ const router = express.Router();
 
 // User Registration
 router.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     try {
         // Check if user already exists
@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert user into the database
-        await db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [username, email, hashedPassword]);
+        await db.query("INSERT INTO users (name, email, password, user_type) VALUES (?, ?, ?, ?)", [username, email, hashedPassword, role]);
 
         res.status(201).json({ message: "User registered successfully!" });
     } catch (err) {

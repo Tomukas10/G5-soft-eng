@@ -15,17 +15,6 @@ body {
     font-size: 16px;
     color: white;
     overflow: hidden;
-    animation: fadeIn 1s ease-out;
-}
-
-/* Animation for fade-in on body load */
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
 }
 
 /* Form Container */
@@ -37,21 +26,6 @@ body {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     border-radius: 12px;
     text-align: center;
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: containerAnimation 1s ease-out forwards;
-}
-
-/* Animation for container fade-in */
-@keyframes containerAnimation {
-    0% {
-        transform: translateY(30px);
-        opacity: 0;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
 }
 
 /* Title */
@@ -60,36 +34,19 @@ h2 {
     color: white;
     font-size: 24px;
     font-weight: bold;
-    opacity: 0;
-    animation: textFadeIn 1s 0.5s ease-out forwards;
-}
-
-/* Animation for text fade-in */
-@keyframes textFadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* Input Fields */
 .input-group {
     margin-bottom: 20px;
     text-align: left;
-    opacity: 0;
-    animation: fadeInInputs 1s 1s ease-out forwards; /* Fade-in animation for inputs */
 }
 
 label {
     display: block;
-    font-size: 14px;
+    font-size: 20px;
     color: white;
     margin-bottom: 8px;
-    transition: color 0.3s ease;
 }
 
 input {
@@ -99,9 +56,6 @@ input {
     border-radius: 6px;
     font-size: 16px;
     outline: none;
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: fadeInInputs 1s 1s ease-out forwards; /* Fade-in animation for inputs */
 }
 
 input:focus {
@@ -153,30 +107,20 @@ input:focus + label {
     color: #0056b3;
 }
 
-/* Animation for input fields fade-in */
-@keyframes fadeInInputs {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+#roleGroup {
+    display: flex;
+    flex-direction: row;
+    margin: 1rem 0;
 }
 
-/* Responsive Design */
-@media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
 
-    .auth-container {
-        width: 100%;
-        padding: 15px;
-    }
-
-    h2 {
-        font-size: 20px;
-    }
+#roleSelect {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
