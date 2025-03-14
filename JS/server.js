@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
 // Get list of landlords
 app.get('/users', async (req, res) => {
   try {
-    const rows = await query('SELECT * FROM users WHERE user_type = landlord');
+    const rows = await query(`SELECT * FROM users WHERE user_type = 'landlord'`);
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -64,10 +64,9 @@ app.get('/houses/rooms', authenticate, async (req, res) => {
 
 // Get houses
 app.get('/houses', authenticate, async (req, res) => {
-  const house_id = req.user.house_id;  // Access house_id from the authenticated user's token
-
+  const user_id = req.user.id;  // Access house_id from the authenticated user's token
   try {
-    const houses = await query('SELECT * FROM houses WHERE id = ?', [house_id]);
+    const houses = await query('SELECT * FROM houses WHERE landlord_id = ?', [user_id]);
     res.json(houses);
   } catch (err) {
     console.error(err);
