@@ -104,6 +104,66 @@ app.delete('/rooms/:roomId', async (req, res) => {
   }
 });
 
+// Get Total Power for all device month combo (deviceid, month, total power for that device in the month)
+
+app.get('/totPower/device/month', async (req, res) => {
+  try {
+    const totPower = await query('SELECT sessions.deviceid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) )
+FROM sessions
+WHERE sesend IS NOT NULL
+GROUP BY sessions.deviceid, MONTH(sesstart);');
+    res.json(devices);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
+// Get Total Power for all user month combo (userid, month, total power for that user in the month)
+
+app.get('/totPower/user/month', async (req, res) => {
+  try {
+    const totPower = await query('SELECT sessions.userid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) )
+	FROM sessions
+	WHERE sesend IS NOT NULL
+	GROUP BY sessions.userid, MONTH(sesstart);');
+    res.json(devices);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
+// Get Total Power for all device month combo (devicename, month, total power for that device in the month)
+
+app.get('/totPower/deviceName/month', async (req, res) => {
+  try {
+    const totPower = await query('SELECT sessions.deviceid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) )
+FROM sessions INNER JOIN devices ON devices.id = sessions.deviceid
+WHERE sesend IS NOT NULL
+GROUP BY sessions.deviceid, MONTH(sesstart);');
+    res.json(devices);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
+// Get Total Power for all user month combo (username, month, total power for that user in the month)
+
+app.get('/totPower/userName/month', async (req, res) => {
+  try {
+    const totPower = await query('SELECT sessions.userid, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) )
+	FROM sessions INNER JOIN users ON users.id = users.userid
+	WHERE sesend IS NOT NULL
+	GROUP BY sessions.userid, MONTH(sesstart);');
+    res.json(devices);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
 app.get('/devices', async (req, res) => {
     try {
         const devices = await query('SELECT id, name, state, powerusage FROM devices');
