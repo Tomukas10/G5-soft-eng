@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const { query } = require('./db'); // Import database functions
-const authenticateToken = require('./authMiddleware'); // Import authentication middleware
+const authenticate = require('./authMiddleware'); // Import authentication middleware
 const authRoutes = require('./authRoutes');
 const profileRoutes = require('./profileRoutes');
 
@@ -50,8 +50,8 @@ app.get('/users', async (req, res) => {
 });
 
 // Get rooms of a house
-app.get('/houses/rooms', async (req, res) => {
-  const house_id = req.user.house_id;  
+app.get('/houses/rooms', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;  // Access house_id from the authenticated user in the token
 
   try {
       const rooms = await query('SELECT * FROM rooms WHERE house_id = ?', [house_id]);
@@ -59,6 +59,19 @@ app.get('/houses/rooms', async (req, res) => {
   } catch (err) {
       console.error(err);
       res.status(500).send('Server error');
+  }
+});
+
+// Get houses
+app.get('/houses', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;  // Access house_id from the authenticated user's token
+
+  try {
+    const houses = await query('SELECT * FROM houses WHERE house_id = ?', [house_id]);
+    res.json(houses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
   }
 });
 
@@ -78,10 +91,17 @@ app.get('/houses/:house_id/nextRoomId', async (req, res) => {
 // Add a new room
 app.post('/houses/:house_id/rooms', async (req, res) => {
   const { house_id } = req.params;
-  const { id, name } = req.body;
+  const { name } = req.body; 
   try {
-    await query('INSERT INTO rooms (house_id, id, name) VALUES (?, ?, ?)', [house_id, id, name]);
-    res.status(201).json({ message: 'Room added successfully', id, name });
+    const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
+    
+    const roomId = result.insertId;
+    
+    res.status(201).json({
+      message: 'Room added successfully',
+      id: roomId,
+      name
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -89,7 +109,7 @@ app.post('/houses/:house_id/rooms', async (req, res) => {
 });
 
 // Delete a room
-app.delete('/houses/:house_id/rooms/:roomId', async (req, res) => {
+app.delete('rooms/:roomId', async (req, res) => {
   const { house_id, roomId } = req.params;
   try {
     await query('DELETE FROM rooms WHERE house_id = ? AND id = ?', [house_id, roomId]);
@@ -148,7 +168,7 @@ app.patch('/devices/:deviceId', async (req, res) => {
 });
 
 // Set room_id to NULL for devices when a room is deleted
-app.patch('/houses/:house_id/rooms/:roomId/devices', async (req, res) => {
+app.patch('rooms/:roomId/devices', async (req, res) => {
   const { roomId } = req.params;
   try {
     await query('UPDATE devices SET room_id = NULL WHERE room_id = ?', [roomId]);
