@@ -95,11 +95,9 @@ app.post('/houses/:house_id/rooms', async (req, res) => {
   try {
     const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
     
-    const roomId = result.insertId;
     
     res.status(201).json({
       message: 'Room added successfully',
-      id: roomId,
       name
     });
   } catch (err) {
@@ -109,10 +107,10 @@ app.post('/houses/:house_id/rooms', async (req, res) => {
 });
 
 // Delete a room
-app.delete('rooms/:roomId', async (req, res) => {
-  const { house_id, roomId } = req.params;
+app.delete('/rooms/:roomId', async (req, res) => {
+  const { roomId } = req.params;
   try {
-    await query('DELETE FROM rooms WHERE house_id = ? AND id = ?', [house_id, roomId]);
+    await query('DELETE FROM rooms WHERE id = ?', [roomId]);
     res.status(200).send({ message: 'Room deleted successfully' });
   } catch (err) {
     console.error(err);
@@ -144,8 +142,9 @@ app.get('/houses/:house_id/rooms/:roomId/devices', async (req, res) => {
 });
 
 // Get unassigned devices
-app.get('/devices/unassigned', async (req, res) => {
+app.get('/houses/devices/unassigned', authenticate, async (req, res) => {
   try {
+    const house_id = req.user.house_id;  // Access house_id directly from req.user
     const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL AND house_id = ?', [house_id]);
     res.json(devices);
   } catch (error) {
@@ -168,7 +167,7 @@ app.patch('/devices/:deviceId', async (req, res) => {
 });
 
 // Set room_id to NULL for devices when a room is deleted
-app.patch('rooms/:roomId/devices', async (req, res) => {
+app.patch('/rooms/:roomId/devices', async (req, res) => {
   const { roomId } = req.params;
   try {
     await query('UPDATE devices SET room_id = NULL WHERE room_id = ?', [roomId]);

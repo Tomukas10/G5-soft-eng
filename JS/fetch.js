@@ -1,7 +1,7 @@
 let currentRoomId;
 
 // #####################################################################
-//                          Get Token
+//                          GET TOKEN
 // #####################################################################
 
 function getUserFromToken() {
@@ -214,14 +214,14 @@ async function deleteRoom(roomId, button) {
     confirmButton.addEventListener('click', async () => {
         try {
             // Step 1: Set room_id to NULL for all devices in this room
-            await fetch(`rooms/${roomId}/devices`, { // Replace 1 with actual house_id
+            await fetch(`/rooms/${roomId}/devices`, {
                 method: 'PATCH', // Use PATCH for updating
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ room_id: null }) // Set to null
             });
 
             // Step 2: Delete the room
-            await fetch(`/rooms/${roomId}`, { // Replace 1 with actual house_id
+            await fetch(`/rooms/${roomId}`, {
                 method: 'DELETE'
             });
 
@@ -246,11 +246,22 @@ async function deleteRoom(roomId, button) {
 // #####################################################################
 
 async function loadUnassignedDevices() {
-    try {
-        const response = await fetch('/devices/unassigned');
-        if (!response.ok) throw new Error('Failed to fetch devices');
 
+        try {
+            const token = localStorage.getItem('token');  // Retrieve token from localStorage
+            const response = await fetch('/houses/devices/unassigned', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to fetch devices');
+            }
+    
         const devices = await response.json();
+
         const dropdown = document.getElementById('deviceDropdown');
 
         // Clear existing options except the placeholder
@@ -449,18 +460,17 @@ fetchRooms();
         if (roomName) {
             try {
                 const token = localStorage.getItem('token');  // Retrieve token from localStorage
-                const response = await fetch('/houses/rooms', {
+                const roomsResponse = await fetch('/houses/rooms', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
                     }
                 });
         
-                if (!response.ok) {
+                if (!roomsResponse.ok) {
                     throw new Error('Failed to fetch rooms');
                 }
             const rooms = await roomsResponse.json();
-            console.log(rooms);
     
             // Check if the room name already exists
             const roomExists = rooms.some(room => room.name.toLowerCase() === roomName.toLowerCase());
@@ -488,12 +498,14 @@ fetchRooms();
             // Hide the modal and clear the input
             addRoomModal.style.display = "none";
             roomNameInput.value = "";
-        } else {
-            alert('Please enter a room name.');
-        }  catch (error) {
+        }
+    
+        catch (error) {
             console.error('Error fetching rooms:', error);
             const mainPanel = document.getElementById('mainPanel');
             mainPanel.innerHTML = '<p>Error loading rooms. Please try again later.</p>';
+        }} else {
+            alert('Please enter a room name.');
         }
     });
 
