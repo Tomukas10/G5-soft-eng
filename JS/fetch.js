@@ -319,6 +319,7 @@ if (user) {
 }
 
 // Fetch rooms when the page loads
+fetchRooms();
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
