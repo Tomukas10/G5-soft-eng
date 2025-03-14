@@ -1,15 +1,39 @@
 let currentRoomId;
 
 // #####################################################################
+//                          Get Token
+// #####################################################################
+
+function getUserFromToken() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "login.html"; // Redirect if not logged in
+        return null;
+    }
+
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload; // Contains { id, name, user_type }
+    } catch (err) {
+        console.error("Error decoding token:", err);
+        return null;
+    }
+}
+
+// #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
 
 async function fetchRooms() {
     try {
-        const response = await fetch('/houses/1/rooms'); // Replace 1 with the house ID
+        const house_id = getUserFromToken().house_id;
+
+        const response = await fetch(`/houses/rooms`);
+
         if (!response.ok) {
             throw new Error('Failed to fetch rooms');
         }
+
         const rooms = await response.json();
 
         const mainPanel = document.getElementById('mainPanel');
@@ -105,7 +129,7 @@ async function fetchDevices(roomId) {
     try {
         currentRoomId = roomId;
         console.log(currentRoomId);
-        const response = await fetch(`/houses/1/rooms/${roomId}/devices`); // Assuming roomId is passed and using houseId as 1
+        const response = await fetch(`/houses/1/rooms/${roomId}/devices`); // Assuming roomId is passed and using house_id as 1
         if (!response.ok) {
             throw new Error('Failed to fetch devices');
         }
@@ -186,14 +210,14 @@ async function deleteRoom(roomId, button) {
     confirmButton.addEventListener('click', async () => {
         try {
             // Step 1: Set room_id to NULL for all devices in this room
-            await fetch(`/houses/1/rooms/${roomId}/devices`, { // Replace 1 with actual houseId
+            await fetch(`/houses/1/rooms/${roomId}/devices`, { // Replace 1 with actual house_id
                 method: 'PATCH', // Use PATCH for updating
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ room_id: null }) // Set to null
             });
 
             // Step 2: Delete the room
-            await fetch(`/houses/1/rooms/${roomId}`, { // Replace 1 with actual houseId
+            await fetch(`/houses/1/rooms/${roomId}`, { // Replace 1 with actual house_id
                 method: 'DELETE'
             });
 
@@ -282,13 +306,19 @@ document.getElementById('selected').addEventListener("click", () => {
     fetchRooms();
 })
 
-// Fetch rooms when the page loads
-fetchRooms();
-
-    // Check if user is logged in
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html"; // Send back to login page
+const user = getUserFromToken();
+console.log(user);
+if (user) {
+    document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+    
+    if (user.user_type === "landlord") {
+       //
+    } else if (user.user_type === "user") {
+        fetchRooms();
     }
+}
+
+// Fetch rooms when the page loads
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
@@ -309,7 +339,7 @@ fetchRooms();
         const roomName = roomNameInput.value.trim();
         
         if (roomName) {
-            // Fetch all rooms under the current house ID (replace 1 with the actual houseId)
+            // Fetch all rooms under the current house ID (replace 1 with the actual house_id)
             const roomsResponse = await fetch('/houses/1/rooms'); // Fetch rooms for house ID
             const rooms = await roomsResponse.json();
     
@@ -322,7 +352,7 @@ fetchRooms();
             }
     
             // Fetch the next available room ID from the server
-            const response = await fetch('/houses/1/nextRoomId'); // Use actual houseId
+            const response = await fetch('/houses/1/nextRoomId'); // Use actual house_id
             const data = await response.json();
             const id = data.nextRoomId;
     
@@ -332,7 +362,7 @@ fetchRooms();
                 name: roomName
             };
     
-            await fetch('/houses/1/rooms', { // Use actual houseId
+            await fetch('/houses/1/rooms', { // Use actual house_id
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

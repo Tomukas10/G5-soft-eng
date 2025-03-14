@@ -50,22 +50,23 @@ app.get('/users', async (req, res) => {
 });
 
 // Get rooms of a house
-app.get('/houses/:houseId/rooms', async (req, res) => {
-  const { houseId } = req.params;
+app.get('/houses/rooms', async (req, res) => {
+  const house_id = req.user.house_id;  
+
   try {
-    const rooms = await query('SELECT * FROM rooms WHERE house_id = ?', [houseId]);
-    res.json(rooms);
+      const rooms = await query('SELECT * FROM rooms WHERE house_id = ?', [house_id]);
+      res.json(rooms);
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+      console.error(err);
+      res.status(500).send('Server error');
   }
 });
 
 // Get the next available room ID
-app.get('/houses/:houseId/nextRoomId', async (req, res) => {
-  const { houseId } = req.params;
+app.get('/houses/:house_id/nextRoomId', async (req, res) => {
+  const { house_id } = req.params;
   try {
-    const rooms = await query('SELECT id FROM rooms WHERE house_id = ?', [houseId]);
+    const rooms = await query('SELECT id FROM rooms WHERE house_id = ?', [house_id]);
     const nextRoomId = rooms.length > 0 ? Math.max(...rooms.map(room => room.id)) + 1 : 1;
     res.json({ nextRoomId });
   } catch (err) {
@@ -75,11 +76,11 @@ app.get('/houses/:houseId/nextRoomId', async (req, res) => {
 });
 
 // Add a new room
-app.post('/houses/:houseId/rooms', async (req, res) => {
-  const { houseId } = req.params;
+app.post('/houses/:house_id/rooms', async (req, res) => {
+  const { house_id } = req.params;
   const { id, name } = req.body;
   try {
-    await query('INSERT INTO rooms (house_id, id, name) VALUES (?, ?, ?)', [houseId, id, name]);
+    await query('INSERT INTO rooms (house_id, id, name) VALUES (?, ?, ?)', [house_id, id, name]);
     res.status(201).json({ message: 'Room added successfully', id, name });
   } catch (err) {
     console.error(err);
@@ -88,10 +89,10 @@ app.post('/houses/:houseId/rooms', async (req, res) => {
 });
 
 // Delete a room
-app.delete('/houses/:houseId/rooms/:roomId', async (req, res) => {
-  const { houseId, roomId } = req.params;
+app.delete('/houses/:house_id/rooms/:roomId', async (req, res) => {
+  const { house_id, roomId } = req.params;
   try {
-    await query('DELETE FROM rooms WHERE house_id = ? AND id = ?', [houseId, roomId]);
+    await query('DELETE FROM rooms WHERE house_id = ? AND id = ?', [house_id, roomId]);
     res.status(200).send({ message: 'Room deleted successfully' });
   } catch (err) {
     console.error(err);
@@ -111,10 +112,10 @@ app.get('/devices', async (req, res) => {
 
 
 // Get devices for a room
-app.get('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
-  const { roomId } = req.params;
+app.get('/houses/:house_id/rooms/:roomId/devices', async (req, res) => {
+  const { roomId, house_id } = req.params;
   try {
-    const devices = await query('SELECT * FROM devices WHERE room_id = ?', [roomId]);
+    const devices = await query('SELECT * FROM devices WHERE room_id = ? AND house_id = ?', [roomId, house_id]);
     res.json(devices);
   } catch (error) {
     console.error('Error fetching devices:', error);
@@ -125,7 +126,7 @@ app.get('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
 // Get unassigned devices
 app.get('/devices/unassigned', async (req, res) => {
   try {
-    const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL');
+    const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL AND house_id = ?', [house_id]);
     res.json(devices);
   } catch (error) {
     console.error('Error fetching unassigned devices:', error);
@@ -147,7 +148,7 @@ app.patch('/devices/:deviceId', async (req, res) => {
 });
 
 // Set room_id to NULL for devices when a room is deleted
-app.patch('/houses/:houseId/rooms/:roomId/devices', async (req, res) => {
+app.patch('/houses/:house_id/rooms/:roomId/devices', async (req, res) => {
   const { roomId } = req.params;
   try {
     await query('UPDATE devices SET room_id = NULL WHERE room_id = ?', [roomId]);

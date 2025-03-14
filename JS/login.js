@@ -11,21 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmPasswordInput = document.getElementById("confirm-password");
 
     let isSignup = false;
-    isSignup = !isSignup;
-
-    emailInput.value = "";
-    passwordInput.value = "";
-    confirmPasswordInput.value = "";
-    roleSelect.value = "user"; // Reset role to default
-
-    formTitle.textContent = isSignup ? "Sign Up" : "Login";
-    confirmPasswordGroup.style.display = isSignup ? "block" : "none";
-    roleGroup.style.display = isSignup ? "block" : "none";
-    submitBtn.textContent = isSignup ? "Sign Up" : "Login";
-
-    toggleText.innerHTML = isSignup
-        ? 'Already have an account? <a href="#" id="toggle-form">Login</a>'
-        : 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
 
     function updateToggleForm() {
         const toggleForm = document.getElementById("toggle-form");
