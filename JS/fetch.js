@@ -265,6 +265,7 @@ async function assignDeviceToRoom(roomId) {
         if (!response.ok) throw new Error('Failed to update device');
 
         fetchDevices(roomId);
+        loadUnassignedDevices()
     } catch (error) {
         console.error('Error assigning device to room:', error);
     }
@@ -277,7 +278,7 @@ async function assignDeviceToRoom(roomId) {
 document.addEventListener("DOMContentLoaded", () => {
 
 document.getElementById('selected').addEventListener("click", () => {
-    document.getElementById('homeTitle').innerHTML = 'Apartment';
+    document.getElementById('homeTitle').innerHTML = 'Dashboard';
     fetchRooms();
 })
 
