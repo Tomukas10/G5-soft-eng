@@ -574,6 +574,53 @@ async function deleteRoom(roomId, button) {
 
 
 // #####################################################################
+//                          FETCH Total Power Usage Per user
+// #####################################################################
+
+
+async function fetchTotPowerDevice() {
+    try {
+ 		const response = await fetch(`/totPower/user/month`); // get power
+        if (!response.ok) {
+            throw new Error('Failed to fetch power');
+        }
+
+        const power = await response.json(); // Parse devices JSON from server
+		
+		        
+        power.forEach(powerstat => {
+		// powerstat.id is the user.id
+        // powerstat.name is the user name
+        // powerstat.month is the month of the power usage
+        // powerstat.power is the total power used in that month by that user
+		//put code here
+        });
+		
+// #####################################################################
+//                          FETCH Total Power Usage Per device
+// #####################################################################
+
+
+async function fetchTotPowerUser() {
+    try {
+ 		const response = await fetch(`/totPower/device/month`); // get power
+        if (!response.ok) {
+            throw new Error('Failed to fetch power');
+        }
+
+        const power = await response.json(); // Parse devices JSON from server
+		
+
+        power.forEach(powerstat => {
+		// powerstat.id is the device.id
+        // powerstat.name is the device name
+        // powerstat.month is the month of the power usage
+        // powerstat.power is the total power used in that month by that device
+		//put code here
+        });
+
+
+// #####################################################################
 //                          LOAD UNASSIGNED DEVICES
 // #####################################################################
 
