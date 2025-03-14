@@ -68,7 +68,7 @@ app.get('/houses', authenticate, async (req, res) => {
 
   try {
     const houses = await query('SELECT * FROM houses WHERE house_id = ?', [house_id]);
-    res.json(houses);
+    res.json(house);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
