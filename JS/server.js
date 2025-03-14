@@ -144,7 +144,7 @@ app.get('/totPower/deviceName/month', async (req, res) => {
 
 app.get('/totPower/userName/month', async (req, res) => {
   try {
-    const totPower = await query('SELECT users.name, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) FROM sessions INNER JOIN users ON users.id = users.userid WHERE sesend IS NOT NULL GROUP BY users.name, MONTH(sesstart);');
+    const totPower = await query('SELECT users.name, MONTH(sesstart), SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY users.name, MONTH(sesstart);');
     res.json(devices);
   } catch (error) {
     console.error('Error fetching total power:', error);
