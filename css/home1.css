@@ -154,6 +154,12 @@ header {
     line-height: 1;
 }
 
+#addHouseButton .plus-sign {
+    font-weight: 140;
+    font-size: 15vh;
+    line-height: 1;
+}
+
 .roomButton {
     position: relative;
     background-color: white;
@@ -175,6 +181,30 @@ header {
 }
 
 .roomButton:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
+.houseButton {
+    position: relative;
+    background-color: white;
+    border-radius: 15px;
+    width: 20vh;
+    height: 20vh;
+	margin: 30px 10px 10px 30px;
+    font-size: 2vh;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+    border: white;
+}
+
+.houseButton:hover {
     background-color: #ddd;
     transform: scale(1.05);
 }
@@ -318,6 +348,11 @@ nav:hover > .navItems:hover{
     transform: scale(0.95);
 }
 
+#addHouseButton:active {
+    background-color: #bbb;
+    transform: scale(0.95);
+}
+
 /* CSS for the logout button */
 .logout-btn {
     background: #ff4d4d;
@@ -368,7 +403,7 @@ nav:hover > .navItems:hover{
 }
 
 /* Input Field */
-#roomName {
+.inputBox {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;

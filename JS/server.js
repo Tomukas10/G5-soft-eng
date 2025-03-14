@@ -74,6 +74,37 @@ app.get('/houses', authenticate, async (req, res) => {
   }
 });
 
+// Add a new house
+app.post('/houses', authenticate,async (req, res) => {
+  const landlord_id = req.user.id;
+  const { name } = req.body; 
+  const { address } = req.body;
+  try {
+    const result = await query('INSERT INTO houses (name, address, landlord_id) VALUES (?, ?, ?)', [name, address, landlord_id]);
+    
+    
+    res.status(201).json({
+      message: 'Room added successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Delete a house
+app.delete('/houses/:houseId', async (req, res) => {
+  const { houseId } = req.params;
+  try {
+    await query('DELETE FROM houses WHERE id = ?', [houseId]);
+    res.status(200).send({ message: 'Room deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Failed to delete room' });
+  }
+});
+
 // Add a new room
 app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;

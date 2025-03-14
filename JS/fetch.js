@@ -26,6 +26,7 @@ function getUserFromToken() {
 
 async function fetchRooms() {
     try {
+        console.log("fetching rooms");
         const token = localStorage.getItem('token');  // Retrieve token from localStorage
         const response = await fetch('/houses/rooms', {
             method: 'GET',
@@ -131,6 +132,7 @@ async function fetchRooms() {
 
 async function fetchHouses() {
     try {
+        const cancelButton = document.getElementById('cancelHouseButton');
         const token = localStorage.getItem('token');
         
         if (!token) {
@@ -152,11 +154,183 @@ async function fetchHouses() {
         }
 
         const houses = await response.json();
-        console.log("Fetched houses:", houses);
-        return houses;
+
+        const mainPanel = document.getElementById('mainPanel');
+        mainPanel.innerHTML = '';
+
+        const button = document.createElement('button');
+        button.classList.add('houseButton');
+        button.id = 'addHouseButton';
+
+        // Create the plus-sign span
+        const plusSign = document.createElement('span');
+        plusSign.classList.add('plus-sign');
+        plusSign.textContent = '+';
+
+        // Create the button-text span
+        const buttonText = document.createElement('span');
+        buttonText.classList.add('button-text');
+        buttonText.textContent = 'Add House';
+
+        //add logout button
+        const logout = document.getElementById("logout");
+        logout.style.display = "block";
+        
+        // Append the spans to the button
+        button.appendChild(plusSign);
+        button.appendChild(buttonText);
+
+        // Append the button to the container
+        mainPanel.appendChild(button);
+const addHouseButton = document.getElementById('addHouseButton');
+    
+const addHouseModal = document.getElementById("addHouseModal");
+    addHouseButton.addEventListener("click", () => {
+        addHouseModal.style.display = "block"; // Show the modal
+    });
+
+    cancelButton.addEventListener('click', () => {
+        addHouseModal.style.display = 'none';
+    });
+
+    const houseNameInput = document.getElementById("houseName")
+    const houseAddressInput = document.getElementById("houseAddress")
+    
+    createHouseButton.addEventListener("click", async () => {
+        const houseName = houseNameInput.value.trim();
+        const address = houseAddressInput.value.trim();
+       addHouse(houseName, address);
+       houseNameInput.value = "";
+       houseAddressInput.value = "";
+    });
+
+    // Add a button for each room
+    houses.forEach(house => {
+        const button = document.createElement('div'); // Change to div for better layout control
+        button.className = 'houseButton';
+        button.setAttribute('data-id', house.id);
+        button.setAttribute('data-name', house.name);
+
+        // Add an icon
+        const icon = document.createElement('img');
+        icon.className = 'icon';
+        icon.src = `./images/house_icon.png`;
+        icon.alt = `House Icon`;
+
+        // Add the room name
+        const houseName = document.createElement('span');
+        houseName.textContent = house.name;
+
+        // Add the delete button
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'deleteRoom';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('data-id', house.id);
+
+        // Add delete event listener
+        deleteButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); 
+            const houseId = event.target.getAttribute('data-id');
+            deleteHouse(houseId, button);
+
+        });
+
+        // Add event listener to take user to house information
+        button.addEventListener('click', async (event) => {    
+            event.stopPropagation(); 
+            const houseId = event.currentTarget.getAttribute('data-id');   
+            document.getElementById('homeTitle').innerHTML = event.currentTarget.getAttribute('data-name'); 
+                fetchCurrentHouse(houseId);
+        });
+
+        button.appendChild(deleteButton);
+        button.appendChild(icon);
+        button.appendChild(houseName);
+
+        mainPanel.insertBefore(button, addHouseButton);
+        
+   
+    });
 
     } catch (error) {
         console.error('Error fetching houses:', error);
+    }
+}
+
+// #####################################################################
+//                              ADD HOUSE
+// #####################################################################
+
+async function addHouse(houseName, houseAddress) {
+    if (houseName.trim() && houseAddress.trim()) {
+        try {
+            const token = localStorage.getItem('token');  // Retrieve token from localStorage
+            if (!token) {
+                alert('User is not authenticated.');
+                return;
+            }
+
+            // Fetch existing houses
+            const response = await fetch('/houses', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch houses');
+            }
+
+            const houses = await response.json();
+
+            // Check if the house name already exists 
+            const houseExists = houses.some(house => 
+                house.name.toLowerCase() === houseName.toLowerCase() ||
+                house.address.toLowerCase() === houseAddress.toLowerCase()
+            );
+
+            if (houseExists) {
+                alert("House name or address already in use. Please choose different values.");
+                return; // Exit if house name or address is taken
+            }
+
+            // Prepare the new house data
+            const newHouse = {
+                name: houseName,
+                address: houseAddress
+            };
+
+            // Send the new house data to the server
+            const addResponse = await fetch('/houses', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newHouse)
+            });
+
+            if (!addResponse.ok) {
+                throw new Error('Failed to add new house');
+            }
+
+            // Refresh the house list
+            await fetchHouses();
+
+            // Hide the modal and clear the input
+            const addHouseModal = document.getElementById("addHouseModal");
+            addHouseModal.style.display = "none";
+            document.getElementById('houseName').value = '';
+            document.getElementById('houseAddress').value = '';
+
+        } catch (error) {
+            console.error('Error adding house:', error);
+            const mainPanel = document.getElementById('mainPanel');
+            mainPanel.innerHTML = '<p>Error loading houses. Please try again later.</p>';
+        }
+    } else {
+        alert('Please enter a house name and address.');
     }
 }
 
@@ -240,6 +414,63 @@ function handleRoomButtonClick(event) {
     const roomId = event.target.getAttribute('data-id');
 }
 
+
+// #####################################################################
+//                          DELETED HOUSE
+// #####################################################################
+
+async function deleteHouse(houseId, button) {
+    // Show the confirmation modal
+    const modal = document.getElementById('confirmationModal');
+    const confirmButton = document.getElementById('confirmDelete');
+    const cancelButton = document.getElementById('cancelDelete');
+    const deleteText = document.getElementById('deleteText');
+
+    deleteText.innerHTML = 'Are you sure you want to delete this house?';
+    modal.style.display = 'flex'; // Show the modal
+
+    // Clean up previous event listeners
+    confirmButton.replaceWith(confirmButton.cloneNode(true));
+    cancelButton.replaceWith(cancelButton.cloneNode(true));
+
+    // Re-select buttons after cloning (to remove old listeners)
+    const newConfirmButton = document.getElementById('confirmDelete');
+    const newCancelButton = document.getElementById('cancelDelete');
+
+    // If user confirms, delete the house and unassign devices
+    newConfirmButton.addEventListener('click', async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Authentication error. Please log in again.');
+                return;
+            }
+
+            // Delete the house
+            const deleteResponse = await fetch(`/houses/${houseId}`, {
+                method: 'DELETE',
+            });
+
+            if (!deleteResponse.ok) {
+                throw new Error('Failed to delete house');
+            }
+
+            // Step 3: Update UI - remove house button and hide modal
+            modal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting house or unassigning devices:', error);
+            alert('Failed to delete house. Please try again.');
+        }
+    });
+
+    // If user cancels, just close the modal
+    newCancelButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
+
+
 // #####################################################################
 //                          ADD ROOMS
 // #####################################################################
@@ -282,7 +513,7 @@ async function addRoom(roomName) {
             body: JSON.stringify(newRoom)
         });
             
-            fetchRooms();
+           await fetchRooms();
 
             // Hide the modal and clear the input
             addRoomModal.style.display = "none";
@@ -306,6 +537,9 @@ async function deleteRoom(roomId, button) {
     const confirmButton = document.getElementById('confirmDelete');
     const cancelButton = document.getElementById('cancelDelete');
 
+    const deleteText = document.getElementById('deleteText');
+
+    deleteText.innerHTML = 'Are you sure you want to delete this room?';
     modal.style.display = 'flex'; // Show the modal
 
     // If user confirms, delete the room and update devices
@@ -423,6 +657,10 @@ if (user) {
     document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
     
     if (user.user_type === "landlord") {
+        const mainPanel = document.getElementById('mainPanel');
+        const sideNav = document.getElementById('sidenav');
+    
+        sidenav.innerHTML = '';
        fetchHouses();
     } else if (user.user_type === "user") {
         fetchRooms();
@@ -431,15 +669,8 @@ if (user) {
 
 document.getElementById('selected').addEventListener("click", () => {
     document.getElementById('homeTitle').innerHTML = 'Dashboard';
-    if (user.user_type === "landlord") {
-        fetchHouses();
-     } else if (user.user_type === "user") {
-        fetchRooms();
-     }
+    fetchRooms();
 })
-
-// Fetch rooms when the page loads
-fetchRooms();
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
