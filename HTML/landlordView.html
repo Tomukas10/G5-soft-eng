@@ -5,82 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apartments</title>
     <link rel="stylesheet" href="../CSS/landlord.css" /> 
+    <script src="../JS/fetch.js"></script>
+    <script src="../JS/landlord.js"></script>
 </head>
 <body>
     <header>
         <h1 id="homeTitle"><b>Apartments</b></h1>
     </header>
     <main>
-        <div id="page">
-            <div id="apartments">
-                <button class="apartment" onclick="location.href='Room(EXAMPLE).html'">
-                    <img class="icon" src="../images/" alt="Apartment 1">
-                    Apartment 1
-                </button>
-                <button class="apartment">
-                    <img class="icon" src="../images/" alt="Apartment 2">
-                    Apartment 2
-                </button>
-                <button class="apartment">
-                    <img class="icon" src="../images/" alt="Apartment 3">
-                    Apartment 3
-                </button>
-                <button class="apartment" id="addRoomButton">
-                    <span class="plus-sign">+</span>
-                    <span class="button-text">Add Apartment</span>
-                </button>
-            </div>
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
-                    <input type="text" id="roomName" placeholder="Enter room name">
-                    <button id="createRoomButton">Create</button>
-                    <button id="cancelRoomButton">Cancel</button>
-                </div>
-            </div>
-            <script src="../JS/home.js"></script>
+        <div id="mainPanel">
+            <div id="divider"></div>
+            <div id="right-panel"></div>
         </div>
-        <a class="logout-btn" href="login.html">Log Out</a>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                // Check if user is logged in
-                if (localStorage.getItem("loggedIn") !== "true") {
-                    window.location.href = "login.html"; // Send back to login page
-                }
+        <div id="addHouseModal" class="addModal" style="display: none;">
+            <div class="addForm">
+                <input type="text" id="roomName" placeholder="Enter House name">
+                <button id="createRoomButton" class="confirmButton">Create</button>
+                <button class="cancelButton" id="cancelHouseButton">Cancel</button>
+            </div>
+        </div>
+        </div>
+    </div>
 
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
 
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-            });
-        </script>
+<div id="confirmationModal" class="addForm" style="display: none;">
+<div class="modal-content">
+    <p>Are you sure you want to delete this House?</p>
+    <button id="confirmDelete" class="confirmButton">Yes, delete</button>
+    <button id="cancelDelete" class="cancelButton">Cancel</button>
+</div>
+</div>
     </main>
 </body>
 </html>
