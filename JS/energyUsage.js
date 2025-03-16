@@ -1,8 +1,9 @@
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
 	
+    // Redirect if not logged in
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html";
+    }
 	
 	
     let energyChart;
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Data for different appliances
     let graphData = {
         overview: {
-            labels: [],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
                     label: 'Electricity Usage (kWh)',
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
         barlight: {
-            labels: [],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
                     label: 'Fridge Usage (kWh)',
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
         hoover: {
-            labels: [],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
                     label: 'AC Usage (kWh)',
@@ -51,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
         washingmachine: {
-            labels: [],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
                     label: 'Washing Machine Usage (kWh)',
@@ -64,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
 		oven: {
-            labels: [],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
                     label: 'Oven Usage (kWh)',
@@ -114,40 +115,28 @@ document.addEventListener("DOMContentLoaded", () => {
 	let cGraph = null;
 	//simple delay function to repeat the request every 1000ms
 	const delay = ms => new Promise(res => setTimeout(res, ms));
-	async function getDevices(){
+	async function getDevices(userId){
 	while (true) {
-		const response = await fetch(`/devices`); // get devices
+		const response = await fetch(`/totPower/device/month/${userId}`); // get energy per devices for user
         if (!response.ok) {
-            throw new Error('Failed to fetch devices');
+            throw new Error('Failed to fetch energy');
         }
 		//console.log(response.json());
-		const devices = await response.json();
-		let l = graphData.overview.datasets[0].data.length; //to be implemented in DB
-		graphData.overview.labels.push(l);
-		graphData.overview.datasets[0].data.push(0);
+		const power = await response.json();
 
-		// Display the devices
-        devices.forEach(device => {
-			//eval("let test = graphData." + device.name.replace(/\s/g, '') + ".labels");
-			//if (typeof test == "undefined"){
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".labels = [];");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets = [];");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.label = 'Power Usage (kWh)';");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.data = [];");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.backgroundColor = 'rgba(54, 162, 235, 0.2)';");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.borderColor = 'rgba(0, 162, 235, 1)';");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.borderWidth = 2;");
-			//	eval("graphData." + device.name.replace(/\s/g, '') + ".datasets.tension = 0.4;");				
-			//}
+
+		// Display the energy data
+        power.forEach(powerstat => {
 			try {
-			let p = l * device.state * device.powerusage;
-			//l = graphData.hoover.datasets[0].data.length * device.state * device.powerUsage;
-			eval("graphData." + device.name.replace(/\s/g, '') + ".labels.push(l);"); //set labels
-			eval("graphData." + device.name.replace(/\s/g, '') + ".datasets[0].data.push(p);"); //set data
-			//graphData.oven.datasets[0].data.push(l);
-			graphData.overview.datasets[0].data[graphData.overview.datasets[0].data.length - 1] += p;
+			let month = powerstat.month;
+			let power = powerstat.power;
+			let name = powerstat.name;
+			let id = powerstat.id;
+
+			eval("graphData." + name.replace(/\s/g, '') + ".datasets[0].data[" + month.replace(/\s/g, '') + "] = " + power + ";"); //set data
+
+			//graphData.overview.datasets[id].data[graphData.overview.datasets[0].data.length - 1] += p;
 	
-			//graphData.oven.labels.push(l);
 			} 
 			catch{
 				//requested device has yet to be added.
@@ -171,6 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	await delay(1000); //delay function call
 	}
 }
-	getDevices();
+	getDevices(2);
 
 });
