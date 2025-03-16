@@ -594,7 +594,8 @@ async function fetchTotPowerDevice() {
         // powerstat.month is the month of the power usage
         // powerstat.power is the total power used in that month by that user
 		//put code here
-        });
+        })
+    }}
 		
 // #####################################################################
 //                          FETCH Total Power Usage Per device
@@ -617,7 +618,8 @@ async function fetchTotPowerUser() {
         // powerstat.month is the month of the power usage
         // powerstat.power is the total power used in that month by that device
 		//put code here
-        });
+        })
+    }}
 
 
 // #####################################################################
