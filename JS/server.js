@@ -147,6 +147,19 @@ app.get('/totPower/device/month', async (req, res) => {
   }
 });
 
+// Get Total Power for all device month combo (deviceid, month, total power for that device in the month) Also takes in a userid
+
+app.get('/totPower/device/month/:user', async (req, res) => {
+  const { user } = req.params;
+  try {
+    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND users.id = ? GROUP BY devices.name, MONTH(sesstart);', [user]);
+    res.json(devices);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
 // Get Total Power for all user month combo (userid, month, total power for that user in the month)
 
 app.get('/totPower/user/month', async (req, res) => {
