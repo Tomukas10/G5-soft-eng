@@ -1,16 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-	let user = 0;
-    const token = localStorage.getItem("token");
-    if (!token) {
-        window.location.href = "login.html"; // Redirect if not logged in
-    }
-
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        user =  payload.id; // Contains { id, name, user_type }
-    } catch (err) {
-        console.error("Error decoding token:", err);
-    }
+console.log(location.href.split("/").slice(-1)[0]);
 	
 	
     let energyChart;
