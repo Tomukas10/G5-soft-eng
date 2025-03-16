@@ -1,8 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-	
-    // Redirect if not logged in
-    if (localStorage.getItem("loggedIn") !== "true") {
-        window.location.href = "login.html";
+	let user = 0;
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "login.html"; // Redirect if not logged in
+    }
+
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        user =  payload.id; // Contains { id, name, user_type }
+    } catch (err) {
+        console.error("Error decoding token:", err);
     }
 	
 	
@@ -19,20 +26,45 @@ document.addEventListener("DOMContentLoaded", () => {
                     label: 'Electricity Usage (kWh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderColor: 'rgba(175, 92, 192, 1)',
                     borderWidth: 2,
                     tension: 0.4
                 }
             ]
+			
         },
-        barlight: {
+        detail: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
-                    label: 'Fridge Usage (kWh)',
+                    label: 'Bar Lights Electricity Usage (kWh)',
                     data: [],
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Oven Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
+                    borderColor: 'rgba(245, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: 'Washing Machine Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Hoover Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
+                    borderColor: 'rgba(175, 192, 92, 1)',
                     borderWidth: 2,
                     tension: 0.4
                 }
@@ -123,8 +155,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 		//console.log(response.json());
 		const power = await response.json();
-
-
+		
+		// zero overview array
+		graphData.overview.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
+		
 		// Display the energy data
         power.forEach(powerstat => {
 			try {
@@ -132,11 +166,17 @@ document.addEventListener("DOMContentLoaded", () => {
 			let power = powerstat.power;
 			let name = powerstat.name;
 			let id = powerstat.id;
-
-			eval("graphData." + name.replace(/\s/g, '') + ".datasets[0].data[" + month.replace(/\s/g, '') + "] = " + power + ";"); //set data
-
+console.log(id);
+			//eval("graphData." + name.replace(/\s/g, '') + ".datasets[0].data[" + month.replace(/\s/g, '') + "] = " + power + ";"); //set data
+			console.log(graphData.detail.datasets[id-1].data[month]);
+			
+			graphData.detail.datasets[id-1].data[month-1] = power;
+			graphData.overview.datasets[0].data[month-1] += power;
+			if (name.replace(/\s/g, '') == "barlight"){
+						console.log(name.replace(/\s/g, ''));
+			}
 			//graphData.overview.datasets[id].data[graphData.overview.datasets[0].data.length - 1] += p;
-	
+			
 			} 
 			catch{
 				//requested device has yet to be added.
@@ -157,9 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
             updateChart(graphData[cGraph]);
         });
     });
-	await delay(1000); //delay function call
+	await delay(60000); //delay function call (update graph one a minute)
 	}
 }
-	getDevices(2);
+	getDevices(user);
 
 });
