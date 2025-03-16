@@ -64,7 +64,7 @@ app.get('/houses/rooms', authenticate, async (req, res) => {
 
 // Get houses
 app.get('/houses', authenticate, async (req, res) => {
-  const user_id = req.user.id;  // Access house_id from the authenticated user's token
+  const user_id = req.user.id;  // Access house_id from the authenticated user`s token
   try {
     const houses = await query('SELECT * FROM houses WHERE landlord_id = ?', [user_id]);
     res.json(houses);
@@ -140,7 +140,7 @@ app.delete('/rooms/:roomId', async (req, res) => {
 app.get('/totPower/device/month', async (req, res) => {
   try {
     const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM sessions INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY devices.name, MONTH(sesstart);');
-    res.json(devices);
+    res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
     res.status(500).send('Error fetching total power');
@@ -153,7 +153,7 @@ app.get('/totPower/device/month/:user', async (req, res) => {
   const { user } = req.params;
   try {
     const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND users.id = ? GROUP BY devices.name, MONTH(sesstart);', [user]);
-    res.json(devices);
+    res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
     res.status(500).send('Error fetching total power');
@@ -165,7 +165,7 @@ app.get('/totPower/device/month/:user', async (req, res) => {
 app.get('/totPower/user/month', async (req, res) => {
   try {
     const totPower = await query('SELECT users.id, users.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY users.name, MONTH(sesstart);');
-    res.json(devices);
+    res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
     res.status(500).send('Error fetching total power');
