@@ -595,6 +595,8 @@ async function fetchTotPowerDevice() {
         // powerstat.power is the total power used in that month by that user
 		//put code here
         })
+    } catch (error) {
+        console.error('Error loading energy data:', error);
     }}
 		
 // #####################################################################
@@ -619,6 +621,8 @@ async function fetchTotPowerUser() {
         // powerstat.power is the total power used in that month by that device
 		//put code here
         })
+    } catch (error) {
+        console.error('Error loading energy data:', error);
     }}
 
 
