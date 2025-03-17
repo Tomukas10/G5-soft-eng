@@ -301,7 +301,6 @@ const addHouseModal = document.getElementById("addHouseModal");
 async function fetchCurrentHouse(houseId) {
 
 try {
-    console.log(houseId);
     const token = localStorage.getItem('token');  // Retrieve token from localStorage
     const houseResponse = await fetch(`/houses/${houseId}`, {
         method: 'GET',
@@ -328,9 +327,6 @@ try {
         const house = await houseResponse.json(); // Parse devices JSON from server
         const users = await userResponse.json(); // Parse devices JSON from server
 
-        console.log(users);
-
-    console.log(house);
     
     const mainPanel = document.getElementById("mainPanel");
     
@@ -364,10 +360,26 @@ try {
 
     // Display the users
         users.forEach( user => {
-        const deviceButton = document.createElement("button");
-        deviceButton.className = 'appliance';
-        deviceButton.innerHTML = `${user.name} <br> ${user.email}`;
-        appliancesContainer.appendChild(deviceButton);
+        const userTab = document.createElement("button");
+        userTab.className = 'appliance';
+        userTab.innerHTML = `${user.name} <br> ${user.email}`;
+
+        // Add the delete button
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'deleteRoom';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('data-id', user.id);
+
+        // Add delete event listener
+        deleteButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); 
+            const userId = event.target.getAttribute('data-id');
+            removeUser(userId, userTab);
+
+        });
+        userTab.appendChild(deleteButton);
+        appliancesContainer.appendChild(userTab);
+
         });
 
 } catch (error) {
@@ -428,7 +440,7 @@ return invite;
 }
 
 // #####################################################################
-//                              LOAD TENANT INVITE
+//                              HANDLE INVITE
 // #####################################################################
 
 async function handleInvite(accept) {
@@ -437,13 +449,19 @@ async function handleInvite(accept) {
         const user = getUserFromToken();
         const landlordId = user.invite;
 
-        await fetch(`/users/invite/${landlordId}`, {
+        const response = await fetch(`/users/invite/${landlordId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ accept })
+
         });
+        const { token: newToken } = await response.json();
+        localStorage.setItem('token', newToken);
+
+        user.invite = null;
     } catch (error) {
         console.error("Error handling invite", error);
     }
@@ -589,8 +607,6 @@ async function addDevice(DeviceName) {
             } else {
                 alert("device added successfully");
             }
-            // Refresh the device list
-            console.log('fetching devices');
 
 
             // Hide the modal and clear the input
@@ -843,6 +859,43 @@ async function deleteRoom(roomId, button) {
     });
 }
 
+// #####################################################################
+//                          REMOVE USER FROM HOUSE
+// #####################################################################
+
+async function removeUser(userId, button) {
+    // Show the confirmation modal
+    const modal = document.getElementById('confirmationModal');
+    const confirmButton = document.getElementById('confirmDelete');
+    const cancelButton = document.getElementById('cancelDelete');
+
+    const deleteText = document.getElementById('deleteText');
+
+    deleteText.innerHTML = 'Are you sure you want to remove this user?';
+    confirmButton.innerHTML = 'Yes, remove';
+    modal.style.display = 'flex'; // Show the modal
+
+    // If user confirms, delete the room and update devices
+    confirmButton.addEventListener('click', async () => {
+        try {
+            modal.style.display = 'none';
+            await fetch(`/house/${userId}`, {
+                method: 'PATCH'
+            });
+
+            // Close the modal and remove the room button from the UI
+            button.remove();
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to remove user. Please try again.');
+        }
+    });
+
+    // If user cancels, just close the modal
+    cancelButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
 
 // #####################################################################
 //                          FETCH Total Power Usage Per user
@@ -969,49 +1022,60 @@ async function assignDeviceToRoom(roomId) {
     }
 }
 
+
+// #####################################################################
+//                          START APP
+// #####################################################################
+
+async function startApp() {
+
+    const user = getUserFromToken();
+    const mainPanel = document.getElementById('mainPanel');
+    const sideNav = document.getElementById('sidenavContainer');
+    console.log(user);
+
+    if (user) {
+        document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+        
+        if (user.user_type === "landlord") {
+            sideNav.remove();
+        fetchHouses();
+        } else if (user.house_id !== null) {
+            fetchRooms();
+
+            document.getElementById('selected').addEventListener("click", () => {
+                document.getElementById('homeTitle').innerHTML = 'Dashboard';
+                fetchRooms();
+            })
+        } else if (user.invite === null) {
+            sideNav.innerHTML = ``;
+            mainPanel.innerHTML=`No house associated with user. Please ask a landlord to invite you`;
+        } else {
+            sideNav.innerHTML = ``;
+            const userInvite = await loadInvitedTenant(user.invite);
+            mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
+                                <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
+                                <button id="declineInvite" class="cancelButton">Decline</button></div>`
+            acceptInvite.addEventListener("click", async () => {
+                await handleInvite(true);
+                window.location.href = "dashboard.html";
+            });
+            
+            declineInvite.addEventListener("click", async () => {
+                await handleInvite(false);
+                window.location.href = "dashboard.html";
+            });
+        }
+    }
+}
+
 // ################################################################################################# //
 // ################################################################################################# //
 // ################################################################################################# //
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-const user = getUserFromToken();
-const mainPanel = document.getElementById('mainPanel');
-console.log(user);
-if (user) {
-    document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
-    
-    if (user.user_type === "landlord") {
-        const sideNav = document.getElementById('sidenavContainer');
-        sideNav.remove();
-       fetchHouses();
-    } else if (user.house_id !== null) {
-        fetchRooms();
-
-        document.getElementById('selected').addEventListener("click", () => {
-            document.getElementById('homeTitle').innerHTML = 'Dashboard';
-            fetchRooms();
-        })
-    } else if (user.invite === null) {
-        document.getElementById('page').innerHTML=`No house associated with user. Please ask a landlord to invite you`;
-    } else {
-        const userInvite = await loadInvitedTenant(user.invite);
-        mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
-                            <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
-                            <button id="declineInvite" class="cancelButton">Decline</button></div>`
-        acceptInvite.addEventListener("click", () => {
-            handleInvite(true);
-            console.log("invitation accepted");
-        });
-        
-        declineInvite.addEventListener("click", () => {
-           handleInvite(false);
-            console.log("invitation declined");
-        });
-    }
-}
-
-
+    startApp();
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
@@ -1153,7 +1217,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
             ]
-        },
+        }, 
 		overviewm: {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [

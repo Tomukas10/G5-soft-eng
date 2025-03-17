@@ -86,22 +86,40 @@ app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
   const { landlordId } = req.params;
   const { accept } = req.body;
   const userId = req.user.id;
-  console.log("landlord id:", landlordId, "  accept: ", accept, "  user id: ", userId);
 
   try {
       if (accept) {
-          const [house] = await query('SELECT house_id FROM houses WHERE landlord_id = ?', [landlordId]);
-          console.log(house);
+          const [house] = await query('SELECT id FROM houses WHERE landlord_id = ?', [landlordId]);
           if (!house) return res.status(404).send('House not found');
-          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.house_id, userId]);
-          console.log("User ", userId, " house set to ", house.house_id);
+          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.id, userId]);
       }
           await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
-          console.log("User invite set to null");
-      res.send('Invite handled successfully');
+          const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
+          const token = jwt.sign({
+              id: updatedUser.id,
+              email: updatedUser.email,
+              user_type: updatedUser.user_type,
+              house_id: updatedUser.house_id,
+              invite: updatedUser.invite
+          }, process.env.JWT_SECRET || "default_secret", { expiresIn: '1h' });
+
+      res.json({ token });
   } catch (error) {
       console.error('Error handling invite:', error);
       res.status(500).send('Server error');
+  }
+});
+
+// Remove user from house
+app.patch(`/house/:userId`, async (req, res) => {
+  const {userId} = req.params;
+
+  try {
+      await query('UPDATE users SET house_id = NULL WHERE id = ? ', [userId]);
+      res.send("User removed from room");
+  } catch (error) {
+    console.error('Error removing user from house:', error)
+    res.status(500).send('Server error');
   }
 });
 
