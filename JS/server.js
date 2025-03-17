@@ -177,6 +177,30 @@ app.post('/houses', authenticate,async (req, res) => {
   }
 });
 
+
+// Add a new device
+app.post('/devices', authenticate,async (req, res) => {
+  const user_Id = req.user.house_id;
+  const { name } = req.body; 
+  const { type } = req.body;
+  const { room_id } = req.body;
+  
+
+
+
+  try {
+    const result = await query('INSERT INTO devices (name, type, room_id, state, powerUsage, house_id) VALUES (?, ?, ?, 0, 20, ?)', [name, type, room_id, user_Id]);
+    
+    res.status(201).json({
+      message: 'Device added successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Delete a house
 app.delete('/houses/:houseId', async (req, res) => {
   const { houseId } = req.params;
@@ -231,12 +255,38 @@ app.get('/totPower/device/month', async (req, res) => {
   }
 });
 
-// Get Total Power for all device month combo (deviceid, month, total power for that device in the month) Also takes in a userid
+// Get Total Power for last year - device month combo (deviceid, month, total power for that device in the month) Also takes in a userid
 
 app.get('/totPower/device/month/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND users.id = ? GROUP BY devices.name, MONTH(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, MONTH(sesstart);', [user]);
+    res.json(totPower);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
+// Get Total Power for last month - device day combo (deviceid, month, total power for that device in the month) Also takes in a userid
+
+app.get('/totPower/device/day/:user', async (req, res) => {
+  const { user } = req.params;
+  try {
+    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id = IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, DAY(sesstart);', [user]);
+    res.json(totPower);
+  } catch (error) {
+    console.error('Error fetching total power:', error);
+    res.status(500).send('Error fetching total power');
+  }
+});
+
+// Get Total Power for last day - device hour combo (deviceid, month, total power for that device in the month) Also takes in a userid
+
+app.get('/totPower/device/hour/:user', async (req, res) => {
+  const { user } = req.params;
+  try {
+    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id = IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, HOUR(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -265,7 +315,6 @@ app.get('/devices', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 // Get devices for a room
 app.get('/houses/houseId/rooms/:roomId/devices', authenticate, async (req, res) => {
