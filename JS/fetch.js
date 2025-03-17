@@ -67,6 +67,25 @@ async function fetchRooms() {
         // Append the button to the container
         mainPanel.appendChild(button);
 
+        // Create add new appliance button
+        const Devbutton = document.createElement('button');
+        Devbutton.textContent = 'Add Device';
+        Devbutton.style.fontSize = '2vh';
+        Devbutton.style.display = 'block';
+        Devbutton.style.height = '10vh';
+        Devbutton.style.width = '10vw';
+        Devbutton.style.float = 'right';
+        Devbutton.style.marginTop = '10vh';
+        Devbutton.classList.add('appliance');
+        Devbutton.id = 'addNewDeviceButton';
+        if(addDevicearea.childElementCount == 0) {   
+             addDevicearea.appendChild(Devbutton);
+        }
+        const addNewDeviceModal = document.getElementById("addNewDeviceModal");
+        Devbutton.addEventListener("click", () => {
+            addNewDeviceModal.style.display = "block"; // Show the modal
+        });
+
         
     const addRoomModal = document.getElementById("addRoomModal");
         addRoomButton.addEventListener("click", () => {
@@ -331,6 +350,86 @@ async function addHouse(houseName, houseAddress) {
         }
     } else {
         alert('Please enter a house name and address.');
+    }
+}
+
+// #####################################################################
+//                              ADD DEVICE
+// #####################################################################
+
+async function addDevice(DeviceName) {
+    if (DeviceName.trim()) {
+        try {
+            const token = localStorage.getItem('token');  // Retrieve token from localStorage
+            if (!token) {
+                alert('User is not authenticated.');
+                return;
+            }
+
+            // Fetch existing devices
+            const response = await fetch('/devices', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch device');
+            }
+
+            const devices = await response.json();
+
+            // Check if the device name already exists 
+            const deviceExists = devices.some(devices => 
+                devices.name.toLowerCase() === DeviceName.toLowerCase()
+            );
+
+            if (deviceExists) {
+                alert("device name already in use.");
+                return; 
+            }
+
+            // Prepare the new device data
+            const newDevice = {
+                name: DeviceName,
+                type: "device",
+                room_id: null,
+                powerUsage: 20,
+                state: 0,
+            };
+
+            // Send the new device data to the server
+            const addResponse = await fetch('/devices', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newDevice)
+            });
+           
+
+            if (!addResponse.ok) {
+                throw new Error('Failed to add new device');
+            } else {
+                alert("device added successfully");
+            }
+            // Refresh the device list
+            console.log('fetching devices');
+
+
+            // Hide the modal and clear the input
+            const addNewDeviceModal = document.getElementById("addNewDeviceModal");
+            addNewDeviceModal.style.display = "none";
+            document.getElementById('newDeviceInput').value = '';
+
+        } catch (error) {
+            console.error('Error adding device:', error);
+            document.getElementById('addDevicearea').innerHTML = '<p>Error loading device. Please try again later.</p>';
+        }
+    } else {
+        alert('Please enter a device');
     }
 }
 
@@ -729,7 +828,10 @@ document.getElementById('selected').addEventListener("click", () => {
     const createRoomButton = document.getElementById("createRoomButton");
     const cancelRoomButton = document.getElementById("cancelRoomButton");
     const cancelDeviceButton = document.getElementById("cancelDeviceButton");
+    const cancelNewDeviceButton = document.getElementById("cancelNewDeviceButton");
+    const createNewDeviceButton = document.getElementById("createNewDeviceButton");
     const roomNameInput = document.getElementById("roomName");
+    const newDeviceInput = document.getElementById("newDeviceInput");
 
     cancelRoomButton.addEventListener("click", () => {
         addRoomModal.style.display = "none"; // Hide the modal
@@ -739,6 +841,17 @@ document.getElementById('selected').addEventListener("click", () => {
     cancelDeviceButton.addEventListener("click", () => {
         addDeviceModal.style.display = "none"; // Hide the modal
     });
+
+    cancelNewDeviceButton.addEventListener("click", () => {
+        addNewDeviceModal.style.display = "none"; // Hide the modal
+    });
+
+    createNewDeviceButton.addEventListener("click", async () => {
+        const newDevice = newDeviceInput.value.trim();
+        addDevice(newDevice);
+        newDeviceInput.value = "";
+    });
+
 
     createRoomButton.addEventListener("click", async () => {
         const roomName = roomNameInput.value.trim();

@@ -93,6 +93,30 @@ app.post('/houses', authenticate,async (req, res) => {
   }
 });
 
+
+// Add a new device
+app.post('/devices', authenticate,async (req, res) => {
+  const user_Id = req.user.house_id;
+  const { name } = req.body; 
+  const { type } = req.body;
+  const { room_id } = req.body;
+  
+
+
+
+  try {
+    const result = await query('INSERT INTO devices (name, type, room_id, state, powerUsage, house_id) VALUES (?, ?, ?, 0, 20, ?)', [name, type, room_id, user_Id]);
+    
+    res.status(201).json({
+      message: 'Device added successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Delete a house
 app.delete('/houses/:houseId', async (req, res) => {
   const { houseId } = req.params;
