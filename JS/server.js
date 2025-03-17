@@ -235,7 +235,7 @@ app.delete('/houses/:houseId', async (req, res) => {
 app.patch('/rooms/:deviceId', async (req, res) => {
   const { deviceId } = req.params;
   try {
-    await query('UPDATE rooms SET room_id = NULL WHERE id = ?', [deviceId]);
+    await query('UPDATE devices SET room_id = NULL WHERE id = ?', [deviceId]);
     res.status(200).send({ message: 'Device removed successfully' });
   } catch (err) {
     console.error(err);
