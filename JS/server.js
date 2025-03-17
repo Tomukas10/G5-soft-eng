@@ -273,7 +273,7 @@ app.get('/totPower/device/month/:user', async (req, res) => {
 app.get('/totPower/device/day/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id = IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, DAY(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, DAY(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -286,7 +286,7 @@ app.get('/totPower/device/day/:user', async (req, res) => {
 app.get('/totPower/device/hour/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id = IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, HOUR(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, HOUR(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
