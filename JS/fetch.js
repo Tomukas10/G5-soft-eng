@@ -13,6 +13,11 @@ function getUserFromToken() {
 
     try {
         const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.exp < Math.floor(Date.now() / 1000)) {
+            alert("Token is expired, please log in again")
+            window.location.href = "login.html"; // Redirect if not logged in
+            return null;
+        }
         return payload; // Contains { id, name, user_type }
     } catch (err) {
         console.error("Error decoding token:", err);
@@ -21,12 +26,24 @@ function getUserFromToken() {
 }
 
 // #####################################################################
+//                          VALIDATE EMAIL
+// #####################################################################
+
+function validateEmail(email) {
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    return emailPattern.test(email);
+    
+    }
+    
+
+// #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
 
 async function fetchRooms() {
     try {
-        console.log("fetching rooms");
         const token = localStorage.getItem('token');  // Retrieve token from localStorage
         const response = await fetch('/houses/rooms', {
             method: 'GET',
@@ -44,7 +61,8 @@ async function fetchRooms() {
         const mainPanel = document.getElementById('mainPanel');
         const title = document.getElementById('homeTitle')
         
-        mainPanel.innerHTML = "";
+        mainPanel.innerHTML = "<div id=roomContainer></div>";
+        const roomContainer = document.getElementById("roomContainer");
 
         const button = document.createElement('button');
         button.classList.add('roomButton');
@@ -65,7 +83,7 @@ async function fetchRooms() {
         button.appendChild(buttonText);
     
         // Append the button to the container
-        mainPanel.appendChild(button);
+        roomContainer.appendChild(button);
 
         
     const addRoomModal = document.getElementById("addRoomModal");
@@ -116,7 +134,7 @@ async function fetchRooms() {
             button.appendChild(icon);
             button.appendChild(roomName);
 
-            mainPanel.insertBefore(button, addRoomButton);
+            roomContainer.insertBefore(button, addRoomButton);
         });
 
     } catch (error) {
@@ -256,6 +274,162 @@ const addHouseModal = document.getElementById("addHouseModal");
         console.error('Error fetching houses:', error);
     }
 }
+
+// #####################################################################
+//                              FETCH CURRENT HOUSE
+// #####################################################################
+
+async function fetchCurrentHouse(houseId) {
+
+try {
+    console.log(houseId);
+    const token = localStorage.getItem('token');  // Retrieve token from localStorage
+    const houseResponse = await fetch(`/houses/${houseId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+        }
+    });
+
+    if (!houseResponse.ok) {
+        throw new Error('Failed to fetch house');
+    }
+        const userResponse = await fetch(`/houses/${houseId}/users`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+    
+        if (!userResponse.ok) {
+            throw new Error('Failed to fetch users');
+        }
+
+        const house = await houseResponse.json(); // Parse devices JSON from server
+        const users = await userResponse.json(); // Parse devices JSON from server
+
+        console.log(users);
+
+    console.log(house);
+    
+    const mainPanel = document.getElementById("mainPanel");
+    
+    mainPanel.innerHTML = ""; // Clears the existing appliance list
+
+    mainPanel.innerHTML=`
+                            <div id="appliances-container">
+                                <h3>List of Tenants</h3>
+                            </div>
+                            <div id="divider"></div>
+                            <div id="right-panel"></div>`
+
+    document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
+                                                        Invite tenant to house:
+                                                        <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
+                    <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
+
+                inviteTenantButton.addEventListener("click", async () => {
+                    const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
+                    if (!validateEmail(tenantEmailInput)) {
+                    document.getElementById("tenantEmail").value = "";
+                    } 
+                    const result = await inviteTenant(tenantEmailInput);
+                    if (result) {
+                      alert("Tenant Invited");
+                    }
+           });
+
+    const appliancesContainer = document.getElementById(`appliances-container`);
+
+
+    // Display the users
+        users.forEach( user => {
+        const deviceButton = document.createElement("button");
+        deviceButton.className = 'appliance';
+        deviceButton.innerHTML = `${user.name} <br> ${user.email}`;
+        appliancesContainer.appendChild(deviceButton);
+        });
+
+} catch (error) {
+    console.error('Error fetching users:', error);
+}
+}
+
+function handleHouseButtonClick(event) {
+const roomId = event.target.getAttribute('data-id');
+}
+
+// #####################################################################
+//                          INVITE TENANT
+// #####################################################################
+
+async function inviteTenant(tenantEmail) {
+    try {
+        const response = await fetch(`/users/${tenantEmail}`, {
+            method: 'GET',
+        })
+    const tenant = await response.json(); 
+
+    if (tenant.user_type === 'landlord') {
+        alert("User not a tenant");
+        return false;
+    } 
+
+    if (tenant.house_id) {
+        alert("User already assigned to a house");
+        return false;
+    }
+
+    const token = localStorage.getItem(`token`);
+    await fetch(`/users/${tenantEmail}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+    return true;
+
+    } catch (error) {
+        console.error('Error inviting tenant:', error);
+        alert("Email not found");
+    }
+}
+
+// #####################################################################
+//                              LOAD TENANT INVITE
+// #####################################################################
+
+async function loadInvitedTenant(inviteId) {
+
+const inviteResponse = await fetch(`/users/landlordName/${inviteId}`);
+const invite = await inviteResponse.json();
+return invite;
+
+}
+
+// #####################################################################
+//                              LOAD TENANT INVITE
+// #####################################################################
+
+async function handleInvite(accept) {
+    try {
+        const token = localStorage.getItem('token');
+        const user = getUserFromToken();
+        const landlordId = user.invite;
+
+        await fetch(`/users/invite/${landlordId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ accept })
+        });
+    } catch (error) {
+        console.error("Error handling invite", error);
+    }
+}
+
 
 // #####################################################################
 //                              ADD HOUSE
@@ -399,9 +573,7 @@ async function fetchDevices(roomId) {
         devices.forEach(device => {
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
-            deviceButton.innerHTML = `
-                ${device.name}
-            `;
+            deviceButton.innerHTML = `${device.name}`;
             appliancesContainer.insertBefore(deviceButton, addDeviceButton);
         });
 
@@ -702,28 +874,45 @@ async function assignDeviceToRoom(roomId) {
 // ################################################################################################# //
 // ################################################################################################# //
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
 const user = getUserFromToken();
+const mainPanel = document.getElementById('mainPanel');
 console.log(user);
 if (user) {
     document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
     
     if (user.user_type === "landlord") {
-        const mainPanel = document.getElementById('mainPanel');
-        const sideNav = document.getElementById('sidenav');
-    
-        sidenav.innerHTML = '';
+        const sideNav = document.getElementById('sidenavContainer');
+        sideNav.remove();
        fetchHouses();
-    } else if (user.user_type === "user") {
+    } else if (user.house_id !== null) {
         fetchRooms();
+
+        document.getElementById('selected').addEventListener("click", () => {
+            document.getElementById('homeTitle').innerHTML = 'Dashboard';
+            fetchRooms();
+        })
+    } else if (user.invite === null) {
+        document.getElementById('page').innerHTML=`No house associated with user. Please ask a landlord to invite you`;
+    } else {
+        const userInvite = await loadInvitedTenant(user.invite);
+        mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
+                            <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
+                            <button id="declineInvite" class="cancelButton">Decline</button></div>`
+        acceptInvite.addEventListener("click", () => {
+            handleInvite(true);
+            console.log("invitation accepted");
+        });
+        
+        declineInvite.addEventListener("click", () => {
+           handleInvite(false);
+            console.log("invitation declined");
+        });
     }
 }
 
-document.getElementById('selected').addEventListener("click", () => {
-    document.getElementById('homeTitle').innerHTML = 'Dashboard';
-    fetchRooms();
-})
+
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
