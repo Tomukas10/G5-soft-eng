@@ -13,6 +13,11 @@ function getUserFromToken() {
 
     try {
         const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.exp < Math.floor(Date.now() / 1000)) {
+            alert("Token is expired, please log in again")
+            window.location.href = "login.html"; // Redirect if not logged in
+            return null;
+        }
         return payload; // Contains { id, name, user_type }
     } catch (err) {
         console.error("Error decoding token:", err);
@@ -21,12 +26,24 @@ function getUserFromToken() {
 }
 
 // #####################################################################
+//                          VALIDATE EMAIL
+// #####################################################################
+
+function validateEmail(email) {
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    return emailPattern.test(email);
+    
+    }
+    
+
+// #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
 
 async function fetchRooms() {
     try {
-        console.log("fetching rooms");
         const token = localStorage.getItem('token');  // Retrieve token from localStorage
         const response = await fetch('/houses/rooms', {
             method: 'GET',
@@ -44,7 +61,8 @@ async function fetchRooms() {
         const mainPanel = document.getElementById('mainPanel');
         const title = document.getElementById('homeTitle')
         
-        mainPanel.innerHTML = "";
+        mainPanel.innerHTML = "<div id=roomContainer></div>";
+        const roomContainer = document.getElementById("roomContainer");
 
         const button = document.createElement('button');
         button.classList.add('roomButton');
@@ -65,7 +83,7 @@ async function fetchRooms() {
         button.appendChild(buttonText);
     
         // Append the button to the container
-        mainPanel.appendChild(button);
+        roomContainer.appendChild(button);
 
         // Create add new appliance button
         const Devbutton = document.createElement('button');
@@ -135,7 +153,7 @@ async function fetchRooms() {
             button.appendChild(icon);
             button.appendChild(roomName);
 
-            mainPanel.insertBefore(button, addRoomButton);
+            roomContainer.insertBefore(button, addRoomButton);
         });
 
     } catch (error) {
@@ -277,6 +295,180 @@ const addHouseModal = document.getElementById("addHouseModal");
 }
 
 // #####################################################################
+//                              FETCH CURRENT HOUSE
+// #####################################################################
+
+async function fetchCurrentHouse(houseId) {
+
+try {
+    const token = localStorage.getItem('token');  // Retrieve token from localStorage
+    const houseResponse = await fetch(`/houses/${houseId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+        }
+    });
+
+    if (!houseResponse.ok) {
+        throw new Error('Failed to fetch house');
+    }
+        const userResponse = await fetch(`/houses/${houseId}/users`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+    
+        if (!userResponse.ok) {
+            throw new Error('Failed to fetch users');
+        }
+
+        const house = await houseResponse.json(); // Parse devices JSON from server
+        const users = await userResponse.json(); // Parse devices JSON from server
+
+    
+    const mainPanel = document.getElementById("mainPanel");
+    
+    mainPanel.innerHTML = ""; // Clears the existing appliance list
+
+    mainPanel.innerHTML=`
+                            <div id="appliances-container">
+                                <h3>List of Tenants</h3>
+                            </div>
+                            <div id="divider"></div>
+                            <div id="right-panel"></div>`
+
+    document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
+                                                        Invite tenant to house:
+                                                        <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
+                    <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
+
+                inviteTenantButton.addEventListener("click", async () => {
+                    const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
+                    if (!validateEmail(tenantEmailInput)) {
+                    document.getElementById("tenantEmail").value = "";
+                    } 
+                    const result = await inviteTenant(tenantEmailInput);
+                    if (result) {
+                      alert("Tenant Invited");
+                    }
+           });
+
+    const appliancesContainer = document.getElementById(`appliances-container`);
+
+
+    // Display the users
+        users.forEach( user => {
+        const userTab = document.createElement("button");
+        userTab.className = 'appliance';
+        userTab.innerHTML = `${user.name} <br> ${user.email}`;
+
+        // Add the delete button
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'deleteRoom';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('data-id', user.id);
+
+        // Add delete event listener
+        deleteButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); 
+            const userId = event.target.getAttribute('data-id');
+            removeUser(userId, userTab);
+
+        });
+        userTab.appendChild(deleteButton);
+        appliancesContainer.appendChild(userTab);
+
+        });
+
+} catch (error) {
+    console.error('Error fetching users:', error);
+}
+}
+
+function handleHouseButtonClick(event) {
+const roomId = event.target.getAttribute('data-id');
+}
+
+// #####################################################################
+//                          INVITE TENANT
+// #####################################################################
+
+async function inviteTenant(tenantEmail) {
+    try {
+        const response = await fetch(`/users/${tenantEmail}`, {
+            method: 'GET',
+        })
+    const tenant = await response.json(); 
+
+    if (tenant.user_type === 'landlord') {
+        alert("User not a tenant");
+        return false;
+    } 
+
+    if (tenant.house_id) {
+        alert("User already assigned to a house");
+        return false;
+    }
+
+    const token = localStorage.getItem(`token`);
+    await fetch(`/users/${tenantEmail}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+    return true;
+
+    } catch (error) {
+        console.error('Error inviting tenant:', error);
+        alert("Email not found");
+    }
+}
+
+// #####################################################################
+//                              LOAD TENANT INVITE
+// #####################################################################
+
+async function loadInvitedTenant(inviteId) {
+
+const inviteResponse = await fetch(`/users/landlordName/${inviteId}`);
+const invite = await inviteResponse.json();
+return invite;
+
+}
+
+// #####################################################################
+//                              HANDLE INVITE
+// #####################################################################
+
+async function handleInvite(accept) {
+    try {
+        const token = localStorage.getItem('token');
+        const user = getUserFromToken();
+        const landlordId = user.invite;
+
+        const response = await fetch(`/users/invite/${landlordId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ accept })
+
+        });
+        const { token: newToken } = await response.json();
+        localStorage.setItem('token', newToken);
+
+        user.invite = null;
+    } catch (error) {
+        console.error("Error handling invite", error);
+    }
+}
+
+
+// #####################################################################
 //                              ADD HOUSE
 // #####################################################################
 
@@ -415,8 +607,6 @@ async function addDevice(DeviceName) {
             } else {
                 alert("device added successfully");
             }
-            // Refresh the device list
-            console.log('fetching devices');
 
 
             // Hide the modal and clear the input
@@ -512,10 +702,7 @@ async function fetchDevices(roomId) {
         });
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
-            deviceButton.innerHTML = `
-                ${device.name}
-            `;
-            deviceButton.appendChild(deleteDevicesButton);
+            deviceButton.innerHTML = `${device.name}`;
             appliancesContainer.insertBefore(deviceButton, addDeviceButton);
         });
 
@@ -687,61 +874,43 @@ async function deleteRoom(roomId, button) {
 }
 
 // #####################################################################
-//                          DELETE DEVICES
+//                          REMOVE USER FROM HOUSE
 // #####################################################################
 
-async function deleteDevices(deviceId, button) {
+async function removeUser(userId, button) {
     // Show the confirmation modal
-    const deviceConfirmationModal = document.getElementById('deviceConfirmationModal');
+    const modal = document.getElementById('confirmationModal');
     const confirmButton = document.getElementById('confirmDelete');
-    const confirmPermaButton = document.getElementById('confirmPermaDelete');
     const cancelButton = document.getElementById('cancelDelete');
 
-    const deleteTextDevice = document.getElementById('deleteTextDevice');
-    deleteTextDevice.innerHTML = 'Are you sure you want to delete this device?';
-    deviceConfirmationModal.style.display = 'flex'; // Show the modal
+    const deleteText = document.getElementById('deleteText');
 
-    // If user confirms, delete the device and update devices
+    deleteText.innerHTML = 'Are you sure you want to remove this user?';
+    confirmButton.innerHTML = 'Yes, remove';
+    modal.style.display = 'flex'; // Show the modal
+
+    // If user confirms, delete the room and update devices
     confirmButton.addEventListener('click', async () => {
-        console.log("confirm button pressed");
         try {
-            // Delete the device
-            await fetch(`/rooms/${deviceId}`, {
+            modal.style.display = 'none';
+            await fetch(`/house/${userId}`, {
                 method: 'PATCH'
             });
 
             // Close the modal and remove the room button from the UI
-            deviceConfirmationModal.style.display = 'none';
             button.remove();
         } catch (error) {
-            console.error('Error deleting room or updating devices:', error);
-            alert('Failed to delete room. Please try again.');
-        }
-    });
-
-    confirmPermaButton.addEventListener('click', async () => {
-        try {
-            console.log("perma button pressed");
-            // Delete the device permamnently 
-            await fetch(`/devices/${deviceId}`, {
-                method: 'DELETE'
-            });
-
-            // Close the modal and remove the room button from the UI
-            deviceConfirmationModal.style.display = 'none';
-            button.remove();
-        } catch (error) {
-            console.error('Error deleting device', error);
-            alert('Failed to delete device. Please try again.');
+            console.error('Error removing user:', error);
+            alert('Failed to remove user. Please try again.');
         }
     });
 
     // If user cancels, just close the modal
     cancelButton.addEventListener('click', () => {
-        console.log("cancel button pressed");
-        deviceConfirmationModal.style.display = 'none';
+        modal.style.display = 'none';
     });
 }
+
 // #####################################################################
 //                          FETCH Total Power Usage Per user
 // #####################################################################
@@ -867,32 +1036,60 @@ async function assignDeviceToRoom(roomId) {
     }
 }
 
-// ################################################################################################# //
-// ################################################################################################# //
-// ################################################################################################# //
 
-document.addEventListener("DOMContentLoaded", () => {
+// #####################################################################
+//                          START APP
+// #####################################################################
 
-const user = getUserFromToken();
-console.log(user);
-if (user) {
-    document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
-    
-    if (user.user_type === "landlord") {
-        const mainPanel = document.getElementById('mainPanel');
-        const sideNav = document.getElementById('sidenav');
-    
-        sidenav.innerHTML = '';
-       fetchHouses();
-    } else if (user.user_type === "user") {
-        fetchRooms();
+async function startApp() {
+
+    const user = getUserFromToken();
+    const mainPanel = document.getElementById('mainPanel');
+    const sideNav = document.getElementById('sidenavContainer');
+    console.log(user);
+
+    if (user) {
+        document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+        
+        if (user.user_type === "landlord") {
+            sideNav.remove();
+        fetchHouses();
+        } else if (user.house_id !== null) {
+            fetchRooms();
+
+            document.getElementById('selected').addEventListener("click", () => {
+                document.getElementById('homeTitle').innerHTML = 'Dashboard';
+                fetchRooms();
+            })
+        } else if (user.invite === null) {
+            sideNav.innerHTML = ``;
+            mainPanel.innerHTML=`No house associated with user. Please ask a landlord to invite you`;
+        } else {
+            sideNav.innerHTML = ``;
+            const userInvite = await loadInvitedTenant(user.invite);
+            mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
+                                <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
+                                <button id="declineInvite" class="cancelButton">Decline</button></div>`
+            acceptInvite.addEventListener("click", async () => {
+                await handleInvite(true);
+                window.location.href = "dashboard.html";
+            });
+            
+            declineInvite.addEventListener("click", async () => {
+                await handleInvite(false);
+                window.location.href = "dashboard.html";
+            });
+        }
     }
 }
 
-document.getElementById('selected').addEventListener("click", () => {
-    document.getElementById('homeTitle').innerHTML = 'Dashboard';
-    fetchRooms();
-})
+// ################################################################################################# //
+// ################################################################################################# //
+// ################################################################################################# //
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    startApp();
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
@@ -1034,7 +1231,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
             ]
-        },
+        }, 
 		overviewm: {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [

@@ -39,12 +39,86 @@ app.get('/', (req, res) => {
 });
 
 // Get list of landlords
-app.get('/users', async (req, res) => {
+app.get('/users/:email', async (req, res) => {
+
+  const { email } = req.params;
+
   try {
-    const rows = await query(`SELECT * FROM users WHERE user_type = 'landlord'`);
-    res.json(rows);
+    const [user] = await query(`SELECT * FROM users WHERE email = ?`, [email]);
+    res.json(user);
   } catch (err) {
     console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Invite user to house
+app.patch(`/users/:email`, authenticate, async (req, res) => {
+
+  const { email } = req.params;
+  const landlord_id = req.user.id;
+
+  try {
+    await query('UPDATE users SET invite = ? WHERE email = ?', [landlord_id, email])
+    res.send("User invited");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+}
+});
+
+// Get Landlord name for invite
+app.get(`/users/landlordName/:landlordId`, async (req, res) => {
+
+  const { landlordId } = req.params;
+
+  try {
+      const [landlordName] = await query('SELECT name FROM users WHERE id = ?', [landlordId]);
+      res.json(landlordName);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Add user to house
+app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
+  const { landlordId } = req.params;
+  const { accept } = req.body;
+  const userId = req.user.id;
+
+  try {
+      if (accept) {
+          const [house] = await query('SELECT id FROM houses WHERE landlord_id = ?', [landlordId]);
+          if (!house) return res.status(404).send('House not found');
+          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.id, userId]);
+      }
+          await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
+          const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
+          const token = jwt.sign({
+              id: updatedUser.id,
+              email: updatedUser.email,
+              user_type: updatedUser.user_type,
+              house_id: updatedUser.house_id,
+              invite: updatedUser.invite
+          }, process.env.JWT_SECRET || "default_secret", { expiresIn: '1h' });
+
+      res.json({ token });
+  } catch (error) {
+      console.error('Error handling invite:', error);
+      res.status(500).send('Server error');
+  }
+});
+
+// Remove user from house
+app.patch(`/house/:userId`, async (req, res) => {
+  const {userId} = req.params;
+
+  try {
+      await query('UPDATE users SET house_id = NULL WHERE id = ? ', [userId]);
+      res.send("User removed from room");
+  } catch (error) {
+    console.error('Error removing user from house:', error)
     res.status(500).send('Server error');
   }
 });
@@ -73,6 +147,34 @@ app.get('/houses', authenticate, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// Fetch house information
+app.get('/houses/:houseId', authenticate, async (req, res) => {
+  const { houseId } = req.params; // Extract houseId
+  try {
+    const [house] = await query('SELECT * FROM houses WHERE id = ?', [houseId]); // Get the first item
+    if (!house) {
+      return res.status(404).json({ error: 'House not found' });
+    }
+    res.json(house); // Send the single object
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Fetch user information
+app.get('/houses/:houseId/users', authenticate, async (req, res) => {
+  const { houseId } = req.params; // Extract houseId
+  try {
+    const users = await query('SELECT * FROM users WHERE house_id = ?', [houseId]);
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 // Add a new house
 app.post('/houses', authenticate,async (req, res) => {
@@ -201,7 +303,7 @@ app.get('/totPower/device/month', async (req, res) => {
 app.get('/totPower/device/month/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id = ? GROUP BY devices.name, MONTH(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, MONTH(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -214,7 +316,7 @@ app.get('/totPower/device/month/:user', async (req, res) => {
 app.get('/totPower/device/day/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id = ? GROUP BY devices.name, DAY(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, DAY(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -227,7 +329,7 @@ app.get('/totPower/device/day/:user', async (req, res) => {
 app.get('/totPower/device/hour/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id = ? GROUP BY devices.name, HOUR(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, HOUR(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
