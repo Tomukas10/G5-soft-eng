@@ -129,6 +129,31 @@ app.delete('/houses/:houseId', async (req, res) => {
   }
 });
 
+// Remove a device from room
+app.patch('/rooms/:deviceId', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    await query('UPDATE rooms SET room_id = NULL WHERE id = ?', [deviceId]);
+    res.status(200).send({ message: 'Device removed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Failed to delete Device' });
+  }
+});
+
+// Delete a device permanetly
+app.delete('/devices/:deviceId', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    await query('DELETE FROM devices WHERE id = ?', [deviceId]);
+    res.status(200).send({ message: 'Device deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Failed to delete Device' });
+  }
+});
+
+
 // Add a new room
 app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;

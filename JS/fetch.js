@@ -462,6 +462,8 @@ async function fetchDevices(roomId) {
         const appliancesContainer = document.createElement('div');
         appliancesContainer.id = 'appliances-container';
 
+        
+
         const divider = document.createElement("div");
         divider.id = 'divider';
 
@@ -496,11 +498,24 @@ async function fetchDevices(roomId) {
 
         // Display the devices
         devices.forEach(device => {
+        const deleteDevicesButton = document.createElement('span');
+        deleteDevicesButton.className = 'deleteDevices';
+        deleteDevicesButton.innerHTML = '&times;';
+        deleteDevicesButton.setAttribute('data-id', devices.id);
+
+        // Add delete event listener
+            deleteDevicesButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); 
+            const deviceId = event.currentTarget.getAttribute('data-id', devices.id);
+            deleteDevices(deviceId, button);
+
+        });
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `
                 ${device.name}
             `;
+            deviceButton.appendChild(deleteDevicesButton);
             appliancesContainer.insertBefore(deviceButton, addDeviceButton);
         });
 
@@ -671,7 +686,62 @@ async function deleteRoom(roomId, button) {
     });
 }
 
+// #####################################################################
+//                          DELETE DEVICES
+// #####################################################################
 
+async function deleteDevices(deviceId, button) {
+    // Show the confirmation modal
+    const deviceConfirmationModal = document.getElementById('deviceConfirmationModal');
+    const confirmButton = document.getElementById('confirmDelete');
+    const confirmPermaButton = document.getElementById('confirmPermaDelete');
+    const cancelButton = document.getElementById('cancelDelete');
+
+    const deleteTextDevice = document.getElementById('deleteTextDevice');
+    deleteTextDevice.innerHTML = 'Are you sure you want to delete this device?';
+    deviceConfirmationModal.style.display = 'flex'; // Show the modal
+
+    // If user confirms, delete the device and update devices
+    confirmButton.addEventListener('click', async () => {
+        console.log("confirm button pressed");
+        try {
+            // Delete the device
+            await fetch(`/rooms/${deviceId}`, {
+                method: 'PATCH'
+            });
+
+            // Close the modal and remove the room button from the UI
+            deviceConfirmationModal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting room or updating devices:', error);
+            alert('Failed to delete room. Please try again.');
+        }
+    });
+
+    confirmPermaButton.addEventListener('click', async () => {
+        try {
+            console.log("perma button pressed");
+            // Delete the device permamnently 
+            await fetch(`/devices/${deviceId}`, {
+                method: 'DELETE'
+            });
+
+            // Close the modal and remove the room button from the UI
+            deviceConfirmationModal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting device', error);
+            alert('Failed to delete device. Please try again.');
+        }
+    });
+
+    // If user cancels, just close the modal
+    cancelButton.addEventListener('click', () => {
+        console.log("cancel button pressed");
+        deviceConfirmationModal.style.display = 'none';
+    });
+}
 // #####################################################################
 //                          FETCH Total Power Usage Per user
 // #####################################################################
