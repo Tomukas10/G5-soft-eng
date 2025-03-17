@@ -1,5 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-console.log(location.href.split("/").slice(-1)[0]);
+	let user = 0;
+    const token = localStorage.getItem("token");
+    if (!token) {
+        window.location.href = "login.html"; // Redirect if not logged in
+    }
+
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        user =  payload.id; // Contains { id, name, user_type }
+    } catch (err) {
+        console.error("Error decoding token:", err);
+    }
 	
 	
     let energyChart;
@@ -24,6 +35,108 @@ console.log(location.href.split("/").slice(-1)[0]);
         },
         detail: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [
+                {
+                    label: 'Bar Lights Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Oven Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
+                    borderColor: 'rgba(245, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: 'Washing Machine Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Hoover Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
+                    borderColor: 'rgba(175, 192, 92, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
+        },
+		overviewm: {
+            labels: Array.from({length: 31}, (_, i) => i + 1),
+            datasets: [
+                {
+                    label: 'Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(175, 92, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
+			
+        },
+        detailm: {
+            labels: Array.from({length: 31}, (_, i) => i + 1),
+            datasets: [
+                {
+                    label: 'Bar Lights Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Oven Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
+                    borderColor: 'rgba(245, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+                {
+                    label: 'Washing Machine Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                },
+				{
+                    label: 'Hoover Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
+                    borderColor: 'rgba(175, 192, 92, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
+        },
+		overviewd: {
+            labels: Array.from({length: 24}, (_, i) => i + 1),
+            datasets: [
+                {
+                    label: 'Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(175, 92, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+            ]
+			
+        },
+        detaild: {
+            labels: Array.from({length: 24}, (_, i) => i + 1),
             datasets: [
                 {
                     label: 'Bar Lights Electricity Usage (kWh)',
@@ -138,12 +251,11 @@ console.log(location.href.split("/").slice(-1)[0]);
 	const delay = ms => new Promise(res => setTimeout(res, ms));
 	async function getDevices(userId){
 	while (true) {
-		const response = await fetch(`/totPower/device/month/${userId}`); // get energy per devices for user
+		let response = await fetch(`/totPower/device/month/${userId}`); // get energy per devices for user
         if (!response.ok) {
             throw new Error('Failed to fetch energy');
         }
-		//console.log(response.json());
-		const power = await response.json();
+		let power = await response.json();
 		
 		// zero overview array
 		graphData.overview.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
@@ -155,17 +267,64 @@ console.log(location.href.split("/").slice(-1)[0]);
 			let power = powerstat.power;
 			let name = powerstat.name;
 			let id = powerstat.id;
-console.log(id);
-			//eval("graphData." + name.replace(/\s/g, '') + ".datasets[0].data[" + month.replace(/\s/g, '') + "] = " + power + ";"); //set data
-			console.log(graphData.detail.datasets[id-1].data[month]);
+			
 			
 			graphData.detail.datasets[id-1].data[month-1] = power;
 			graphData.overview.datasets[0].data[month-1] += power;
-			if (name.replace(/\s/g, '') == "barlight"){
-						console.log(name.replace(/\s/g, ''));
+			} 
+			catch{
+				//requested device has yet to be added.
 			}
-			//graphData.overview.datasets[id].data[graphData.overview.datasets[0].data.length - 1] += p;
+        });
+		
+		
+		response = await fetch(`/totPower/device/day/${userId}`); // get energy per devices for user
+        if (!response.ok) {
+            throw new Error('Failed to fetch energy');
+        }
+		power = await response.json();
+		
+		// zero overview array
+		graphData.overviewm.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
+		
+		// Display the energy data
+        power.forEach(powerstat => {
+			try {
+			day = powerstat.day;
+			power = powerstat.power;
+			name = powerstat.name;
+			id = powerstat.id;
 			
+			
+			graphData.detailm.datasets[id-1].data[day-1] = power;
+			graphData.overviewm.datasets[0].data[day-1] += power;
+			} 
+			catch{
+				//requested device has yet to be added.
+			}
+        });
+		
+		
+		response = await fetch(`/totPower/device/hour/${userId}`); // get energy per devices for user
+        if (!response.ok) {
+            throw new Error('Failed to fetch energy');
+        }
+		power = await response.json();
+		
+		// zero overview array
+		graphData.overviewd.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
+		
+		// Display the energy data
+        power.forEach(powerstat => {
+			try {
+			hour = powerstat.hour;
+			power = powerstat.power;
+			name = powerstat.name;
+			id = powerstat.id;
+			
+			
+			graphData.detaild.datasets[id-1].data[hour-1] = power;
+			graphData.overviewd.datasets[0].data[hour-1] += power;
 			} 
 			catch{
 				//requested device has yet to be added.
@@ -186,9 +345,10 @@ console.log(id);
             updateChart(graphData[cGraph]);
         });
     });
-	await delay(60000); //delay function call (update graph one a minute)
+	await delay(60000); //delay function call (update graph once a minute)
 	}
 }
 	getDevices(user);
+
 
 });
