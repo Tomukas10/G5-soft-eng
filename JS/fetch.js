@@ -111,9 +111,7 @@ async function fetchRooms() {
         devButton.textContent = 'Add Device';
         devButton.classList.add('appliance');
         devButton.id = 'addNewDeviceButton';
-        if(addDevicearea.childElementCount == 0) {   
-             addDevicearea.appendChild(devButton);
-        }
+        document.getElementById('page').appendChild(devButton);
         const addNewDeviceModal = document.getElementById("addNewDeviceModal");
         devButton.addEventListener("click", () => {
             addNewDeviceModal.style.display = "block"; // Show the modal
@@ -145,7 +143,7 @@ async function fetchRooms() {
             // Add an icon
             const icon = document.createElement('img');
             icon.className = 'icon';
-            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`;
+            icon.src = `./images/${room.name.toLowerCase().replace(/ \d+$/, '').trim().replace(' ', '-')}.png`;
 
             // Fallback to default image if the image is not found
             icon.onerror = () => {
@@ -1410,7 +1408,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
-                    label: 'Total Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1428,7 +1426,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1446,7 +1444,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 24}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1458,6 +1456,10 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detaild: {
             labels: Array.from({length: 24}, (_, i) => i + 1),
+            datasets: []
+        },
+        detailc: {
+            labels: Array.from({length: 2}, (_, i) => i + 1),
             datasets: []
         }
     };
@@ -1500,9 +1502,10 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			let month = powerstat.month;
-			let power = powerstat.power/(3600*1000);
+			let power = powerstat.power/(3600);
 			let name = powerstat.name;
 			let id = powerstat.id;
+			let wattage = powerstat.wattage;
 			if (!(idStore.includes(id))) {
 				
 			function random_rgba() {
@@ -1511,7 +1514,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 				idStore.push(id);
 				graphData.detail.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 12}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1519,7 +1522,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detailm.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 31}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1527,13 +1530,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detaild.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 24}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
                     borderWidth: 2,
                     tension: 0.4
                 }
+				graphData.detailc.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (W)',
+                    data: Array.from({length: 2}, (_, i) => wattage),
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+				
+				
 			}
 							
 		
@@ -1562,7 +1575,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			day = powerstat.day;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
@@ -1588,7 +1601,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			hour = powerstat.hour;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
@@ -1620,5 +1633,3 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 	getDevices(user);
 });}
-
-

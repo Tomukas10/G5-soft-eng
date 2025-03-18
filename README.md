@@ -4,11 +4,9 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
-3. [Branches](#branches)
-4. [Testing](#testing)
-5. [License](#license)
-6. [Contributors](#contributors)
+2. [Branches](#branches)
+3. [License](#license)
+4. [Contributors](#contributors)
 
 
 ## Introduction
@@ -16,13 +14,6 @@
 ### This section provides an overview of the project
 
 Easy Cribs is our smart home system that we are developing for F29PD. It is used to control any smart devices that you may have around the house, such as: thermostat, lights or robot hoovers. The purpose of Easy Cribs is to make these household items more manageable and trackable so that you know exactly what is on when and how much energy is being used.
-
-
-## Getting Started
-
-### Explanation of how to set up our software
-
-In order to get started with Easy Cribs you must have ... TBC.
 
 
 ## Branches
@@ -33,18 +24,11 @@ In order to get started with Easy Cribs you must have ... TBC.
 - Ali's-version: A version of our main which Ali has been using to create the login, sign up and welcome pages of our website.
 
 
-## Testing
-
-### All the testing completed will be documented here
-
-The testing we have used on this project is ... TBC.
-
-
 ## License
 
 ### Any licensing that has been used will be documented below
 
-License: TBC.
+License: We do not have any specified license, meaning it is not explicitly open-source or freely available for modification and distribution. Without a license, the default copyright laws apply, restricting others from using, copying, or modifying the code without permission. Easy Cribs does NOT give anyone permission to do any of the aforementioned.
 
 
 ## Contributors
@@ -57,3 +41,5 @@ License: TBC.
 - @Daniel-Fejdych - Daniel Fejdych
 - @thenamesdonnie - Donnie Stark
 - @Afraser8765 - Adam Fraser
+- @mv2025 - Mridul Verma
+- @AliBara2004 - Ali Bara

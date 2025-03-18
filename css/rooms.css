@@ -163,8 +163,13 @@ header {
 
 /* CSS for the 'temperature' section. */
 
+#temp-box {
+    display: flex;
+    width: 100%;
+    margin-top: 0; 
+}
 
-.temperature-container {
+#temperature-container {
     display: flex;
     justify-content: center;
     gap: 40px;
@@ -447,22 +452,6 @@ nav:hover > .navItems:hover{
     background: #cc0000;
 }
 
-/* CSS for scrollbar customization */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #fff;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
 
 /* Modal Background */
 #addRoomModal {
