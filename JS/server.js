@@ -86,22 +86,40 @@ app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
   const { landlordId } = req.params;
   const { accept } = req.body;
   const userId = req.user.id;
-  console.log("landlord id:", landlordId, "  accept: ", accept, "  user id: ", userId);
 
   try {
       if (accept) {
-          const [house] = await query('SELECT house_id FROM houses WHERE landlord_id = ?', [landlordId]);
-          console.log(house);
+          const [house] = await query('SELECT id FROM houses WHERE landlord_id = ?', [landlordId]);
           if (!house) return res.status(404).send('House not found');
-          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.house_id, userId]);
-          console.log("User ", userId, " house set to ", house.house_id);
+          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.id, userId]);
       }
           await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
-          console.log("User invite set to null");
-      res.send('Invite handled successfully');
+          const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
+          const token = jwt.sign({
+              id: updatedUser.id,
+              email: updatedUser.email,
+              user_type: updatedUser.user_type,
+              house_id: updatedUser.house_id,
+              invite: updatedUser.invite
+          }, process.env.JWT_SECRET || "default_secret", { expiresIn: '1h' });
+
+      res.json({ token });
   } catch (error) {
       console.error('Error handling invite:', error);
       res.status(500).send('Server error');
+  }
+});
+
+// Remove user from house
+app.patch(`/house/:userId`, async (req, res) => {
+  const {userId} = req.params;
+
+  try {
+      await query('UPDATE users SET house_id = NULL WHERE id = ? ', [userId]);
+      res.send("User removed from room");
+  } catch (error) {
+    console.error('Error removing user from house:', error)
+    res.status(500).send('Server error');
   }
 });
 
@@ -213,7 +231,36 @@ app.delete('/houses/:houseId', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Add a new room and automatically generate a related temperature entry.
+=======
+// Remove a device from room
+app.patch('/rooms/:deviceId', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    await query('UPDATE devices SET room_id = NULL WHERE id = ?', [deviceId]);
+    res.status(200).send({ message: 'Device removed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Failed to delete Device' });
+  }
+});
+
+// Delete a device permanetly
+app.delete('/devices/:deviceId', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    await query('DELETE FROM devices WHERE id = ?', [deviceId]);
+    res.status(200).send({ message: 'Device deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: 'Failed to delete Device' });
+  }
+});
+
+
+// Add a new room
+>>>>>>> branch 'main' of https://github.com/Tomukas10/G5-soft-eng.git
 app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;
   const { name } = req.body; 
@@ -373,6 +420,7 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Fetch all the necessary room temperatures.
 app.get('/rooms/temperature', async (req, res) => {
     try {
@@ -511,6 +559,40 @@ app.put('/rooms/kitchen/lights', async (req, res) =>
         res.status(500).send('Server error');
     }
 });
+=======
+//Start a new session
+app.post('/sessions/:deviceId/:userId', authenticate, async (req, res) => {
+  const {deviceId, userId} = req.params;
+  try {
+    const result = await query('INSERT INTO sessions (sesid, deviceid, userid, sesstart, sesend, sesError) VALUES (NULL, ?, ?, NOW(), NULL, NULL);', [deviceId, userId]);
+    
+    res.status(201).json({
+      message: 'Session started successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//End a session
+app.patch('/sessions/:deviceId/end', authenticate, async (req, res) => {
+  const deviceId = req.params;
+  try {
+    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND sesend = NULL;', [deviceId]);
+    
+    res.status(201).json({
+      message: 'Session ended successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+>>>>>>> branch 'main' of https://github.com/Tomukas10/G5-soft-eng.git
 
 // Start the server
 app.listen(port, () => {

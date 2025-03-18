@@ -284,6 +284,7 @@ header {
 }
 
 .appliance {
+    position: relative;
     margin-top: 10px;
     margin-left: 10px;
     background-color: white; /* Default greyed-out */

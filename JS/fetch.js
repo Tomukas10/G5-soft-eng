@@ -301,7 +301,6 @@ const addHouseModal = document.getElementById("addHouseModal");
 async function fetchCurrentHouse(houseId) {
 
 try {
-    console.log(houseId);
     const token = localStorage.getItem('token');  // Retrieve token from localStorage
     const houseResponse = await fetch(`/houses/${houseId}`, {
         method: 'GET',
@@ -328,9 +327,6 @@ try {
         const house = await houseResponse.json(); // Parse devices JSON from server
         const users = await userResponse.json(); // Parse devices JSON from server
 
-        console.log(users);
-
-    console.log(house);
     
     const mainPanel = document.getElementById("mainPanel");
     
@@ -364,10 +360,26 @@ try {
 
     // Display the users
         users.forEach( user => {
-        const deviceButton = document.createElement("button");
-        deviceButton.className = 'appliance';
-        deviceButton.innerHTML = `${user.name} <br> ${user.email}`;
-        appliancesContainer.appendChild(deviceButton);
+        const userTab = document.createElement("button");
+        userTab.className = 'appliance';
+        userTab.innerHTML = `${user.name} <br> ${user.email}`;
+
+        // Add the delete button
+        const deleteButton = document.createElement('span');
+        deleteButton.className = 'deleteRoom';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('data-id', user.id);
+
+        // Add delete event listener
+        deleteButton.addEventListener('click', async (event) => {
+            event.stopPropagation(); 
+            const userId = event.target.getAttribute('data-id');
+            removeUser(userId, userTab);
+
+        });
+        userTab.appendChild(deleteButton);
+        appliancesContainer.appendChild(userTab);
+
         });
 
 } catch (error) {
@@ -428,7 +440,7 @@ return invite;
 }
 
 // #####################################################################
-//                              LOAD TENANT INVITE
+//                              HANDLE INVITE
 // #####################################################################
 
 async function handleInvite(accept) {
@@ -437,13 +449,19 @@ async function handleInvite(accept) {
         const user = getUserFromToken();
         const landlordId = user.invite;
 
-        await fetch(`/users/invite/${landlordId}`, {
+        const response = await fetch(`/users/invite/${landlordId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ accept })
+
         });
+        const { token: newToken } = await response.json();
+        localStorage.setItem('token', newToken);
+
+        user.invite = null;
     } catch (error) {
         console.error("Error handling invite", error);
     }
@@ -589,8 +607,6 @@ async function addDevice(DeviceName) {
             } else {
                 alert("device added successfully");
             }
-            // Refresh the device list
-            console.log('fetching devices');
 
 
             // Hide the modal and clear the input
@@ -636,6 +652,8 @@ async function fetchDevices(roomId) {
         const appliancesContainer = document.createElement('div');
         appliancesContainer.id = 'appliances-container';
 
+        
+
         const divider = document.createElement("div");
         divider.id = 'divider';
 
@@ -669,12 +687,28 @@ async function fetchDevices(roomId) {
         });
 
         // Display the devices
-        devices.forEach(device => {
+        devices.forEach( device => {
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `${device.name}`;
-            appliancesContainer.insertBefore(deviceButton, addDeviceButton);
-        });
+    
+            // Add the delete button
+            const deleteButton = document.createElement('span');
+            deleteButton.className = 'deleteRoom';
+            deleteButton.innerHTML = '&times;';
+            deleteButton.setAttribute('data-id', device.id);
+    
+            // Add delete event listener
+            deleteButton.addEventListener('click', async (event) => {
+                event.stopPropagation(); 
+                const deviceId = event.target.getAttribute('data-id');
+                deleteDevice(deviceId, deviceButton);
+    
+            });
+            deviceButton.appendChild(deleteButton);
+            appliancesContainer.insertBefore(deviceButton, button);
+    
+            });
 
     } catch (error) {
         console.error('Error fetching devices:', error);
@@ -685,6 +719,60 @@ function handleRoomButtonClick(event) {
     const roomId = event.target.getAttribute('data-id');
 }
 
+// #####################################################################
+//                          DELETE DEVICES
+// #####################################################################
+ 
+async function deleteDevice(deviceId, button) {
+ 
+    // Show the confirmation modal
+    const deviceConfirmationModal = document.getElementById('deviceConfirmationModal');
+    const confirmButton = document.getElementById('confirmDeviceDelete');
+    const confirmPermaButton = document.getElementById('confirmPermaDelete');
+    const cancelButton = document.getElementById('cancelDeviceDelete');
+    const deleteTextDevice = document.getElementById('deleteTextDevice');
+ 
+    deleteTextDevice.innerHTML = 'Are you sure you want to delete this device?';
+    deviceConfirmationModal.style.display = 'block';
+    // If user confirms, delete the device and update devices
+    confirmButton.addEventListener('click', async () => {
+        try {
+            // Delete the device
+            await fetch(`/rooms/${deviceId}`, {
+                method: 'PATCH'
+            });
+            // Close the modal and remove the room button from the UI
+            deviceConfirmationModal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting room or updating devices:', error);
+            alert('Failed to delete room. Please try again.');
+        }
+        
+    });
+ 
+    confirmPermaButton.addEventListener('click', async () => {
+        try {
+            // Delete the device permamnently 
+            await fetch(`/devices/${deviceId}`, {
+                method: 'DELETE'
+            });
+ 
+            // Close the modal and remove the room button from the UI
+            deviceConfirmationModal.style.display = 'none';
+            button.remove();
+        } catch (error) {
+            console.error('Error deleting device', error);
+            alert('Failed to delete device. Please try again.');
+        }
+    });
+
+    // If user cancels, just close the modal
+    cancelButton.addEventListener('click', () => {
+        deviceConfirmationModal.style.display = 'none';
+    });
+
+}
 
 // #####################################################################
 //                          DELETED HOUSE
@@ -700,16 +788,8 @@ async function deleteHouse(houseId, button) {
     deleteText.innerHTML = 'Are you sure you want to delete this house?';
     modal.style.display = 'flex'; // Show the modal
 
-    // Clean up previous event listeners
-    confirmButton.replaceWith(confirmButton.cloneNode(true));
-    cancelButton.replaceWith(cancelButton.cloneNode(true));
-
-    // Re-select buttons after cloning (to remove old listeners)
-    const newConfirmButton = document.getElementById('confirmDelete');
-    const newCancelButton = document.getElementById('cancelDelete');
-
     // If user confirms, delete the house and unassign devices
-    newConfirmButton.addEventListener('click', async () => {
+    confirmButton.addEventListener('click', async () => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -736,7 +816,7 @@ async function deleteHouse(houseId, button) {
     });
 
     // If user cancels, just close the modal
-    newCancelButton.addEventListener('click', () => {
+    cancelButton.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 }
@@ -844,6 +924,75 @@ async function deleteRoom(roomId, button) {
     });
 }
 
+// #####################################################################
+//                          REMOVE USER FROM HOUSE
+// #####################################################################
+
+async function removeUser(userId, button) {
+    // Show the confirmation modal
+    const modal = document.getElementById('confirmationModal');
+    const confirmButton = document.getElementById('confirmDelete');
+    const cancelButton = document.getElementById('cancelDelete');
+
+    const deleteText = document.getElementById('deleteText');
+
+    deleteText.innerHTML = 'Are you sure you want to remove this user?';
+    confirmButton.innerHTML = 'Yes, remove';
+    modal.style.display = 'flex'; // Show the modal
+
+    // If user confirms, delete the room and update devices
+    confirmButton.addEventListener('click', async () => {
+        try {
+            modal.style.display = 'none';
+            await fetch(`/house/${userId}`, {
+                method: 'PATCH'
+            });
+
+            // Close the modal and remove the room button from the UI
+            button.remove();
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to remove user. Please try again.');
+        }
+    });
+
+    // If user cancels, just close the modal
+    cancelButton.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
+
+// #####################################################################
+//                          START Session
+// #####################################################################
+async function startses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}/${userId}`);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to start session. Please try again.');
+        }
+    });
+
+
+
+
+
+// #####################################################################
+//                          END Session
+// #####################################################################
+async function endses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}/end`);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to end session. Please try again.');
+        }
+    });
 
 // #####################################################################
 //                          FETCH Total Power Usage Per user
@@ -970,49 +1119,60 @@ async function assignDeviceToRoom(roomId) {
     }
 }
 
+
+// #####################################################################
+//                          START APP
+// #####################################################################
+
+async function startApp() {
+
+    const user = getUserFromToken();
+    const mainPanel = document.getElementById('mainPanel');
+    const sideNav = document.getElementById('sidenavContainer');
+    console.log(user);
+
+    if (user) {
+        document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+        
+        if (user.user_type === "landlord") {
+            sideNav.remove();
+        fetchHouses();
+        } else if (user.house_id !== null) {
+            fetchRooms();
+
+            document.getElementById('selected').addEventListener("click", () => {
+                document.getElementById('homeTitle').innerHTML = 'Dashboard';
+                fetchRooms();
+            })
+        } else if (user.invite === null) {
+            sideNav.innerHTML = ``;
+            mainPanel.innerHTML=`No house associated with user. Please ask a landlord to invite you`;
+        } else {
+            sideNav.innerHTML = ``;
+            const userInvite = await loadInvitedTenant(user.invite);
+            mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
+                                <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
+                                <button id="declineInvite" class="cancelButton">Decline</button></div>`
+            acceptInvite.addEventListener("click", async () => {
+                await handleInvite(true);
+                window.location.href = "dashboard.html";
+            });
+            
+            declineInvite.addEventListener("click", async () => {
+                await handleInvite(false);
+                window.location.href = "dashboard.html";
+            });
+        }
+    }
+}
+
 // ################################################################################################# //
 // ################################################################################################# //
 // ################################################################################################# //
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-const user = getUserFromToken();
-const mainPanel = document.getElementById('mainPanel');
-console.log(user);
-if (user) {
-    document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
-    
-    if (user.user_type === "landlord") {
-        const sideNav = document.getElementById('sidenavContainer');
-        sideNav.remove();
-       fetchHouses();
-    } else if (user.house_id !== null) {
-        fetchRooms();
-
-        document.getElementById('selected').addEventListener("click", () => {
-            document.getElementById('homeTitle').innerHTML = 'Dashboard';
-            fetchRooms();
-        })
-    } else if (user.invite === null) {
-        document.getElementById('page').innerHTML=`No house associated with user. Please ask a landlord to invite you`;
-    } else {
-        const userInvite = await loadInvitedTenant(user.invite);
-        mainPanel.innerHTML=`<h3>${userInvite.name} has invited you to join their house</h3>
-                            <div id="inviteButtons"><button id="acceptInvite" class="confirmButton">Accept</button>
-                            <button id="declineInvite" class="cancelButton">Decline</button></div>`
-        acceptInvite.addEventListener("click", () => {
-            handleInvite(true);
-            console.log("invitation accepted");
-        });
-        
-        declineInvite.addEventListener("click", () => {
-           handleInvite(false);
-            console.log("invitation declined");
-        });
-    }
-}
-
-
+    startApp();
 
     // Add Room Button Click Event
     const createRoomButton = document.getElementById("createRoomButton");
@@ -1096,19 +1256,31 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
         console.error("Error decoding token:", err);
     }
-	
-	
-    let energyChart;
-    const ctx = document.getElementById("energyChart").getContext("2d");
+
 
 	
-    // Data for different appliances
+	let cGraph = null;
+	//simple delay function to repeat the request every 1000ms
+	const delay = ms => new Promise(res => setTimeout(res, ms));
+	async function getDevices(userId){
+	while (true) {
+		let response = await fetch(`/totPower/device/month/${userId}`); // get energy per devices for user
+        if (!response.ok) {
+            throw new Error('Failed to fetch energy');
+        }
+		let power = await response.json();
+		
+				
+		let energyChart;
+		const ctx = document.getElementById("energyChart").getContext("2d");
+
+			    // Data for different appliances
     let graphData = {
         overview: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (kWh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1120,40 +1292,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detail: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [
-                {
-                    label: 'Bar Lights Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Oven Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
-                    borderColor: 'rgba(245, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: 'Washing Machine Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Hoover Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
-                    borderColor: 'rgba(175, 192, 92, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
+            datasets: []
         },
 		overviewm: {
             labels: Array.from({length: 31}, (_, i) => i + 1),
@@ -1171,40 +1310,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detailm: {
             labels: Array.from({length: 31}, (_, i) => i + 1),
-            datasets: [
-                {
-                    label: 'Bar Lights Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Oven Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
-                    borderColor: 'rgba(245, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: 'Washing Machine Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Hoover Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
-                    borderColor: 'rgba(175, 192, 92, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
+            datasets: []
         },
 		overviewd: {
             labels: Array.from({length: 24}, (_, i) => i + 1),
@@ -1222,83 +1328,11 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detaild: {
             labels: Array.from({length: 24}, (_, i) => i + 1),
-            datasets: [
-                {
-                    label: 'Bar Lights Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(053, 052, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Oven Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(245, 192, 192, 0.2)',
-                    borderColor: 'rgba(245, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-                {
-                    label: 'Washing Machine Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                },
-				{
-                    label: 'Hoover Electricity Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(175, 192, 92, 0.2)',
-                    borderColor: 'rgba(175, 192, 92, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
-        },
-        hoover: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [
-                {
-                    label: 'AC Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                    borderColor: 'rgba(255, 159, 64, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
-        },
-        washingmachine: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [
-                {
-                    label: 'Washing Machine Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
-        },
-		oven: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [
-                {
-                    label: 'Oven Usage (kWh)',
-                    data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(0, 162, 235, 1)',
-                    borderWidth: 2,
-                    tension: 0.4
-                }
-            ]
+            datasets: []
         }
     };
-	
-    // Function to update the chart
+		
+		    // Function to update the chart
     const updateChart = (data) => {
         if (energyChart) {
             energyChart.destroy(); // Destroy existing chart
@@ -1327,34 +1361,55 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     };
-
-    // Initialize with the overview graph
-    updateChart(graphData.overview);
 	
-	let cGraph = null;
-	//simple delay function to repeat the request every 1000ms
-	const delay = ms => new Promise(res => setTimeout(res, ms));
-	async function getDevices(userId){
-	while (true) {
-		let response = await fetch(`/totPower/device/month/${userId}`); // get energy per devices for user
-        if (!response.ok) {
-            throw new Error('Failed to fetch energy');
-        }
-		let power = await response.json();
-		
-		// zero overview array
+			// zero overview array
 		graphData.overview.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
 		
+		let idStore = [];
 		// Display the energy data
         power.forEach(powerstat => {
 			try {
 			let month = powerstat.month;
-			let power = powerstat.power;
+			let power = powerstat.power/(3600*1000);
 			let name = powerstat.name;
 			let id = powerstat.id;
+			if (!(idStore.includes(id))) {
+				
+			function random_rgba() {
+				var o = Math.round, r = Math.random, s = 255;
+				return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+				}
+				idStore.push(id);
+				graphData.detail.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+				graphData.detailm.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+				graphData.detaild.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (kWh)',
+                    data: [],
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+			}
+							
+		
+
 			
-			
-			graphData.detail.datasets[id-1].data[month-1] = power;
+			graphData.detail.datasets[idStore.indexOf(id)].data[month-1] = power;
 			graphData.overview.datasets[0].data[month-1] += power;
 			} 
 			catch{
@@ -1362,6 +1417,8 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
         });
 		
+		// zero overview array
+		graphData.overviewm.datasets[0].data = Array.from({length: 31}, (_, i) => 0);
 		
 		response = await fetch(`/totPower/device/day/${userId}`); // get energy per devices for user
         if (!response.ok) {
@@ -1369,19 +1426,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 		power = await response.json();
 		
-		// zero overview array
-		graphData.overviewm.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
+
 		
 		// Display the energy data
         power.forEach(powerstat => {
 			try {
 			day = powerstat.day;
-			power = powerstat.power;
+			power = powerstat.power/(3600*1000);
 			name = powerstat.name;
 			id = powerstat.id;
 			
-			
-			graphData.detailm.datasets[id-1].data[day-1] = power;
+			graphData.detailm.datasets[idStore.indexOf(id)].data[day-1] = power;
 			graphData.overviewm.datasets[0].data[day-1] += power;
 			} 
 			catch{
@@ -1389,26 +1444,26 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
         });
 		
+		// zero overview array
+		graphData.overviewd.datasets[0].data = Array.from({length: 24}, (_, i) => 0);
 		
 		response = await fetch(`/totPower/device/hour/${userId}`); // get energy per devices for user
         if (!response.ok) {
             throw new Error('Failed to fetch energy');
         }
 		power = await response.json();
-		
-		// zero overview array
-		graphData.overviewd.datasets[0].data = [0,0,0,0,0,0,0,0,0,0,0,0];
+	
 		
 		// Display the energy data
         power.forEach(powerstat => {
 			try {
 			hour = powerstat.hour;
-			power = powerstat.power;
+			power = powerstat.power/(3600*1000);
 			name = powerstat.name;
 			id = powerstat.id;
 			
 			
-			graphData.detaild.datasets[id-1].data[hour-1] = power;
+			graphData.detaild.datasets[idStore.indexOf(id)].data[hour-1] = power;
 			graphData.overviewd.datasets[0].data[hour-1] += power;
 			} 
 			catch{
@@ -1434,8 +1489,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 }
 	getDevices(user);
-
-
 });}
 
 
