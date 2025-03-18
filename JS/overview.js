@@ -1,4 +1,4 @@
-console.log("overview.js has loaded!");
+const token = localStorage.getItem('token');
 
 let actualTempInterval = null;
 
@@ -9,7 +9,12 @@ function getActualTemperature() {
     actualTempInterval = setInterval(async () => {
         try {
             console.log("Running getActualTemperature() cycle..."); // Debugging steps.
-            const response = await fetch('/rooms/temperature');
+            const response = await fetch('/rooms/temperature', {
+                method: 'GET',
+                headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
             const data = await response.json();
 
             console.log("Fetched Data:", data); // Debugging steps.

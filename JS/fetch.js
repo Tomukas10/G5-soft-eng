@@ -1318,19 +1318,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         addDeviceModal.style.display = 'none';
     });
 
-    function swapCSS() {
-        const linkElement = document.getElementById("main");
-        if (linkElement.href = "../css/home1.css") {
-            linkElement.href = "../css/accessability.css";
-        } else if (linkElement.href = "../css/accessability.css") {
-            linkElement.href = "../css/home1.css";
-        }
-    }
-    
-    const swap = document.getElementById('swap');
-    swap.addEventListener("click", function(event) {
-        swapCSS(); 
-    });
+
 
 
  
