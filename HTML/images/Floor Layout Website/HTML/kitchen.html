@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../CSS/kitchen.css" /> 
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment 1</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+				<!-- Sidebar & functionality. -->
+                <div id="sidenav">
+                    <a class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a id="selected" class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+                </div>
+            </div>
+			
+			<div id="houseLayout">
+				<!-- DIV overlays featuring the lights. -->
+				<div id="kitchen-mainLight" class="room-overlay"><center></center></div>
+				<div id="kitchen-tableLight" class="room-overlay"></div>
+				<div id="kitchen-barLight" class="room-overlay"></div>
+				<div id="kitchen-counterLight" class="room-overlay"></div>
+
+				<!-- Temperature overlays featuring the temp. -->
+				<span id="kitchen-temp" class="temperature">20°C</span>
+			</div>
+        </div>
+    </main>
+	
+<script src="../JS/kitchen.js"></script> <!-- Fetches the relevant data from the database. -->
+</body>
+</html>

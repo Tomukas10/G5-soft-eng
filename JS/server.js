@@ -389,6 +389,52 @@ app.get('/totPower/user/month', async (req, res) => {
   }
 });
 
+// Fetch devices with a specific state and house ID
+app.get('/devices/fault', authenticate, async (req, res) => {
+
+
+  const houseId = req.user.house_id; // Access house_id directly from req.user
+
+  try {
+    // Query the database to get devices with the specified state and house ID
+    const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT null', [houseId]);
+
+    if (devices.length === 0) {
+      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
+    }
+
+    // Send the devices as a response
+    res.json(devices);
+  } catch (err) {
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Fetch devices with a specific state and house ID
+app.post('/fault/devices/:deviceId', authenticate, async (req, res) => {
+
+  const { deviceId } = req.params;
+  
+
+  try {
+    // Query the database to get devices with the specified state and house ID
+    const devices = await query('UPDATE devices SET state = 0 WHERE device_id = ?', [deviceId]);
+
+    if (devices.length === 0) {
+      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
+    }
+
+    // Send the devices as a response
+    res.json(devices);
+  } catch (err) {
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
 
 // Get devices from a house
 app.get('/devices/houseId', authenticate, async (req, res) => {
