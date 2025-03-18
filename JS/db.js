@@ -4,13 +4,8 @@ const mariadb = require('mariadb');
 // Create a connection pool
 const pool = mariadb.createPool({
     host: '132.145.18.222', // MariaDB host
-<<<<<<< HEAD
     user: 'df2017', // MariaDB username
     password: 'wnd4VKSANY3', // MariaDB password
-=======
-    user: 'ds2000', // MariaDB username
-    password: 'wnd4VKSANY6', // MariaDB password
->>>>>>> branch 'main' of https://github.com/Tomukas10/G5-soft-eng.git
     database: 'df2017', // Database name
     port: 3306,
     connectionLimit: 10 // Limit the number of connections
