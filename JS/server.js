@@ -409,6 +409,39 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
   }
 });
 
+//Start a new session
+app.post('/sessions/:deviceId/:userId', authenticate, async (req, res) => {
+  const {deviceId, userId} = req.params;
+  try {
+    const result = await query('INSERT INTO sessions (sesid, deviceid, userid, sesstart, sesend, sesError) VALUES (NULL, ?, ?, NOW(), NULL, NULL);', [deviceId, userId]);
+    
+    res.status(201).json({
+      message: 'Session started successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+//End a session
+app.patch('/sessions/:deviceId/:userId/end', authenticate, async (req, res) => {
+  const {deviceId, userId} = req.params;
+  try {
+    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND userid = ?;', [deviceId, userId]);
+    
+    res.status(201).json({
+      message: 'Session ended successfully',
+      name
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
