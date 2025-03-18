@@ -410,8 +410,9 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
 });
 
 //Start a new session
-app.post('/sessions/:deviceId/:userId', authenticate, async (req, res) => {
-  const {deviceId, userId} = req.params;
+app.post('/sessions/:deviceId', authenticate, async (req, res) => {
+  const {deviceId} = req.params;
+  const { userId } = req.body;
   try {
     const result = await query('INSERT INTO sessions (sesid, deviceid, userid, sesstart, sesend, sesError) VALUES (NULL, ?, ?, NOW(), NULL, NULL);', [deviceId, userId]);
     
