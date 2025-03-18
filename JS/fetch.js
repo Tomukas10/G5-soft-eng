@@ -1439,7 +1439,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				idStore.push(id);
 				graphData.detail.datasets[idStore.indexOf(id)] =                 {
                     label: name + ' Electricity Usage (kWh)',
-                    data: [],
+                    data: Array.from({length: 12}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
                     borderWidth: 2,
@@ -1447,7 +1447,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 				graphData.detailm.datasets[idStore.indexOf(id)] =                 {
                     label: name + ' Electricity Usage (kWh)',
-                    data: [],
+                    data: Array.from({length: 31}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
                     borderWidth: 2,
@@ -1455,7 +1455,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 				graphData.detaild.datasets[idStore.indexOf(id)] =                 {
                     label: name + ' Electricity Usage (kWh)',
-                    data: [],
+                    data: Array.from({length: 24}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
                     borderWidth: 2,
