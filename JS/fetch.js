@@ -111,9 +111,7 @@ async function fetchRooms() {
         devButton.textContent = 'Add Device';
         devButton.classList.add('appliance');
         devButton.id = 'addNewDeviceButton';
-        if(addDevicearea.childElementCount == 0) {   
-             addDevicearea.appendChild(devButton);
-        }
+        document.getElementById('page').appendChild(devButton);
         const addNewDeviceModal = document.getElementById("addNewDeviceModal");
         devButton.addEventListener("click", () => {
             addNewDeviceModal.style.display = "block"; // Show the modal
@@ -135,7 +133,8 @@ async function fetchRooms() {
             // Add an icon
             const icon = document.createElement('img');
             icon.className = 'icon';
-            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`;
+            icon.src = `./images/${room.name.toLowerCase().replace(/ \d+$/, '').trim().replace(' ', '-')}.png`;
+            console.log(icon.src);
 
             // Fallback to default image if the image is not found
             icon.onerror = () => {

@@ -371,11 +371,11 @@ nav:hover > .navItems:hover{
 #addNewDeviceButton {
     
     font-size: 2vh;
-    display: block;
     height: 10vh;
     width: 10vw;
-    float: right;
-    margin-top: 10vh;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;  
 }
 
 /* CSS for the logout button */
