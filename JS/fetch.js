@@ -1353,7 +1353,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Total Electricity Usage (Wh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1371,7 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 24}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Total Electricity Usage (Wh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1383,6 +1383,10 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detaild: {
             labels: Array.from({length: 24}, (_, i) => i + 1),
+            datasets: []
+        },
+        detailc: {
+            labels: Array.from({length: 2}, (_, i) => i + 1),
             datasets: []
         }
     };
@@ -1428,6 +1432,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			let power = powerstat.power/(3600);
 			let name = powerstat.name;
 			let id = powerstat.id;
+			let wattage = powerstat.wattage;
 			if (!(idStore.includes(id))) {
 				
 			function random_rgba() {
@@ -1459,6 +1464,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     borderWidth: 2,
                     tension: 0.4
                 }
+				graphData.detailc.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (W)',
+                    data: Array.from({length: 2}, (_, i) => wattage),
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+				
+				
 			}
 							
 		
@@ -1545,5 +1560,3 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 	getDevices(user);
 });}
-
-
