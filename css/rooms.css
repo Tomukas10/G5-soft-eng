@@ -195,7 +195,7 @@ header {
     align-items: center;
     width: 80px;
     height: 200px;
-    background: linear-gradient(to bottom, #007bff, #ff0000); /* Blue (cold) to Red (hot) gradient */
+    background: linear-gradient(to bottom, #ff0000, #007bff); /* Blue (cold) to Red (hot) gradient */
     padding: 10px;
     border-radius: 15px;
     justify-content: space-between;
