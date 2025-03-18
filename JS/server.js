@@ -429,7 +429,7 @@ app.post('/sessions/:deviceId/:userId', authenticate, async (req, res) => {
 app.patch('/sessions/:deviceId/:userId/end', authenticate, async (req, res) => {
   const {deviceId, userId} = req.params;
   try {
-    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND userid = ?;', [deviceId, userId]);
+    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND sesend = NULL;', [deviceId]);
     
     res.status(201).json({
       message: 'Session ended successfully',
