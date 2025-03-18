@@ -962,6 +962,38 @@ async function removeUser(userId, button) {
 }
 
 // #####################################################################
+//                          START Session
+// #####################################################################
+async function startses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}/${userId}`);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to start session. Please try again.');
+        }
+    });
+
+
+
+
+
+// #####################################################################
+//                          END Session
+// #####################################################################
+async function endses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}/${userId}/end`);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to end session. Please try again.');
+        }
+    });
+
+// #####################################################################
 //                          FETCH Total Power Usage Per user
 // #####################################################################
 
