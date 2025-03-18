@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    console.log("Accessibility button loaded.");
 
     button.addEventListener("click", () => {
         console.log("🔄 Toggling accessibility modes...");

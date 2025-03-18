@@ -43,9 +43,7 @@ function validateEmail(email) {
 // #####################################################################
 async function togglestatus(deviceId) {
 	const token = localStorage.getItem('token');  // Retrieve token from localStorage
-	const payload = JSON.parse(atob(token.split(".")[1]));
-	const userId = payload.id;
-	console.log(deviceId);
+	const userId = getUserFromToken().id;
 	
 	const response = await fetch(`/togdev/${deviceId}`);
 	let device = await response.json();
@@ -109,21 +107,15 @@ async function fetchRooms() {
         roomContainer.appendChild(button);
 
         // Create add new appliance button
-        const Devbutton = document.createElement('button');
-        Devbutton.textContent = 'Add Device';
-        Devbutton.style.fontSize = '2vh';
-        Devbutton.style.display = 'block';
-        Devbutton.style.height = '10vh';
-        Devbutton.style.width = '10vw';
-        Devbutton.style.float = 'right';
-        Devbutton.style.marginTop = '10vh';
-        Devbutton.classList.add('appliance');
-        Devbutton.id = 'addNewDeviceButton';
+        const devButton = document.createElement('button');
+        devButton.textContent = 'Add Device';
+        devButton.classList.add('appliance');
+        devButton.id = 'addNewDeviceButton';
         if(addDevicearea.childElementCount == 0) {   
-             addDevicearea.appendChild(Devbutton);
+             addDevicearea.appendChild(devButton);
         }
         const addNewDeviceModal = document.getElementById("addNewDeviceModal");
-        Devbutton.addEventListener("click", () => {
+        devButton.addEventListener("click", () => {
             addNewDeviceModal.style.display = "block"; // Show the modal
         });
 
@@ -143,7 +135,12 @@ async function fetchRooms() {
             // Add an icon
             const icon = document.createElement('img');
             icon.className = 'icon';
-            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`; // Dynamic icon path
+            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`;
+
+            // Fallback to default image if the image is not found
+            icon.onerror = () => {
+                icon.src = './images/default-room.png';
+            };
             icon.alt = `${room.name} Icon`;
 
             // Add the room name
@@ -711,7 +708,6 @@ async function fetchDevices(roomId) {
 
         // Display the devices
         devices.forEach( device => {
-			console.log(device.id);
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `${device.name} <br>`;
@@ -731,7 +727,12 @@ async function fetchDevices(roomId) {
     
             });
             // Add an event listener to show device information
-            deviceButton.addEventListener('click', async (event) => {    
+            deviceButton.addEventListener('click', async (event) => {
+
+                document.querySelectorAll('.appliance').forEach(button => {
+                    button.style.backgroundColor = 'white';
+                });
+                    deviceButton.style.backgroundColor = '#ddd';
                 event.stopPropagation();  
                   displayDevice(device);
             });
