@@ -30,8 +30,7 @@
                 <button id="Alarm" class="security" >  
                     Alarm
                 </button>
-                <button id="Cameras" class="security">
-                    <a href="CameraView.html">Cameras</a>
+                <button id="Cameras" class="security">Camera
                 </button>
                 <button class="security" id="addRoomButton">
                     <span class="plus-sign">+</span>
@@ -53,40 +52,12 @@
            
 
                 // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
+                const Cameras = document.getElementById('Cameras')
 
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
+                Cameras.addEventListener("click", () => {
+                    window.location.href = "CameraView.html";
                 });
             });
-
-        
         </script>
     </main>
 </body>
