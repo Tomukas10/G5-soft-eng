@@ -1220,7 +1220,7 @@ async function startApp() {
     console.log(user);
 
     if (user) {
-        document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+        document.getElementById("homeTitle").textContent = `Welcome, ${user.name} ${user.last_name}`;
         
         if (user.user_type === "landlord") {
             sideNav.remove();

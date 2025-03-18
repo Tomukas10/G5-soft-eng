@@ -26,9 +26,7 @@ app.use('/js', express.static(path.join(__dirname, '../JS')));
 app.use(express.static(path.join(__dirname, '../HTML')));
 
 // Load authentication and profile routes
-console.log('Loading authRoutes...');
 app.use('/auth', authRoutes);
-console.log('authRoutes loaded!');
 
 app.use('/user', profileRoutes);
 
@@ -192,7 +190,6 @@ app.patch(`/updateDevice/:deviceId`, async (req, res) => {
 
   const { deviceId } = req.params;
   const { state } = req.body;
-  console.log(deviceId, state);
 
   try {
     await query('UPDATE devices SET state = ? WHERE id = ?', [state, deviceId]);
