@@ -4,11 +4,9 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
-3. [Branches](#branches)
-4. [Testing](#testing)
-5. [License](#license)
-6. [Contributors](#contributors)
+2. [Branches](#branches)
+3. [License](#license)
+4. [Contributors](#contributors)
 
 
 ## Introduction
