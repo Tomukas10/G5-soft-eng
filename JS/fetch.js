@@ -1,5 +1,6 @@
 if (location.href.split("/").slice(-1)[0] != "energyUsage.html") {
 let currentRoomId;
+let currentHouseId;
 
 // #####################################################################
 //                          GET TOKEN
@@ -37,27 +38,6 @@ function validateEmail(email) {
     return emailPattern.test(email);
     
     }
-
-// #####################################################################
-//                          TOGGLE Device Status
-// #####################################################################
-async function togglestatus(deviceId) {
-	const token = localStorage.getItem('token');  // Retrieve token from localStorage
-	const userId = getUserFromToken().id;
-	
-	const response = await fetch(`/togdev/${deviceId}`);
-	let device = await response.json();
-	if (device[0].state == 1) {
-		await fetch(`/sessions/${deviceId}/end`, {method: 'PATCH'});
-	}
-	else {
-		await fetch(`/sessions/${deviceId}/${userId}`, {method: 'POST'});
-	}
-	
-}
-window.togglestatus = togglestatus;
-
-    
 
 // #####################################################################
 //                          FETCH ROOMS
@@ -106,24 +86,37 @@ async function fetchRooms() {
         // Append the button to the container
         roomContainer.appendChild(button);
 
+        const modal = document.getElementById('addRoomModal')
+        button.addEventListener("click", () => {
+            modal.style.display = 'block';
+        })
+
         // Create add new appliance button
         const devButton = document.createElement('button');
         devButton.textContent = 'Add Device';
         devButton.classList.add('appliance');
         devButton.id = 'addNewDeviceButton';
-        if(addDevicearea.childElementCount == 0) {   
-             addDevicearea.appendChild(devButton);
-        }
+        document.getElementById('page').appendChild(devButton);
         const addNewDeviceModal = document.getElementById("addNewDeviceModal");
         devButton.addEventListener("click", () => {
             addNewDeviceModal.style.display = "block"; // Show the modal
         });
 
-        
-    const addRoomModal = document.getElementById("addRoomModal");
-        addRoomButton.addEventListener("click", () => {
-            addRoomModal.style.display = "block"; // Show the modal
-        });
+      
+       // Create the fault button
+            const faultButton = document.createElement('button');
+            faultButton.textContent = 'Fault random device';
+            faultButton.style.fontSize = '10px';
+            faultButton.id = 'addFaultArea';
+
+            if (addFaultArea.childElementCount == 0) {   
+                addFaultArea.appendChild(faultButton);
+            }
+
+            faultButton.addEventListener("click", async () => {
+                // Fetch houses and set currentHouseId
+                faultDevice();
+            });
 
         // Add a button for each room
         rooms.forEach(room => {
@@ -135,7 +128,7 @@ async function fetchRooms() {
             // Add an icon
             const icon = document.createElement('img');
             icon.className = 'icon';
-            icon.src = `./images/${room.name.toLowerCase().replace(' ', '-')}.png`;
+            icon.src = `./images/${room.name.toLowerCase().replace(/ \d+$/, '').trim().replace(' ', '-')}.png`;
 
             // Fallback to default image if the image is not found
             icon.onerror = () => {
@@ -183,9 +176,61 @@ async function fetchRooms() {
     }
 }
 
+
 // #####################################################################
-//                              FETCH HOUSES
+//                              FAULT DEVICES
 // #####################################################################
+
+async function faultDevice() {
+    try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            console.error("No token found. User might be logged out.");
+            return;
+        }
+
+        // Fetch the list of active devices (state = 1) within the specified house
+        const response = await fetch(`/devices/fault`,  {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch active devices');
+        }
+
+        const devices = await response.json();
+
+        if (devices.length === 0) {
+            console.log('No active devices found.');
+            return;
+        }
+
+        // Randomly select an active device
+        const randomDevice = devices[Math.floor(Math.random() * devices.length)];
+
+        const deviceId = randomDevice.id;
+        // Update the state of the selected device to 0 (fault)
+        await fetch(`/fault/devices/${deviceId}`,  {
+            method: 'PATCH',
+        });
+
+        // Alert the user about the faulted device
+        alert(`Device ${randomDevice.name} (ID: ${randomDevice.id}) has been set to fault state.`);
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        console.error('Error faulting device:', error);
+    }
+}
+
+// #####################################################################
+//                              FETCH HOUSES 
+// #####################################################################
+
+
 
 async function fetchHouses() {
     try {
@@ -320,102 +365,103 @@ const addHouseModal = document.getElementById("addHouseModal");
 
 async function fetchCurrentHouse(houseId) {
 
-try {
-    const token = localStorage.getItem('token');  // Retrieve token from localStorage
-    const houseResponse = await fetch(`/houses/${houseId}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
-        }
-    });
-
-    if (!houseResponse.ok) {
-        throw new Error('Failed to fetch house');
-    }
-        const userResponse = await fetch(`/houses/${houseId}/users`, {
+    try {
+        currentHouseId = houseId;
+        const token = localStorage.getItem('token');  // Retrieve token from localStorage
+        const houseResponse = await fetch(`/houses/${houseId}`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
             }
         });
     
-        if (!userResponse.ok) {
-            throw new Error('Failed to fetch users');
+        if (!houseResponse.ok) {
+            throw new Error('Failed to fetch house');
         }
-
-        const house = await houseResponse.json(); // Parse devices JSON from server
-        const users = await userResponse.json(); // Parse devices JSON from server
-
+            const userResponse = await fetch(`/houses/${houseId}/users`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+        
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch users');
+            }
     
-    const mainPanel = document.getElementById("mainPanel");
+            const house = await houseResponse.json(); // Parse devices JSON from server
+            const users = await userResponse.json(); // Parse devices JSON from server
     
-    mainPanel.innerHTML = ""; // Clears the existing appliance list
-
-    mainPanel.innerHTML=`
-                            <div id="appliances-container">
-                                <h3>List of Tenants</h3>
-                            </div>
-                            <div id="divider"></div>
-                            <div id="right-panel"></div>`
-
-    document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
-                                                        Invite tenant to house:
-                                                        <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
-                    <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
-
-                inviteTenantButton.addEventListener("click", async () => {
-                    const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
-                    if (!validateEmail(tenantEmailInput)) {
-                    document.getElementById("tenantEmail").value = "";
-                    } 
-                    const result = await inviteTenant(tenantEmailInput);
-                    if (result) {
-                      alert("Tenant Invited");
-                    }
-           });
-
-    const appliancesContainer = document.getElementById(`appliances-container`);
-
-
-    // Display the users
-        users.forEach( user => {
-        const userTab = document.createElement("button");
-        userTab.className = 'appliance';
-        userTab.innerHTML = `${user.name} <br> ${user.email}`;
-
-        // Add the delete button
-        const deleteButton = document.createElement('span');
-        deleteButton.className = 'deleteRoom';
-        deleteButton.innerHTML = '&times;';
-        deleteButton.setAttribute('data-id', user.id);
-
-        // Add delete event listener
-        deleteButton.addEventListener('click', async (event) => {
-            event.stopPropagation(); 
-            const userId = event.target.getAttribute('data-id');
-            removeUser(userId, userTab);
-
-        });
-        userTab.appendChild(deleteButton);
-        appliancesContainer.appendChild(userTab);
-
-        });
-
-} catch (error) {
-    console.error('Error fetching users:', error);
-}
-}
-
-function handleHouseButtonClick(event) {
-const roomId = event.target.getAttribute('data-id');
-}
+        
+        const mainPanel = document.getElementById("mainPanel");
+        
+        mainPanel.innerHTML = ""; // Clears the existing appliance list
+    
+        mainPanel.innerHTML=`
+                                <div id="appliances-container">
+                                    <h3>List of Tenants</h3>
+                                </div>
+                                <div id="divider"></div>
+                                <div id="right-panel"></div>`
+    
+        document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
+                                                            Invite tenant to house:
+                                                            <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
+                        <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
+    
+                    inviteTenantButton.addEventListener("click", async () => {
+                        const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
+                        if (!validateEmail(tenantEmailInput)) {
+                        document.getElementById("tenantEmail").value = "";
+                        } 
+                        const result = await inviteTenant(tenantEmailInput, currentHouseId);
+                        if (result) {
+                          alert("Tenant Invited");
+                        }
+               });
+    
+        const appliancesContainer = document.getElementById(`appliances-container`);
+    
+    
+        // Display the users
+            users.forEach( user => {
+            const userTab = document.createElement("button");
+            userTab.className = 'appliance';
+            userTab.innerHTML = `${user.name} <br> ${user.email}`;
+    
+            // Add the delete button
+            const deleteButton = document.createElement('span');
+            deleteButton.className = 'deleteRoom';
+            deleteButton.innerHTML = '&times;';
+            deleteButton.setAttribute('data-id', user.id);
+    
+            // Add delete event listener
+            deleteButton.addEventListener('click', async (event) => {
+                event.stopPropagation(); 
+                const userId = event.target.getAttribute('data-id');
+                removeUser(userId, userTab);
+    
+            });
+            userTab.appendChild(deleteButton);
+            appliancesContainer.appendChild(userTab);
+    
+            });
+    
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+    }
+    
+    function handleHouseButtonClick(event) {
+    const roomId = event.target.getAttribute('data-id');
+    }
 
 // #####################################################################
 //                          INVITE TENANT
 // #####################################################################
 
-async function inviteTenant(tenantEmail) {
+async function inviteTenant(tenantEmail, houseId) {
     try {
         const response = await fetch(`/users/${tenantEmail}`, {
             method: 'GET',
@@ -433,11 +479,8 @@ async function inviteTenant(tenantEmail) {
     }
 
     const token = localStorage.getItem(`token`);
-    await fetch(`/users/${tenantEmail}`, {
+    await fetch(`/users/${tenantEmail}/${houseId}`, {
         method: 'PATCH',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        }
     });
     return true;
 
@@ -467,9 +510,7 @@ async function handleInvite(accept) {
     try {
         const token = localStorage.getItem('token');
         const user = getUserFromToken();
-        const landlordId = user.invite;
-
-        const response = await fetch(`/users/invite/${landlordId}`, {
+        const response = await fetch(`/users/invite/`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -759,7 +800,6 @@ function handleRoomButtonClick(event) {
 async function displayDevice(device) {
     const panel = document.getElementById('right-panel');
 
-
     try {
 
         // Clear the panel and display device info with a toggle switch
@@ -771,7 +811,7 @@ async function displayDevice(device) {
                 <p><strong>Power Usage:</strong> ${device.powerUsage} kWh</p>
                 
                 <label class="switch">
-                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked' : ''} onclick="togglestatus(${device.id});">
+                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''}>
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -784,6 +824,7 @@ async function displayDevice(device) {
         toggleSwitch.addEventListener('change', async () => {
             const newState = toggleSwitch.checked ? 1 : 0;
             deviceStatus.textContent = newState === 1 ? 'On' : 'Off';
+            device.state = newState;
 
             try {
                 await fetch(`/updateDevice/${device.id}`, {
@@ -1337,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
-                    label: 'Total Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1355,7 +1396,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1373,7 +1414,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 24}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1385,6 +1426,10 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         detaild: {
             labels: Array.from({length: 24}, (_, i) => i + 1),
+            datasets: []
+        },
+        detailc: {
+            labels: Array.from({length: 2}, (_, i) => i + 1),
             datasets: []
         }
     };
@@ -1427,9 +1472,10 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			let month = powerstat.month;
-			let power = powerstat.power/(3600*1000);
+			let power = powerstat.power/(3600);
 			let name = powerstat.name;
 			let id = powerstat.id;
+			let wattage = powerstat.wattage;
 			if (!(idStore.includes(id))) {
 				
 			function random_rgba() {
@@ -1438,7 +1484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 				idStore.push(id);
 				graphData.detail.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 12}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1446,7 +1492,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detailm.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 31}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1454,13 +1500,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detaild.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 24}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
                     borderWidth: 2,
                     tension: 0.4
                 }
+				graphData.detailc.datasets[idStore.indexOf(id)] =                 {
+                    label: name + ' Electricity Usage (W)',
+                    data: Array.from({length: 2}, (_, i) => wattage),
+                    backgroundColor: random_rgba(),
+                    borderColor: random_rgba(),
+                    borderWidth: 2,
+                    tension: 0.4
+                }
+				
+				
 			}
 							
 		
@@ -1489,7 +1545,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			day = powerstat.day;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
@@ -1515,7 +1571,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			hour = powerstat.hour;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
@@ -1547,5 +1603,3 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 	getDevices(user);
 });}
-
-

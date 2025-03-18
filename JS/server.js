@@ -51,13 +51,12 @@ app.get('/users/:email', async (req, res) => {
 });
 
 // Invite user to house
-app.patch(`/users/:email`, authenticate, async (req, res) => {
+app.patch(`/users/:email/:houseId`, async (req, res) => {
 
-  const { email } = req.params;
-  const landlord_id = req.user.id;
+  const { email, houseId } = req.params;
 
   try {
-    await query('UPDATE users SET invite = ? WHERE email = ?', [landlord_id, email])
+    await query('UPDATE users SET invite = ? WHERE email = ?', [houseId, email])
     res.send("User invited");
   } catch (err) {
     console.error(err);
@@ -66,12 +65,12 @@ app.patch(`/users/:email`, authenticate, async (req, res) => {
 });
 
 // Get Landlord name for invite
-app.get(`/users/landlordName/:landlordId`, async (req, res) => {
+app.get(`/users/landlordName/:houseId`, async (req, res) => {
 
-  const { landlordId } = req.params;
+  const { houseId } = req.params;
 
   try {
-      const [landlordName] = await query('SELECT name FROM users WHERE id = ?', [landlordId]);
+      const [landlordName] = await query('SELECT u.name FROM users u JOIN houses h ON u.id = h.landlord_id WHERE h.id = ?;', [houseId]);
       res.json(landlordName);
   } catch (err) {
     console.error(err);
@@ -80,20 +79,20 @@ app.get(`/users/landlordName/:landlordId`, async (req, res) => {
 });
 
 // Add user to house
-app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
-  const { landlordId } = req.params;
+app.patch('/users/invite/', authenticate, async (req, res) => {
+  const houseId = req.user.invite;
   const { accept } = req.body;
   const userId = req.user.id;
 
   try {
       if (accept) {
-          const [house] = await query('SELECT id FROM houses WHERE landlord_id = ?', [landlordId]);
-          if (!house) return res.status(404).send('House not found');
-          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.id, userId]);
+          await query('UPDATE users SET house_id = ? WHERE id = ?', [houseId, userId]);
       }
           await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
           const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
           const token = jwt.sign({
+            name: updatedUser.name,
+            last_name: updatedUser.last_name,
               id: updatedUser.id,
               email: updatedUser.email,
               user_type: updatedUser.user_type,
@@ -177,28 +176,9 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
-  							console.log(deviceId);
   try {
     const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
 	res.json(response);
-  } catch (err) {
-    console.error('Error fetching house:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Fetch device information and flip state
-app.get('/togdev/:deviceId', async (req, res) => {
-  const { deviceId} = req.params; // Extract deviceId
-  try {
-    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-	if (response[0].state == 1) {
-		const temp = await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
-	}
-	else {
-		const temp = await query('UPDATE devices SET state = 1 WHERE id = ?', [deviceId]);
-	}
-    res.json(response);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
@@ -301,9 +281,10 @@ app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;
   const { name } = req.body; 
   try {
-    const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
-    
-    
+    await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
+    const [room_id] = await query('SELECT id FROM rooms WHERE name = ? AND house_id = ?', [name, house_id]);
+    const roomId = room_id.id;
+    await query('INSERT INTO temperature (room_id, actual_temp, target_temp, house_id) VALUES (?, 20, 20, ?)', [roomId, house_id]);
     res.status(201).json({
       message: 'Room added successfully',
       name
@@ -343,7 +324,7 @@ app.get('/totPower/device/month', async (req, res) => {
 app.get('/totPower/device/month/:user', async (req, res) => {
   const { user } = req.params;
   try {
-    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, MONTH(sesstart);', [user]);
+    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power, AVG(powerUsage) * AVG(state) AS wattage FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, MONTH(sesstart);', [user]);
     res.json(totPower);
   } catch (error) {
     console.error('Error fetching total power:', error);
@@ -388,6 +369,41 @@ app.get('/totPower/user/month', async (req, res) => {
     res.status(500).send('Error fetching total power');
   }
 });
+
+// Fetch devices with a specific state and house ID
+app.get(`/devices/fault`, authenticate, async (req, res) => {
+
+
+  const houseId = req.user.house_id; // Access house_id directly from req.user
+  try {
+    // Query the database to get devices with the specified state and house ID
+    const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT NULL', [houseId]);
+    if (devices.length === 0) {
+      console.error("No devices found with the specified state and house ID")
+      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
+    }
+
+    // Send the devices as a response
+    res.json(devices);
+  } catch (err) {
+    console.error('Error fetching devices:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Fault device
+app.patch('/fault/devices/:deviceId', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
+    res.send('Device updated successfully');
+  } catch (error) {
+    console.error('Error faulting device:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
 // Get devices from a house
@@ -484,6 +500,139 @@ app.patch('/sessions/:deviceId/end', async (req, res) => {
   }
 });
 
+// Fetch all the necessary room temperatures.
+app.get('/rooms/temperature', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;
+    try {
+        const rooms = await query(`
+            SELECT t.room_id, r.name AS room_name, t.target_temp, t.actual_temp
+            FROM temperature t 
+            JOIN rooms r ON t.room_id = r.id 
+            WHERE r.house_id = ?
+        `, [house_id]);
+        res.json(rooms);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+
+// Update the TARGET temperature for a specific room.
+app.put('/rooms/:roomId/temperature', async (req, res) => {
+    const { roomId } = req.params;
+    const { target_temp } = req.body;
+
+    try {
+        await query('UPDATE temperature SET target_temp = ? WHERE room_id = ?', [target_temp, roomId]);
+        res.status(200).json({ message: 'Target temperature updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Update the ACTUAL temperature for a specific room.
+app.put('/rooms/:roomId/actualTemp', async (req, res) => {
+    const { roomId } = req.params;
+    const { actual_temp } = req.body;
+
+
+    try {
+        const result = await query('UPDATE temperature SET actual_temp = ? WHERE room_id = ?', [actual_temp, roomId]);
+
+        if (result.affectedRows === 0) {
+            console.warn(`No rows affected for room: ${roomId}`);
+            return res.status(404).json({ error: "Room not found or actual_temp already set!" });
+        }
+
+
+        res.status(200).json({ message: 'Actual temperature updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Acquire all the room light states that aren't kitchen-specific.
+app.get('/rooms/lights', async (req, res) => {
+    try {
+        const lights = await query(`
+            SELECT l.room_id, r.name AS room_name, l.state 
+            FROM lighting l
+            JOIN rooms r ON l.room_id = r.id
+        `);
+        res.json(lights);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error!');
+    }
+});
+
+
+// Acquire all the kitchen-specific lights. Redundant, but kept in event of need.
+app.get('/rooms/kitchen/lights', async (req, res) => 
+{
+    try 
+	{
+        const kitchenLights = await query('SELECT roomID, tableLight, barLight, counterLight FROM tempRooms WHERE roomName = "Kitchen"');
+        res.json(kitchenLights);
+    } catch (err) 
+	{
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+app.put('/rooms/:roomId/light', async (req, res) => {
+    const { roomId } = req.params;
+    const { state } = req.body; // Expects 'true' or 'false'
+
+    try {
+        const result = await query(`
+            UPDATE lighting 
+            SET state = ? 
+            WHERE room_id = ?
+        `, [state, roomId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No matching room/light found!" });
+        }
+
+
+        res.status(200).json({ message: `Light for room ${roomId} updated successfully.` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Toggles kitchen-specific lights whenever a button is pressed. Redundant, but kept in event of need.
+app.put('/rooms/kitchen/lights', async (req, res) => 
+{
+    const { lightType, state } = req.body; 
+
+    if (!["tableLight", "barLight", "counterLight"].includes(lightType)) 
+	{
+        return res.status(400).json({ error: "Invalid light type" });
+    }
+
+    try 
+	{
+        const result = await query(`UPDATE tempRooms SET ${lightType} = ? WHERE roomName = "Kitchen"`, [state]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No records updated, check lightType value" });
+        }
+
+        res.status(200).json({ message: `${lightType} updated successfully` });
+    } 
+	catch (err) 
+	{
+        console.error("SQL Error:", err);
+        res.status(500).send('Server error');
+    }
+});
 
 // Start the server
 app.listen(port, () => {

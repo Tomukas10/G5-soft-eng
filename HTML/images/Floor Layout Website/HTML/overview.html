@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../CSS/overview.css" /> 
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Apartment 1</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+				<!-- Sidebar & functionality. -->
+                <div id="sidenav">
+                    <a id="selected" class="sidenavItems" href="overview.html" style="opacity: 100%;">Overview</a>
+                    <hr>
+                    <a class="sidenavItems" href="kitchen.html">Kitchen</a>
+                    <hr>
+					<a class="sidenavItems" href="homeView.html">Home View</a>
+                    <hr>
+					<a class="sidenavItems" href="kitchenView.html">Kitchen View</a>
+                    <hr>
+                </div>
+            </div>
+			<!-- Room Layouts. -->
+			<div id="houseLayout">
+				<!-- DIV overlays featuring the lights. -->
+				<div id="kitchen-mainLight" class="room-overlay"></div>
+				<div id="living-room-mainLight" class="room-overlay"></div>
+				<div id="bedroom-1-mainLight" class="room-overlay"></div>
+				<div id="bedroom-2-mainLight" class="room-overlay"></div>
+
+				<!-- Temperature overlays featuring the temps. -->
+				<span id="kitchen-temp" class="temperature">20°C</span>
+				<span id="living-room-temp" class="temperature">20°C</span>
+				<span id="bedroom-1-temp" class="temperature">20°C</span>
+				<span id="bedroom-2-temp" class="temperature">20°C</span>
+			</div>
+    </main>
+	<!-- Fetches the relevant data from the database. -->
+	<script src="../JS/overview.js"></script>
+</body>
+</html>

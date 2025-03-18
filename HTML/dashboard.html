@@ -8,15 +8,18 @@
     <script src="../JS/fetch.js"></script>
     <script src="../JS/accessibility.js"></script>
 </head>
-<body>
-    <button id="accessibilityBtn">Accessibility</button>
-    <header>
-        <a class="logout-btn" id="logout" href="login.html" style="margin-right: 3%; display: block; width: 5vw; height: 5vh; ">Log Out</a>
-        <h1 id="homeTitle">Dashboard</h1> 
-        <a  style="position:relative; ">
-            <img id ="swap" src="./images/disabled.png" width="35" height="35" alt="disabled" style = "opacity: 0%">
-        </a>
-    </header>
+<body id="body"> 
+	<header>
+    <div id="accessibilityContainer">
+        <button id="accessibilityBtn">Accessibility ▼</button>
+        <div id="accessibilityDropdown">
+            <button id="toggleContrast">High Contrast</button>
+            <button id="toggleTextSize">Larger Text</button>
+            <button id="toggleFont">Dyslexia-Friendly Font</button>
+        </div>
+    </div> 
+    <h1 id="homeTitle">Dashboard</h1> 
+</header>
     <main>
         <div id="page">
             <div id="sidenavContainer">
@@ -25,6 +28,8 @@
                     <hr>
                     <a class="sidenavItems" href="Heating.html">Heating</a>
                     <hr>
+					<a class="sidenavItems" href="lighting.html">Lighting</a>
+					<hr>
                     <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
                     <hr>
                     <a class="sidenavItems" href="security.html">Security</a>
@@ -67,7 +72,7 @@
         </div>
 
         
-<a href = "..\Floor Layout Website\HTML\overview.html"> floor layout </a>
+<a href = "overview.html"> floor layout </a>
 <a class="logout-btn" id="logout" href="login.html" style="margin-left: 3%; margin-top: 25%; display: none; width: 5vw; height: 5vh; ">Log Out</a>
 <div id="confirmationModal" class="addForm" style="display: none;">
     <div class="modal-content">
@@ -91,6 +96,9 @@
         <button id="createNewDeviceButton" class="confirmButton">Create</button>
         <button class="cancelButton" id="cancelNewDeviceButton">Cancel</button>
     </div>
+</div> 
+<div id = "addFaultArea" style="float: left; width: 5vw; height: 5vh; margin-top: 25vh; "></div>
+<div id="addFault" class="addModal" style="display: none;">
 </div>
     </main>
 </body>

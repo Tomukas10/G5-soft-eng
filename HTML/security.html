@@ -28,22 +28,14 @@
             </div>
             <div id="security">
                 <button id="Alarm" class="security" >  
-                    Alarm
+                    Alarm <label class="switch">
+                        <input type="checkbox" id="toggleSwitch">
+                        <span class="slider round"></span>
+                    </label>
                 </button>
-                <button id="Cameras" class="security">
-                    <a href="CameraView.html">Cameras</a>
+                <button id="Cameras" class="security">Camera
                 </button>
-                <button class="security" id="addRoomButton">
-                    <span class="plus-sign">+</span>
-                </button>
-            </div>
-            <div id="addRoomModal" style="display: none;">
-                <div id="addRoomForm">
-                    <input type="text" id="roomName" placeholder="Enter room name">
-                    <button id="createRoomButton">Create</button>
-                    <button id="cancelRoomButton">Cancel</button>
-                </div>
-            </div>
+                
             
             <script src="../JS/home.js"></script>
         </div>
@@ -53,40 +45,12 @@
            
 
                 // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
+                const Cameras = document.getElementById('Cameras')
 
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
+                Cameras.addEventListener("click", () => {
+                    window.location.href = "CameraView.html";
                 });
             });
-
-        
         </script>
     </main>
 </body>
