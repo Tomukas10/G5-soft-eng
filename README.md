@@ -44,7 +44,7 @@ The testing we have used on this project is ... TBC.
 
 ### Any licensing that has been used will be documented below
 
-License: TBC.
+License: We do not have any specified license, meaning it is not explicitly open-source or freely available for modification and distribution. Without a license, the default copyright laws apply, restricting others from using, copying, or modifying the code without permission. Easy Cribs does NOT give anyone permission to do any of the aforementioned.
 
 
 ## Contributors
