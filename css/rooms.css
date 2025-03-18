@@ -70,10 +70,11 @@ header {
 	border-radius: 15px;
   }
 
-.temp {
-	color: white;
-	font-size: 6vh;
-	text-align: center;
+  .temp {
+    color: white;
+    font-size: 6vh;
+    text-align: left;
+    margin-left: 110px; 
 }
 
 .button-container {
@@ -161,13 +162,15 @@ header {
 /* #############################################################################################################*/
 
 /* CSS for the 'temperature' section. */
-.temperature-container
-{
-	display: flex;
-	justify-content: center;
-	gap: 40px;
-	align-items: center;
-	width: 100%;
+
+
+.temperature-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 0; 
 }
 
 .temp-column
@@ -186,18 +189,17 @@ header {
     margin-bottom: 25px;
 }
 
-.temp-control 
-{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 80px;
-        height: 200px;
-        background: linear-gradient(to bottom, #5a1e00, #cc4400);
-        padding: 10px;
-        border-radius: 15px;
-        justify-content: space-between;
-		border: 1.2px solid white;
+.temp-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80px;
+    height: 200px;
+    background: linear-gradient(to bottom, #007bff, #ff0000); /* Blue (cold) to Red (hot) gradient */
+    padding: 10px;
+    border-radius: 15px;
+    justify-content: space-between;
+    border: 1.2px solid white;
 }
 
 .temp-btn 
@@ -213,14 +215,9 @@ header {
         transition: background 0.2s ease, transform 0.1s ease;
 }
 
-.temp-btn:hover 
-{
-    background: linear-gradient(to bottom, #ff4500, #ff0000);
-}
-
 .temp-btn:active 
 {
-    transform: scale(0.9);
+    transform: scale(0.3);
 }
 
 .temp-display 
@@ -247,12 +244,15 @@ header {
     margin-top: 10px;
 }
 
-.target-label 
-{
+.target-Label {
     font-size: 22px;
     font-weight: bold;
     color: white;
-    margin-left: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+    padding: 10px; /* Add padding for better readability */
+    display: inline-block; /* Ensure the background only covers the text */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    margin-top: 130px; /* Lower the target text by 30px */
 }
 
 .actual-temp 
@@ -274,19 +274,17 @@ header {
     height: 320px; 
 }
 
-.target-Label 
-{
-    flex-grow: 1; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-	margin-top: 40px;
-}
 
-.actual-Label 
-{
-    align-self: flex-end;
-    margin-bottom: 6px; 
+.actual-Label {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5); 
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px; 
+    margin-top: 10px; 
 }
 
 /* #############################################################################################################*/
