@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.querySelector(".btn");
     const emailInput = document.getElementById("email");
     const fnameInput = document.getElementById("name");
+    const nameInputID = document.getElementById("nameInputID");
+    const lNameInputID = document.getElementById("lNameInputID");
     const lastNameINput = document.getElementById("last_name");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
@@ -30,6 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
             formTitle.textContent = isSignup ? "Sign Up" : "Login";
             confirmPasswordGroup.style.display = isSignup ? "block" : "none";
+            nameInputID.style.display = isSignup ? "block" : "none";
+            lNameInputID.style.display = isSignup ? "block" : "none";
             roleGroup.style.display = isSignup ? "block" : "none";
             submitBtn.textContent = isSignup ? "Sign Up" : "Login";
     
@@ -79,6 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     isSignup = false;
                     formTitle.textContent = "Login";
                     confirmPasswordGroup.style.display = "none";
+                    nameInputID.style.display =  "none";
+                    lNameInputID.style.display =  "none";
                     roleGroup.style.display = "none";
                     submitBtn.textContent = "Login";
                     toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-form">Sign up</a>';
@@ -94,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch("http://localhost:3000/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ fname, last_name, email, password })
+                    body: JSON.stringify({email, password })
                 });
     
                 const data = await response.json();

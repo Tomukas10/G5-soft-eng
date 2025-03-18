@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
 
     try {
         // Find user in database
-        const users = await db.query("SELECT * FROM users WHERE email = ? AND name = ? AND last_name = ?", [email, fname, last_name]);
+        const users = await db.query("SELECT * FROM users WHERE email = ?", [email]);
         if (users.length === 0) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
