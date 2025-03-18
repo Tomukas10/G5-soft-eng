@@ -8,15 +8,17 @@
     <script src="../JS/fetch.js"></script>
     <script src="../JS/accessibility.js"></script>
 </head>
-<body>
-    <header>
-        <button id="accessibilityBtn" style="position: absolute; top: 10px; left: 10px;">Accessibility</button>
-        <a class="logout-btn" id="logout" href="login.html" style="margin-right: 3%; display: block; width: 5vw; height: 5vh; ">Log Out</a>
-        <h1 id="homeTitle">Dashboard</h1> 
-        <a  style="position:relative; ">
-            <img id ="swap" src="./images/disabled.png" width="35" height="35" alt="disabled" style = "opacity: 0%">
-        </a>
-    </header>
+<body id="body"> 
+	<header>
+    <div id="accessibilityContainer">
+        <button id="accessibilityBtn">Accessibility ▼</button>
+        <div id="accessibilityDropdown">
+            <button id="toggleContrast">High Contrast</button>
+            <button id="toggleTextSize">Larger Text</button>
+            <button id="toggleFont">Dyslexia-Friendly Font</button>
+        </div>
+    </div> 
+</header>
     <main>
         <div id="page">
             <div id="sidenavContainer">
