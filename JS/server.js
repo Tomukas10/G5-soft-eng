@@ -179,9 +179,28 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
+  							console.log(deviceId);
   try {
-    const [device] = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-    res.json(device);
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	res.json(response);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Fetch device information and flip state
+app.get('/togdev/:deviceId', async (req, res) => {
+  const { deviceId} = req.params; // Extract deviceId
+  try {
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	if (response[0].state == 1) {
+		const temp = await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
+	}
+	else {
+		const temp = await query('UPDATE devices SET state = 1 WHERE id = ?', [deviceId]);
+	}
+    res.json(response);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
