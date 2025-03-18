@@ -368,6 +368,16 @@ nav:hover > .navItems:hover{
     transform: scale(0.95);
 }
 
+#addNewDeviceButton {
+    
+    font-size: 2vh;
+    display: block;
+    height: 10vh;
+    width: 10vw;
+    float: right;
+    margin-top: 10vh;
+}
+
 /* CSS for the logout button */
 .logout-btn {
     position:relative;
