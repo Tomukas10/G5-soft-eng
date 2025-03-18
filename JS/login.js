@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleText = document.getElementById("toggle-text");
     const submitBtn = document.querySelector(".btn");
     const emailInput = document.getElementById("email");
+    const fnameInput = document.getElementById("name");
+    const lastNameINput = document.getElementById("last_name");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
 
@@ -19,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             isSignup = !isSignup;
     
+            fnameInput.value = "";
+            lastNameINput.value = "";
             emailInput.value = "";
             passwordInput.value = "";
             confirmPasswordInput.value = "";
@@ -42,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
     
+        const fname = fnameInput.value;
+        const last_name = lastNameINput.value;
         const email = emailInput.value;
         const password = passwordInput.value;
         const confirmPassword = confirmPasswordInput.value;
@@ -58,7 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        username: email.split("@")[0],
+                        fname,
+                        last_name,
                         email,
                         password,
                         role
@@ -87,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch("http://localhost:3000/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ fname, last_name, email, password })
                 });
     
                 const data = await response.json();

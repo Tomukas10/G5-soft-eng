@@ -7,7 +7,7 @@ const router = express.Router();
 
 // User Registration
 router.post("/register", async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { fname, last_name, email, password, role } = req.body;
 
     try {
         // Check if user already exists
@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert user into the database
-        await db.query("INSERT INTO users (name, email, password, user_type) VALUES (?, ?, ?, ?)", [username, email, hashedPassword, role]);
+        await db.query("INSERT INTO users (name, last_name, email, password, user_type) VALUES (?, ?, ?, ?, ?)", [fname, last_name, email, hashedPassword, role]);
 
         res.status(201).json({ message: "User registered successfully!" });
     } catch (err) {
@@ -30,11 +30,11 @@ router.post("/register", async (req, res) => {
 
 // User Login
 router.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const {fname, last_name, email, password } = req.body;
 
     try {
         // Find user in database
-        const users = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+        const users = await db.query("SELECT * FROM users WHERE email = ? AND name = ? AND last_name = ?", [email, fname, last_name]);
         if (users.length === 0) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
