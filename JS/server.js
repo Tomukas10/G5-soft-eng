@@ -203,9 +203,6 @@ app.post('/devices', authenticate,async (req, res) => {
   const { type } = req.body;
   const { room_id } = req.body;
   
-
-
-
   try {
     const result = await query('INSERT INTO devices (name, type, room_id, state, powerUsage, house_id) VALUES (?, ?, ?, 0, 20, ?)', [name, type, room_id, user_Id]);
     
@@ -231,9 +228,7 @@ app.delete('/houses/:houseId', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // Add a new room and automatically generate a related temperature entry.
-=======
 // Remove a device from room
 app.patch('/rooms/:deviceId', async (req, res) => {
   const { deviceId } = req.params;
@@ -260,7 +255,6 @@ app.delete('/devices/:deviceId', async (req, res) => {
 
 
 // Add a new room
->>>>>>> branch 'main' of https://github.com/Tomukas10/G5-soft-eng.git
 app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;
   const { name } = req.body; 
@@ -420,7 +414,6 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // Fetch all the necessary room temperatures.
 app.get('/rooms/temperature', async (req, res) => {
     try {
@@ -559,7 +552,7 @@ app.put('/rooms/kitchen/lights', async (req, res) =>
         res.status(500).send('Server error');
     }
 });
-=======
+
 //Start a new session
 app.post('/sessions/:deviceId', authenticate, async (req, res) => {
   const {deviceId} = req.params;
@@ -592,8 +585,6 @@ app.patch('/sessions/:deviceId/end', authenticate, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
->>>>>>> branch 'main' of https://github.com/Tomukas10/G5-soft-eng.git
 
 // Start the server
 app.listen(port, () => {
