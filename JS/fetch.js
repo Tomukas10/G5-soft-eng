@@ -978,7 +978,7 @@ async function startses(deviceId, userId) {
             console.error('Error removing user:', error);
             alert('Failed to start session. Please try again.');
         }
-    });
+    }
 
 
 
@@ -996,7 +996,7 @@ async function endses(deviceId, userId) {
             console.error('Error removing user:', error);
             alert('Failed to end session. Please try again.');
         }
-    });
+    }
 
 // #####################################################################
 //                          FETCH Total Power Usage Per user
