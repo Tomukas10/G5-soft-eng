@@ -855,8 +855,7 @@ async function addRoom(roomName) {
                 name: roomName
             };
 
-			// Sends a request to add a new room and implement a new related temperature table entry.
-       		const addRoomResponse = await fetch(`/houses/houseId/rooms`, {
+        await fetch(`/houses/houseId/rooms`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header

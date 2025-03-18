@@ -1,434 +1,68 @@
 const express = require('express');
 const path = require('path');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
-const { query } = require('./db'); // Import database functions
-const authenticate = require('./authMiddleware'); // Import authentication middleware
-const authRoutes = require('./authRoutes');
-const profileRoutes = require('./profileRoutes');
+const { query } = require('./db'); // Import the query function
 
 const app = express();
 const port = 3000;
 
-app.use(express.json()); // Middleware to parse JSON request bodies
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // Enable CORS
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  next();
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
 });
 
-// Serve static files
+// Serve static files from the "CSS" folder
 app.use('/css', express.static(path.join(__dirname, '../CSS')));
+
+// Serve static files from the "JS" folder
 app.use('/js', express.static(path.join(__dirname, '../JS')));
+
+// Serve static files from the "HTML" folder
 app.use(express.static(path.join(__dirname, '../HTML')));
 
-// Load authentication and profile routes
-console.log('Loading authRoutes...');
-app.use('/auth', authRoutes);
-console.log('authRoutes loaded!');
-
-app.use('/user', profileRoutes);
-
-// Serve index.html at the root URL
+// Route for the root URL
+// - Changed from 'index.html' to 'overview.html' for the floor plan website.
 app.get('/', (req, res) => {
-  console.log('Serving file from:', path.join(__dirname, '../HTML/index.html'));
-  res.sendFile(path.join(__dirname, '../HTML/index.html'));
-});
-
-// Get list of landlords
-app.get('/users/:email', async (req, res) => {
-
-  const { email } = req.params;
-
-  try {
-    const [user] = await query(`SELECT * FROM users WHERE email = ?`, [email]);
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Invite user to house
-app.patch(`/users/:email`, authenticate, async (req, res) => {
-
-  const { email } = req.params;
-  const landlord_id = req.user.id;
-
-  try {
-    await query('UPDATE users SET invite = ? WHERE email = ?', [landlord_id, email])
-    res.send("User invited");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-}
-});
-
-// Get Landlord name for invite
-app.get(`/users/landlordName/:landlordId`, async (req, res) => {
-
-  const { landlordId } = req.params;
-
-  try {
-      const [landlordName] = await query('SELECT name FROM users WHERE id = ?', [landlordId]);
-      res.json(landlordName);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Add user to house
-app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
-  const { landlordId } = req.params;
-  const { accept } = req.body;
-  const userId = req.user.id;
-  console.log("landlord id:", landlordId, "  accept: ", accept, "  user id: ", userId);
-
-  try {
-      if (accept) {
-          const [house] = await query('SELECT house_id FROM houses WHERE landlord_id = ?', [landlordId]);
-          console.log(house);
-          if (!house) return res.status(404).send('House not found');
-          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.house_id, userId]);
-          console.log("User ", userId, " house set to ", house.house_id);
-      }
-          await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
-          console.log("User invite set to null");
-      res.send('Invite handled successfully');
-  } catch (error) {
-      console.error('Error handling invite:', error);
-      res.status(500).send('Server error');
-  }
-});
-
-// Get rooms of a house
-app.get('/houses/rooms', authenticate, async (req, res) => {
-  const house_id = req.user.house_id;  // Access house_id from the authenticated user in the token
-
-  try {
-      const rooms = await query('SELECT * FROM rooms WHERE house_id = ?', [house_id]);
-      res.json(rooms);
-  } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
-  }
-});
-
-// Get houses
-app.get('/houses', authenticate, async (req, res) => {
-  const user_id = req.user.id;  // Access house_id from the authenticated user`s token
-  try {
-    const houses = await query('SELECT * FROM houses WHERE landlord_id = ?', [user_id]);
-    res.json(houses);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Fetch house information
-app.get('/houses/:houseId', authenticate, async (req, res) => {
-  const { houseId } = req.params; // Extract houseId
-  try {
-    const [house] = await query('SELECT * FROM houses WHERE id = ?', [houseId]); // Get the first item
-    if (!house) {
-      return res.status(404).json({ error: 'House not found' });
-    }
-    res.json(house); // Send the single object
-  } catch (err) {
-    console.error('Error fetching house:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Fetch user information
-app.get('/houses/:houseId/users', authenticate, async (req, res) => {
-  const { houseId } = req.params; // Extract houseId
-  try {
-    const users = await query('SELECT * FROM users WHERE house_id = ?', [houseId]);
-    res.json(users);
-  } catch (err) {
-    console.error('Error fetching house:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-
-// Add a new house
-app.post('/houses', authenticate,async (req, res) => {
-  const landlord_id = req.user.id;
-  const { name } = req.body; 
-  const { address } = req.body;
-  try {
-    const result = await query('INSERT INTO houses (name, address, landlord_id) VALUES (?, ?, ?)', [name, address, landlord_id]);
-    
-    
-    res.status(201).json({
-      message: 'Room added successfully',
-      name
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-
-// Add a new device
-app.post('/devices', authenticate,async (req, res) => {
-  const user_Id = req.user.house_id;
-  const { name } = req.body; 
-  const { type } = req.body;
-  const { room_id } = req.body;
-  
-
-
-
-  try {
-    const result = await query('INSERT INTO devices (name, type, room_id, state, powerUsage, house_id) VALUES (?, ?, ?, 0, 20, ?)', [name, type, room_id, user_Id]);
-    
-    res.status(201).json({
-      message: 'Device added successfully',
-      name
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Delete a house
-app.delete('/houses/:houseId', async (req, res) => {
-  const { houseId } = req.params;
-  try {
-    await query('DELETE FROM houses WHERE id = ?', [houseId]);
-    res.status(200).send({ message: 'Room deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: 'Failed to delete room' });
-  }
-});
-
-// Add a new room and automatically generate a related temperature entry.
-app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
-  const house_id = req.user.house_id;
-  const { name } = req.body; 
-  try {
-    const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
-    const roomId = result.insertId // Acquires the auto-generated room ID.
-	
-	// Inserts the new temperature entry for the added room.
-	await query (
-		'INSERT INTO temperature (room_id, house_id, actual_temp, target_temp) VALUES (?, ?, ?, ?)',
-		[roomId, house_id, 20, 20]
-	)
-    
-    res.status(201).json({
-      message: 'Room added successfully',
-	  roomId,
-      name
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Delete a room
-app.delete('/rooms/:roomId', async (req, res) => {
-  const { roomId } = req.params;
-  try {
-    await query('DELETE FROM rooms WHERE id = ?', [roomId]);
-    res.status(200).send({ message: 'Room deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: 'Failed to delete room' });
-  }
-});
-
-// Get Total Power for all device month combo (deviceid, month, total power for that device in the month)
-
-app.get('/totPower/device/month', async (req, res) => {
-  try {
-    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM sessions INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY devices.name, MONTH(sesstart);');
-    res.json(totPower);
-  } catch (error) {
-    console.error('Error fetching total power:', error);
-    res.status(500).send('Error fetching total power');
-  }
-});
-
-// Get Total Power for last year - device month combo (deviceid, month, total power for that device in the month) Also takes in a userid
-
-app.get('/totPower/device/month/:user', async (req, res) => {
-  const { user } = req.params;
-  try {
-    const totPower = await query('SELECT devices.id, devices.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND YEAR(sesstart) = YEAR(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, MONTH(sesstart);', [user]);
-    res.json(totPower);
-  } catch (error) {
-    console.error('Error fetching total power:', error);
-    res.status(500).send('Error fetching total power');
-  }
-});
-
-// Get Total Power for last month - device day combo (deviceid, month, total power for that device in the month) Also takes in a userid
-
-app.get('/totPower/device/day/:user', async (req, res) => {
-  const { user } = req.params;
-  try {
-    const totPower = await query('SELECT devices.id, devices.name, DAY(sesstart) AS day, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND MONTH(sesstart) = MONTH(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, DAY(sesstart);', [user]);
-    res.json(totPower);
-  } catch (error) {
-    console.error('Error fetching total power:', error);
-    res.status(500).send('Error fetching total power');
-  }
-});
-
-// Get Total Power for last day - device hour combo (deviceid, month, total power for that device in the month) Also takes in a userid
-
-app.get('/totPower/device/hour/:user', async (req, res) => {
-  const { user } = req.params;
-  try {
-    const totPower = await query('SELECT devices.id, devices.name, HOUR(sesstart) AS hour, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL AND DAY(sesstart) = DAY(NOW()) AND users.id IN (SELECT id FROM users WHERE house_id IN (SELECT house_id FROM users WHERE users.id = ?)) GROUP BY devices.name, HOUR(sesstart);', [user]);
-    res.json(totPower);
-  } catch (error) {
-    console.error('Error fetching total power:', error);
-    res.status(500).send('Error fetching total power');
-  }
-});
-
-// Get Total Power for all user month combo (userid, month, total power for that user in the month)
-
-app.get('/totPower/user/month', async (req, res) => {
-  try {
-    const totPower = await query('SELECT users.id, users.name, MONTH(sesstart) AS month, SUM(powerUsage * TIMESTAMPDIFF(SECOND, sesstart, sesend) ) AS power FROM (sessions INNER JOIN users ON users.id = sessions.userid) INNER JOIN devices ON devices.id = sessions.deviceid WHERE sesend IS NOT NULL GROUP BY users.name, MONTH(sesstart);');
-    res.json(totPower);
-  } catch (error) {
-    console.error('Error fetching total power:', error);
-    res.status(500).send('Error fetching total power');
-  }
-});
-
-app.get('/devices', async (req, res) => {
-    try {
-        const devices = await query('SELECT id, name, state, powerusage FROM devices');
-        res.json(devices);
-    } catch (error) {
-        console.error('Error fetching devices:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Get devices for a room
-app.get('/houses/houseId/rooms/:roomId/devices', authenticate, async (req, res) => {
-  const { roomId } = req.params;
-  const house_id = req.user.house_id;
-  try {
-    const devices = await query('SELECT * FROM devices WHERE room_id = ? AND house_id = ?', [roomId, house_id]);
-    res.json(devices);
-  } catch (error) {
-    console.error('Error fetching devices:', error);
-    res.status(500).send('Error fetching devices');
-  }
-});
-
-// Get unassigned devices
-app.get('/houses/devices/unassigned', authenticate, async (req, res) => {
-  try {
-    const house_id = req.user.house_id;  // Access house_id directly from req.user
-    const devices = await query('SELECT id, name FROM devices WHERE room_id IS NULL AND house_id = ?', [house_id]);
-    res.json(devices);
-  } catch (error) {
-    console.error('Error fetching unassigned devices:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-// Update a device's room assignment
-app.patch('/devices/:deviceId', async (req, res) => {
-  const { deviceId } = req.params;
-  const { room_id } = req.body;
-  try {
-    await query('UPDATE devices SET room_id = ? WHERE id = ?', [room_id, deviceId]);
-    res.send('Device updated successfully');
-  } catch (error) {
-    console.error('Error updating device:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
-// Set room_id to NULL for devices when a room is deleted
-app.patch('/rooms/:roomId/devices', async (req, res) => {
-  const { roomId } = req.params;
-  try {
-    await query('UPDATE devices SET room_id = NULL WHERE room_id = ?', [roomId]);
-    res.status(200).send('Devices updated successfully.');
-  } catch (error) {
-    console.error('Error updating devices:', error);
-    res.status(500).send('Error updating devices.');
-  }
+    console.log('Serving file from:', path.join(__dirname, '../HTML/overview.html'));
+    res.sendFile(path.join(__dirname, '../HTML/overview.html'));
 });
 
 // Fetch all the necessary room temperatures.
-app.get('/rooms/temperature', async (req, res) => {
-    try {
-        const rooms = await query(`
-            SELECT t.room_id, r.name AS room_name, t.target_temp, t.actual_temp
-            FROM temperature t
-            JOIN rooms r ON t.room_id = r.id
-        `);
-        console.log(rooms);
-        res.json(rooms);
-    } catch (err) {
+app.get('/rooms/temperature', async (req, res) => 
+{
+    try 
+	{
+        const rooms = await query('SELECT roomID, roomName, temperature FROM tempRooms');
+		console.log(rooms); // Log data received from DB
+        res.json(rooms); 
+    } catch (err) 
+	{
         console.error(err);
         res.status(500).send('Server error');
     }
 });
 
+// Update the temperature for a specific room.
+app.put('/rooms/:roomName/temperature', async (req, res) => 
+{
+    const { roomName } = req.params;
+    const { temperature } = req.body;
 
-// Update the TARGET temperature for a specific room.
-app.put('/rooms/:roomId/temperature', async (req, res) => {
-    const { roomId } = req.params;
-    const { target_temp } = req.body;
-
-    try {
-        await query('UPDATE temperature SET target_temp = ? WHERE room_id = ?', [target_temp, roomId]);
-        res.status(200).json({ message: 'Target temperature updated successfully' });
-    } catch (err) {
+    try 
+	{
+        await query('UPDATE tempRooms SET temperature = ? WHERE roomName = ?', [temperature, roomName]);
+        res.status(200).json({ message: 'Temperature updated successfully' });
+    } catch (err) 
+	{
         console.error(err);
         res.status(500).send('Server error');
     }
 });
-
-// Update the ACTUAL temperature for a specific room.
-app.put('/rooms/:roomId/actualTemp', async (req, res) => {
-    const { roomId } = req.params;
-    const { actual_temp } = req.body;
-
-    console.log(`Received request to update room ${roomId}: ${actual_temp}`);
-
-    try {
-        const result = await query('UPDATE temperature SET actual_temp = ? WHERE room_id = ?', [actual_temp, roomId]);
-
-        if (result.affectedRows === 0) {
-            console.warn(`No rows affected for room: ${roomId}`);
-            return res.status(404).json({ error: "Room not found or actual_temp already set!" });
-        }
-
-        console.log(`Updated ${roomId} to actualTemp: ${actual_temp}`);
-
-        res.status(200).json({ message: 'Actual temperature updated successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    }
-});
-
-
 
 // Acquire all the room light states that aren't kitchen-specific.
 app.get('/rooms/lights', async (req, res) => 
@@ -504,5 +138,5 @@ app.put('/rooms/kitchen/lights', async (req, res) =>
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});});
+    console.log(`Server is running on http://localhost:${port}`);
+});
