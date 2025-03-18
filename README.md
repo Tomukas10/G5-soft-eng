@@ -18,13 +18,6 @@
 Easy Cribs is our smart home system that we are developing for F29PD. It is used to control any smart devices that you may have around the house, such as: thermostat, lights or robot hoovers. The purpose of Easy Cribs is to make these household items more manageable and trackable so that you know exactly what is on when and how much energy is being used.
 
 
-## Getting Started
-
-### Explanation of how to set up our software
-
-In order to get started with Easy Cribs you must have ... TBC.
-
-
 ## Branches
 
 ### A list and decription of all branches used on this repository will be listed here
