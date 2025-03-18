@@ -1,59 +1,11 @@
-           console.log("heating.js has loaded!");
-
-		   document.addEventListener("DOMContentLoaded", async () => 
+const token = localStorage.getItem('token');
+		 
+		 document.addEventListener("DOMContentLoaded", async () => 
 		   {
 				// Fetch the necessary data from the database when the page loads.
 				await getTemperatures();
-				await getLights();
 				
 				getActualTemperature();
-				// Checks to make sure the relevant buttons exist before adding event listeners.
-				const kitchenTempButton = document.getElementById("kitchenTemperature");
-				if (kitchenTempButton) kitchenTempButton.addEventListener("click", () => showSection("temperature"));
-
-				const kitchenLightsButton = document.getElementById("kitchenLights");
-				if (kitchenLightsButton) kitchenLightsButton.addEventListener("click", () => showSection("lights"));
-
-				const kitchenOvenButton = document.getElementById("kitchenOven");
-				if (kitchenOvenButton) kitchenOvenButton.addEventListener("click", () => showSection("oven"));
-
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
-
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-				
-
-				document.getElementById("kitchenTemperature").addEventListener("click", () => showSection("temperature"));
-				document.getElementById("kitchenLights").addEventListener("click", () => showSection("lights"));
-				document.getElementById("kitchenOven").addEventListener("click", () => showSection("oven"));
 			});
 
 			// Handles the 'invisible' property of each section.
@@ -89,18 +41,31 @@
 			// Fetches temperature from the database.
 			async function getTemperatures() {
 			    try {
-			        const response = await fetch('/rooms/temperature');
+			        const response = await fetch('/rooms/temperature', {
+						method: 'GET',
+						headers: {
+							'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+						}
+					});
 
 			        if (!response.ok) { 
 			            throw new Error(`HTTP error! Status: ${response.status}`);
 			        }
 
-			        const text = await response.text(); // Part of the debugging process.
-			        console.log("Raw response from server:", text); // Part of the debugging process.
+			        const data = await response.json();
 
-			        const data = JSON.parse(text);
-
+					const container = document.getElementById('temperature-container');
+					container.innerHTML = '';
 			        data.forEach(room => {
+						container.innerHTML += `								<div class = "temp-column">
+									<h3 class = "room-header">${room.room_name}</h3>
+										<div class = "temp-control">
+											<button class="temp-btn" onclick="changeTemperature(${room.room_id}, 1)">+</button>
+											<span class="temp-display" id="room-${room.room_id}-temp">${room.target_temp}</span>
+											<button class="temp-btn" onclick="changeTemperature(${room.room_id}, -1)">-</button>
+										</div>
+										<span class="actual-temp" id="actual-room-${room.room_id}">${room.target_temp}°</span>
+								</div>`;
 			            const tempDisplay = document.getElementById(`room-${room.room_id}-temp`);
 			            const actualTempDisplay = document.getElementById(`actual-room-${room.room_id}`);
 
@@ -122,14 +87,16 @@
 
 			    actualTempInterval = setInterval(async () => {
 			        try {
-			            console.log("Running getActualTemperature() cycle..."); // Part of the debugging process.
-			            const response = await fetch('/rooms/temperature');
+						const response = await fetch('/rooms/temperature', {
+							method: 'GET',
+							headers: {
+								'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+							}
+						});
 			            const data = await response.json();
 
-			            console.log("Fetched Data:", data); // Part of the debugging process.
 
 			            const updatePromises = data.map(async room => {
-			                console.log(`Processing ${room.room_id}...`); // Part of the debugging process.
 
 			                const actualTempDisplay = document.getElementById(`actual-room-${room.room_id}`);
 			                if (!actualTempDisplay) {
@@ -140,14 +107,12 @@
 			                let actualTemp = parseInt(actualTempDisplay.textContent);
 			                let targetTemp = room.target_temp;
 
-			                console.log(`Current: ${actualTemp}, Target: ${targetTemp}`); // Part of the debugging process.
-
+			               
 			                if (actualTemp !== targetTemp) {
 			                    actualTemp += actualTemp < targetTemp ? 1 : -1;
 			                    actualTempDisplay.textContent = actualTemp;
 
-			                    console.log(`Updating DB: Room ${room.room_id} -> ${actualTemp}`); // Part of the debugging process.
-
+			               
 			                    return fetch(`/rooms/${room.room_id}/actualTemp`, {
 			                        method: "PUT",
 			                        headers: { "Content-Type": "application/json" },
@@ -160,6 +125,8 @@
 
 			        } catch (error) {
 			            console.error("Error adjusting the actual temperature!", error);
+						clearInterval(actualTempInterval);
+						actualTempInterval = null;
 			        }
 			    }, 3000);
 			}
@@ -174,7 +141,6 @@
 			    // Prevents temperatures from exceeding 30 or dropping below 10.
 			    if (newTemperature < 10 || newTemperature > 30) return;
 
-			    console.log(`Updating Room ${roomId}: New target_temp = ${newTemperature}`); // Part of the debugging process.
 			    tempDisplay.textContent = newTemperature;
 
 			    try {

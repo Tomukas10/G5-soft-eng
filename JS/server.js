@@ -94,6 +94,8 @@ app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
           await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
           const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
           const token = jwt.sign({
+            name: updatedUser.name,
+            last_name: updatedUser.last_name,
               id: updatedUser.id,
               email: updatedUser.email,
               user_type: updatedUser.user_type,
@@ -177,7 +179,6 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
-  							console.log(deviceId);
   try {
     const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
 	res.json(response);
@@ -301,9 +302,10 @@ app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;
   const { name } = req.body; 
   try {
-    const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
-    
-    
+    await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
+    const [room_id] = await query('SELECT id FROM rooms WHERE name = ? AND house_id = ?', [name, house_id]);
+    const roomId = room_id.id;
+    await query('INSERT INTO temperature (room_id, actual_temp, target_temp, house_id) VALUES (?, 20, 20, ?)', [roomId, house_id]);
     res.status(201).json({
       message: 'Room added successfully',
       name
@@ -485,14 +487,15 @@ app.patch('/sessions/:deviceId/end', async (req, res) => {
 });
 
 // Fetch all the necessary room temperatures.
-app.get('/rooms/temperature', async (req, res) => {
+app.get('/rooms/temperature', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;
     try {
         const rooms = await query(`
             SELECT t.room_id, r.name AS room_name, t.target_temp, t.actual_temp
-            FROM temperature t
-            JOIN rooms r ON t.room_id = r.id
-        `);
-        console.log(rooms);
+            FROM temperature t 
+            JOIN rooms r ON t.room_id = r.id 
+            WHERE r.house_id = ?
+        `, [house_id]);
         res.json(rooms);
     } catch (err) {
         console.error(err);
@@ -520,7 +523,6 @@ app.put('/rooms/:roomId/actualTemp', async (req, res) => {
     const { roomId } = req.params;
     const { actual_temp } = req.body;
 
-    console.log(`Received request to update room ${roomId}: ${actual_temp}`);
 
     try {
         const result = await query('UPDATE temperature SET actual_temp = ? WHERE room_id = ?', [actual_temp, roomId]);
@@ -530,7 +532,6 @@ app.put('/rooms/:roomId/actualTemp', async (req, res) => {
             return res.status(404).json({ error: "Room not found or actual_temp already set!" });
         }
 
-        console.log(`Updated ${roomId} to actualTemp: ${actual_temp}`);
 
         res.status(200).json({ message: 'Actual temperature updated successfully' });
     } catch (err) {
@@ -547,7 +548,6 @@ app.get('/rooms/lights', async (req, res) => {
             FROM lighting l
             JOIN rooms r ON l.room_id = r.id
         `);
-        console.log(lights); // Debugging process!
         res.json(lights);
     } catch (err) {
         console.error(err);
@@ -585,7 +585,6 @@ app.put('/rooms/:roomId/light', async (req, res) => {
             return res.status(404).json({ error: "No matching room/light found!" });
         }
 
-        console.log(`Updated room ${roomId} light state to ${state}`); // Debugging process!
 
         res.status(200).json({ message: `Light for room ${roomId} updated successfully.` });
     } catch (err) {

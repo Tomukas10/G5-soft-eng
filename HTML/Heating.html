@@ -57,57 +57,14 @@
 					<!-- Implements the 'temperature' section. -->
 					<div id="temperature-section">
 						<h2 class = "temp">Temperature (&deg;c)</h2>
-							<div class = "temperature-container">
-								<!-- Living Room section. -->
-								<div class = "temp-column">
-									<h3 class = "room-header">Living Room</h3>
-										<div class = "temp-control">
-											<button class="temp-btn" onclick="changeTemperature('38', 1)">+</button>
-											<span class="temp-display" id="room-38-temp">20</span>
-											<button class="temp-btn" onclick="changeTemperature('38', -1)">-</button>
-										</div>
-										<span class="actual-temp" id="actual-room-38">18°</span>
-								</div>
-								
-								<!-- Kitchen section. -->
-								<div class = "temp-column">
-									<h3 class = "room-header">Kitchen</h3>
-										<div class = "temp-control">
-											<button class="temp-btn" onclick="changeTemperature('37', 1)">+</button>
-											<span class="temp-display" id="room-37-temp">20</span>
-											<button class="temp-btn" onclick="changeTemperature('37', -1)">-</button>
-										</div>
-										<span class="actual-temp" id="actual-room-37">15°</span>
-								</div>
-								
-								<!-- Bedroom 1 section. -->
-								<div class = "temp-column">
-									<h3 class = "room-header">Bedroom 1</h3>
-										<div class = "temp-control">
-											<button class="temp-btn" onclick="changeTemperature('39', 1)">+</button>
-											<span class="temp-display" id="room-39-temp">20</span>
-											<button class="temp-btn" onclick="changeTemperature('39', -1)">-</button>
-										</div>
-										<span class="actual-temp" id="actual-room-39">19°</span>
-								</div>
-								
-								<!-- Bedroom 2 section. -->
-								<div class = "temp-column">
-									<h3 class = "room-header">Bedroom 2</h3>
-										<div class = "temp-control">
-											<button class="temp-btn" onclick="changeTemperature('40', 1)">+</button>
-											<span class="temp-display" id="room-40-temp">20</span>
-											<button class="temp-btn" onclick="changeTemperature('40', -1)">-</button>
-										</div>
-										<span class="actual-temp" id="actual-room-40">23°</span>
-								</div>
-								
-								<div class="temp-column temp-info-column">
-									<span class = "target-Label">Target</span>
-									<span class = "actual-Label">Actual</span>
-								</div>
+						<div id="temp-box">
+							<div id = "temperature-container">
 							</div>
-							
+							<div class="temp-column temp-info-column">
+								<span class = "target-Label">Target</span>
+								<span class = "actual-Label">Actual</span>
+							</div>
+						</div>
 					</div>
 
 					<!-- Implements the 'oven' section. -->
