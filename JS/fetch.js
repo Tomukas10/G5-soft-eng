@@ -744,13 +744,6 @@ async function fetchDevices(roomId) {
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `${device.name} <br>`;
             deviceButton.setAttribute('data-id', device.id);
-			
-			if (device.state = 1) {
-				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});" checked/>`;
-			}
-			else {
-				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});"/>`;
-			}
     
             // Add the delete button
             const deleteButton = document.createElement('span');
