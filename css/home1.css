@@ -609,6 +609,76 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(22px);
 }
+#accessibilityContainer {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+#accessibilityBtn {
+    padding: 8px 15px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease-in-out;
+}
+
+#accessibilityBtn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+#accessibilityDropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: rgba(50, 50, 50, 0.9);
+    border-radius: 8px;
+    padding: 8px;
+    width: 180px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#accessibilityDropdown.show {
+    display: block;
+}
+
+#accessibilityDropdown button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    color: white;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+#accessibilityDropdown button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Accessibility Modes */
+.high-contrast {
+    background-color: black !important;
+    color: yellow !important;
+}
+
+.larger-text {
+    font-size: 20px !important;
+}
+
+.dyslexia-friendly {
+    font-family: "Comic Sans MS", Arial, sans-serif !important;
+}
 
 
 
