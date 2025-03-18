@@ -134,7 +134,6 @@ async function fetchRooms() {
             const icon = document.createElement('img');
             icon.className = 'icon';
             icon.src = `./images/${room.name.toLowerCase().replace(/ \d+$/, '').trim().replace(' ', '-')}.png`;
-            console.log(icon.src);
 
             // Fallback to default image if the image is not found
             icon.onerror = () => {

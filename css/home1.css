@@ -306,6 +306,29 @@ header {
     margin-bottom: 10px;
 }
 
+#accessibilityBtn {
+    position: relative;
+    margin-top: 10px;
+    margin-left: 10px;
+    background-color: white; /* Default greyed-out */
+    border-radius: 15px;
+    border: white;
+    width: 6vw;
+    height: 6vh;
+	margin-right: 6%;
+    font-size: 1.6vh;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
 .appliance.active {
     background-color: white; /* When active */
     border: 2px solid black;
@@ -380,7 +403,7 @@ nav:hover > .navItems:hover{
 
 /* CSS for the logout button */
 .logout-btn {
-    position:relative;
+    position:absolute;
     background: #ff4d4d;
     color: white;
     text-align: center;
@@ -391,6 +414,8 @@ nav:hover > .navItems:hover{
     display: block;
     margin-top: 10px;
     transition: background-color 0.3s ease;
+    top: 10px;
+    right: 10px;
 }
 
 .logout-btn:hover {
@@ -502,54 +527,6 @@ nav:hover > .navItems:hover{
 #confirmationModal {
     color: black;
 }
-
-/* Delete Room Confirmation*/
-
-/* #############################################################################################################*/
-/* #############################################################################################################*/
-
-.speedometer {
-    display: flex;
-    width: 30vh;
-    height: auto;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    justify-items: center;
-    border: 2px solid #e0e0e0;
-    border-radius: 20px;
-    background: #f5f5f5;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#gauge {
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.5s ease-in-out;
-}
-
-#needle {
-    transition: transform 0.5s ease-in-out;
-}
-
-.speedometer:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-text {
-    font-family: 'Arial', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    fill: #333;
-}
-
-#gradient stop {
-    transition: stop-color 0.5s ease-in-out;
-}
-
-
-/*div{bordeR: solid;}*/
 
 /* #############################################################################################################*/
 /* #############################################################################################################*/
