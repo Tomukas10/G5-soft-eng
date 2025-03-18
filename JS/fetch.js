@@ -45,9 +45,9 @@ async function togglestatus(deviceId) {
 	const token = localStorage.getItem('token');  // Retrieve token from localStorage
 	const payload = JSON.parse(atob(token.split(".")[1]));
 	const userId = payload.id;
-	console.log("hello");
+	console.log(deviceId);
 	
-	const response = await fetch(`/getdev/${deviceId}`);
+	const response = await fetch(`/togdev/${deviceId}`);
 	let device = await response.json();
 	if (device[0].state == 1) {
 		await fetch(`/sessions/${deviceId}/end`, {method: 'PATCH'});
@@ -711,6 +711,7 @@ async function fetchDevices(roomId) {
 
         // Display the devices
         devices.forEach( device => {
+			console.log(device.id);
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `${device.name} <br>`;
@@ -732,9 +733,11 @@ async function fetchDevices(roomId) {
             // Add an event listener to show device information
             deviceButton.addEventListener('click', async (event) => {    
                 event.stopPropagation(); 
-                const deviceId = event.currentTarget.getAttribute('data-id');   
-                displayDevice(deviceId);
+                const deviceId = event.currentTarget.getAttribute('data-id'); 
+
             });
+
+			displayDevice(device);
 
             deviceButton.appendChild(deleteButton);
             appliancesContainer.insertBefore(deviceButton, button);
@@ -754,18 +757,14 @@ function handleRoomButtonClick(event) {
 //                          DISPLAY DEVICE
 // #####################################################################
  
-async function displayDevice(deviceId) {
+async function displayDevice(device) {
     const panel = document.getElementById('right-panel');
 
-    try {
-        const response = await fetch(`/getdev/${deviceId}`, {
-            method: 'GET',
-        });
 
-        const device = await response.json();
+    try {
 
         // Clear the panel and display device info with a toggle switch
-        panel.innerHTML = `
+        panel.innerHTML += `
             <div class="device-info">
                 <h2>${device.name}</h2>
                 <p><strong>Device ID:</strong> ${device.id}</p>
@@ -788,7 +787,7 @@ async function displayDevice(deviceId) {
             deviceStatus.textContent = newState === 1 ? 'On' : 'Off';
 
             try {
-                await fetch(`/updateDevice/${deviceId}`, {
+                await fetch(`/updateDevice/${device.id}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1191,7 +1190,7 @@ async function startApp() {
     console.log(user);
 
     if (user) {
-        document.getElementById("homeTitle").textContent = `Welcome, ${user.email}`;
+        document.getElementById("homeTitle").textContent = `Welcome, ${user.name} ${user.last_name}`;
         
         if (user.user_type === "landlord") {
             sideNav.remove();
@@ -1436,7 +1435,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				
 			function random_rgba() {
 				var o = Math.round, r = Math.random, s = 255;
-				return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+				return 'rgba(' + o((1 - r() * r() ) * s) + ',' + o((1 - r() * r() ) * s) + ',' + o((1 - r() * r() ) * s) + ',' + r().toFixed(1) + ')';
 				}
 				idStore.push(id);
 				graphData.detail.datasets[idStore.indexOf(id)] =                 {

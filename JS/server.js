@@ -26,9 +26,7 @@ app.use('/js', express.static(path.join(__dirname, '../JS')));
 app.use(express.static(path.join(__dirname, '../HTML')));
 
 // Load authentication and profile routes
-console.log('Loading authRoutes...');
 app.use('/auth', authRoutes);
-console.log('authRoutes loaded!');
 
 app.use('/user', profileRoutes);
 
@@ -179,9 +177,28 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
+  							console.log(deviceId);
   try {
-    const [device] = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-    res.json(device);
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	res.json(response);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Fetch device information and flip state
+app.get('/togdev/:deviceId', async (req, res) => {
+  const { deviceId} = req.params; // Extract deviceId
+  try {
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	if (response[0].state == 1) {
+		const temp = await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
+	}
+	else {
+		const temp = await query('UPDATE devices SET state = 1 WHERE id = ?', [deviceId]);
+	}
+    res.json(response);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
@@ -192,7 +209,6 @@ app.patch(`/updateDevice/:deviceId`, async (req, res) => {
 
   const { deviceId } = req.params;
   const { state } = req.body;
-  console.log(deviceId, state);
 
   try {
     await query('UPDATE devices SET state = ? WHERE id = ?', [state, deviceId]);
