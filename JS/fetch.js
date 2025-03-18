@@ -611,7 +611,7 @@ async function addDevice(DeviceName) {
             }
 
             // Fetch existing devices
-            const response = await fetch('/devices', {
+            const response = await fetch('/devices/houseId', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
@@ -743,13 +743,7 @@ async function fetchDevices(roomId) {
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
             deviceButton.innerHTML = `${device.name} <br>`;
-			
-			if (device.state = 1) {
-				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});" checked/>`;
-			}
-			else {
-				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});"/>`;
-			}
+            deviceButton.setAttribute('data-id', device.id);
     
             // Add the delete button
             const deleteButton = document.createElement('span');
@@ -764,6 +758,13 @@ async function fetchDevices(roomId) {
                 deleteDevice(deviceId, deviceButton);
     
             });
+            // Add an event listener to show device information
+            deviceButton.addEventListener('click', async (event) => {    
+                event.stopPropagation(); 
+                const deviceId = event.currentTarget.getAttribute('data-id');   
+                displayDevice(deviceId);
+            });
+
             deviceButton.appendChild(deleteButton);
             appliancesContainer.insertBefore(deviceButton, button);
     
@@ -777,6 +778,66 @@ async function fetchDevices(roomId) {
 function handleRoomButtonClick(event) {
     const roomId = event.target.getAttribute('data-id');
 }
+
+// #####################################################################
+//                          DISPLAY DEVICE
+// #####################################################################
+ 
+async function displayDevice(deviceId) {
+    const panel = document.getElementById('right-panel');
+
+    try {
+        const response = await fetch(`/getdev/${deviceId}`, {
+            method: 'GET',
+        });
+
+        const device = await response.json();
+
+        // Clear the panel and display device info with a toggle switch
+        panel.innerHTML = `
+            <div class="device-info">
+                <h2>${device.name}</h2>
+                <p><strong>Device ID:</strong> ${device.id}</p>
+                <p><strong>Status:</strong> <span id="deviceStatus">${device.state === 1 ? 'On' : 'Off'}</span></p>
+                <p><strong>Power Usage:</strong> ${device.powerUsage} kWh</p>
+                
+                <label class="switch">
+                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked' : ''}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        `;
+
+        // Handle switch toggle
+        const toggleSwitch = document.getElementById('toggleSwitch');
+        const deviceStatus = document.getElementById('deviceStatus');
+
+        toggleSwitch.addEventListener('change', async () => {
+            const newState = toggleSwitch.checked ? 1 : 0;
+            deviceStatus.textContent = newState === 1 ? 'On' : 'Off';
+
+            try {
+                await fetch(`/updateDevice/${deviceId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ state: newState })
+                });
+            } catch (error) {
+                console.error('Error updating device state:', error);
+                alert('Failed to update device. Please try again.');
+                toggleSwitch.checked = !newState; // Revert on failure
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching device information', error);
+        alert("Failed to load device. Please try again");
+    }
+}
+
+
 
 // #####################################################################
 //                          DELETE DEVICES
