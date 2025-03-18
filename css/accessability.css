@@ -456,6 +456,76 @@ text {
 .larger-text {
     font-size: 20px !important;
 }
+#accessibilityContainer {
+    position: fixed;
+    top: 20px; /* Keep it aligned at the top */
+    left: 20px; /* Move it slightly away from the Home button */
+    z-index: 1000;
+}
 
+/* Accessibility Button */
+#accessibilityBtn {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease-in-out;
+}
+
+#accessibilityBtn:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Accessibility Dropdown */
+#accessibilityDropdown {
+    display: none;
+    position: absolute;
+    top: 35px; /* Adjusted to avoid overlapping Home */
+    left: 0;
+    background: rgba(50, 50, 50, 0.9);
+    border-radius: 6px;
+    padding: 8px;
+    width: 180px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#accessibilityDropdown.show {
+    display: block;
+}
+
+#accessibilityDropdown button {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font-size: 12px;
+    color: white;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+#accessibilityDropdown button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Fix for Home Button Shifting */
+#sidenav {
+    margin-top: 60px; /* Pushes it down so it doesn't overlap */
+}
+
+#sidenav a {
+    text-decoration: none;
+    font-size: 3vh;
+    color: #ffffff;
+    display: block;
+    padding: 10px;
+}
 
 
