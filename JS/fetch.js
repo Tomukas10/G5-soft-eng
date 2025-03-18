@@ -732,12 +732,10 @@ async function fetchDevices(roomId) {
             });
             // Add an event listener to show device information
             deviceButton.addEventListener('click', async (event) => {    
-                event.stopPropagation(); 
-                const deviceId = event.currentTarget.getAttribute('data-id'); 
-
+                event.stopPropagation();  
+                  displayDevice(device);
             });
 
-			displayDevice(device);
 
             deviceButton.appendChild(deleteButton);
             appliancesContainer.insertBefore(deviceButton, button);
@@ -764,7 +762,7 @@ async function displayDevice(device) {
     try {
 
         // Clear the panel and display device info with a toggle switch
-        panel.innerHTML += `
+        panel.innerHTML  = `
             <div class="device-info">
                 <h2>${device.name}</h2>
                 <p><strong>Device ID:</strong> ${device.id}</p>
