@@ -1,3 +1,4 @@
+if (location.href.split("/").slice(-1)[0] != "energyUsage.html") {
 let currentRoomId;
 
 // #####################################################################
@@ -36,6 +37,57 @@ function validateEmail(email) {
     return emailPattern.test(email);
     
     }
+
+// #####################################################################
+//                          TOGGLE Device Status
+// #####################################################################
+async function togglestatus(deviceId) {
+	const token = localStorage.getItem('token');  // Retrieve token from localStorage
+	console.log("hello");
+	        const response = await fetch(`/getdev/${deviceId}`);
+			console.log(response);
+			
+	
+}
+window.togglestatus = togglestatus;
+
+
+// #####################################################################
+//                          START Session
+// #####################################################################
+async function startses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}`, {
+            	headers: { 'Content-Type': 'application/json' }, 
+		body: JSON.stringify({ userId: userId })
+	    	}
+		);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to start session. Please try again.');
+        }
+    }
+
+
+
+
+
+// #####################################################################
+//                          END Session
+// #####################################################################
+async function endses(deviceId, userId) {
+	try {
+
+            await fetch(`/sessions/${deviceId}/end`);
+
+        } catch (error) {
+            console.error('Error removing user:', error);
+            alert('Failed to end session. Please try again.');
+        }
+    }
+
     
 
 // #####################################################################
@@ -690,7 +742,14 @@ async function fetchDevices(roomId) {
         devices.forEach( device => {
             const deviceButton = document.createElement("button");
             deviceButton.className = 'appliance';
-            deviceButton.innerHTML = `${device.name}`;
+            deviceButton.innerHTML = `${device.name} <br>`;
+			
+			if (device.state = 1) {
+				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});" checked/>`;
+			}
+			else {
+				deviceButton.innerHTML += `State: <input name="${device.name}" type="checkbox"  id="${device.id}"  onclick="togglestatus(${device.id});"/>`;
+			}
     
             // Add the delete button
             const deleteButton = document.createElement('span');
@@ -961,41 +1020,6 @@ async function removeUser(userId, button) {
     });
 }
 
-// #####################################################################
-//                          START Session
-// #####################################################################
-async function startses(deviceId, userId) {
-	try {
-
-            await fetch(`/sessions/${deviceId}`, {
-            	headers: { 'Content-Type': 'application/json' }, 
-		body: JSON.stringify({ userId: userId })
-	    	}
-		);
-
-        } catch (error) {
-            console.error('Error removing user:', error);
-            alert('Failed to start session. Please try again.');
-        }
-    }
-
-
-
-
-
-// #####################################################################
-//                          END Session
-// #####################################################################
-async function endses(deviceId, userId) {
-	try {
-
-            await fetch(`/sessions/${deviceId}/end`);
-
-        } catch (error) {
-            console.error('Error removing user:', error);
-            alert('Failed to end session. Please try again.');
-        }
-    }
 
 // #####################################################################
 //                          FETCH Total Power Usage Per user
@@ -1237,7 +1261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
  
 });
-
+}
 
 
 

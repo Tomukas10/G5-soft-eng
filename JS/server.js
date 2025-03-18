@@ -176,6 +176,19 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 });
 
 
+// Fetch device information
+app.get('/getdev/:deviceId', async (req, res) => {
+  const { deviceId } = req.params; // Extract deviceId
+  try {
+    const device = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	console.log(device);
+    res.json(device);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Add a new house
 app.post('/houses', authenticate,async (req, res) => {
   const landlord_id = req.user.id;
