@@ -57,3 +57,5 @@ License: TBC.
 - @Daniel-Fejdych - Daniel Fejdych
 - @thenamesdonnie - Donnie Stark
 - @Afraser8765 - Adam Fraser
+- @mv2025 - Mridul Verma
+- @AliBara2004 - Ali Bara
