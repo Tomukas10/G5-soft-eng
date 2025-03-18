@@ -180,12 +180,26 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
   try {
-    const device = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-	console.log(device);
+    const [device] = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
     res.json(device);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
+  }
+});
+
+app.patch(`/updateDevice/:deviceId`, async (req, res) => {
+
+  const { deviceId } = req.params;
+  const { state } = req.body;
+  console.log(deviceId, state);
+
+  try {
+    await query('UPDATE devices SET state = ? WHERE id = ?', [state, deviceId]);
+    res.send("Device state updated")
+  } catch (error) {
+    console.error(err);
+    res.status(500).send(`Server error`);
   }
 });
 
@@ -215,9 +229,6 @@ app.post('/devices', authenticate,async (req, res) => {
   const { name } = req.body; 
   const { type } = req.body;
   const { room_id } = req.body;
-  
-
-
 
   try {
     const result = await query('INSERT INTO devices (name, type, room_id, state, powerUsage, house_id) VALUES (?, ?, ?, 0, 20, ?)', [name, type, room_id, user_Id]);
@@ -362,9 +373,14 @@ app.get('/totPower/user/month', async (req, res) => {
   }
 });
 
-app.get('/devices', async (req, res) => {
+
+// Get devices from a house
+app.get('/devices/houseId', authenticate, async (req, res) => {
+
+  const houseId = req.user.house_id;
+
     try {
-        const devices = await query('SELECT id, name, state, powerusage FROM devices');
+        const devices = await query('SELECT name FROM devices where house_id = ?', [houseId]);
         res.json(devices);
     } catch (error) {
         console.error('Error fetching devices:', error);
