@@ -967,7 +967,11 @@ async function removeUser(userId, button) {
 async function startses(deviceId, userId) {
 	try {
 
-            await fetch(`/sessions/${deviceId}/${userId}`);
+            await fetch(`/sessions/${deviceId}`, {,
+            	headers: { 'Content-Type': 'application/json' }, 
+		body: JSON.stringify({ userId: userId })
+	    	}
+		);
 
         } catch (error) {
             console.error('Error removing user:', error);
