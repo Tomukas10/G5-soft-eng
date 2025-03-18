@@ -255,6 +255,8 @@ async function fetchHouses() {
             throw new Error(`Failed to fetch houses: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
+       
+        
         const houses = await response.json();
 
         const mainPanel = document.getElementById('mainPanel');
@@ -276,7 +278,7 @@ async function fetchHouses() {
 
         //add logout button
         const logout = document.getElementById("logout");
-        logout.style.display = "block";
+        logout.style.display = "none";
         
         // Append the spans to the button
         button.appendChild(plusSign);
@@ -1228,6 +1230,7 @@ async function startApp() {
     const mainPanel = document.getElementById('mainPanel');
     const sideNav = document.getElementById('sidenavContainer');
     console.log(user);
+    
 
     if (user) {
         document.getElementById("homeTitle").textContent = `Welcome, ${user.name} ${user.last_name}`;
