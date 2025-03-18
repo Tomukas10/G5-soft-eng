@@ -1336,7 +1336,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [
                 {
-                    label: 'Total Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1354,7 +1354,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 31}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1372,7 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
             labels: Array.from({length: 24}, (_, i) => i + 1),
             datasets: [
                 {
-                    label: 'Electricity Usage (kWh)',
+                    label: 'Total Electricity Usage (Wh)',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(175, 92, 192, 1)',
@@ -1426,7 +1426,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			let month = powerstat.month;
-			let power = powerstat.power/(3600*1000);
+			let power = powerstat.power/(3600);
 			let name = powerstat.name;
 			let id = powerstat.id;
 			if (!(idStore.includes(id))) {
@@ -1437,7 +1437,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 				idStore.push(id);
 				graphData.detail.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 12}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1445,7 +1445,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detailm.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 31}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1453,7 +1453,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tension: 0.4
                 }
 				graphData.detaild.datasets[idStore.indexOf(id)] =                 {
-                    label: name + ' Electricity Usage (kWh)',
+                    label: name + ' Electricity Usage (Wh)',
                     data: Array.from({length: 24}, (_, i) => 0),
                     backgroundColor: random_rgba(),
                     borderColor: random_rgba(),
@@ -1488,7 +1488,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			day = powerstat.day;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
@@ -1514,7 +1514,7 @@ document.addEventListener("DOMContentLoaded", () => {
         power.forEach(powerstat => {
 			try {
 			hour = powerstat.hour;
-			power = powerstat.power/(3600*1000);
+			power = powerstat.power/(3600);
 			name = powerstat.name;
 			id = powerstat.id;
 			
