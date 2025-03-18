@@ -985,7 +985,7 @@ async function startses(deviceId, userId) {
 async function endses(deviceId, userId) {
 	try {
 
-            await fetch(`/sessions/${deviceId}/${userId}/end`);
+            await fetch(`/sessions/${deviceId}/end`);
 
         } catch (error) {
             console.error('Error removing user:', error);
