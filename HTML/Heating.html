@@ -20,12 +20,16 @@
                
                 <a id="selected" class="sidenavItems" href="Heating.html">Heating</a>
                 <hr>
+				<a class="sidenavItems" href="lighting.html">Lighting</a>
+				<hr>
                 <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
                 <hr>
                 <a class="sidenavItems" href="security.html">Security</a>
                 <hr>
                 <a class="sidenavItems" href="settings.html">Settings</a>
                 <hr>
+				<a class="sidenavItems" href="overview.html">Home View</a>
+				<hr>
             </div>
             
             </div>
@@ -51,51 +55,51 @@
 					</div>
 					
 					<!-- Implements the 'temperature' section. -->
-					<div id="temperature-section" >
+					<div id="temperature-section">
 						<h2 class = "temp">Temperature (&deg;c)</h2>
 							<div class = "temperature-container">
 								<!-- Living Room section. -->
 								<div class = "temp-column">
 									<h3 class = "room-header">Living Room</h3>
 										<div class = "temp-control">
-											<button class = "temp-btn" onclick = "adjustTemperature('living', 1)">+</button>
-											<span class="temp-display" id="living-temp">20</span>
-											<button class = "temp-btn" onclick = "adjustTemperature('living', -1)">-</button>
+											<button class="temp-btn" onclick="changeTemperature('38', 1)">+</button>
+											<span class="temp-display" id="room-38-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('38', -1)">-</button>
 										</div>
-										<span class="actual-temp" id="actual-Living">18°</span>
+										<span class="actual-temp" id="actual-room-38">18°</span>
 								</div>
 								
 								<!-- Kitchen section. -->
 								<div class = "temp-column">
 									<h3 class = "room-header">Kitchen</h3>
 										<div class = "temp-control">
-											<button class = "temp-btn" onclick = "adjustTemperature('kitchen', 1)">+</button>
-											<span class="temp-display" id="kitchen-temp">20</span>
-											<button class = "temp-btn" onclick = "adjustTemperature('kitchen', -1)">-</button>
+											<button class="temp-btn" onclick="changeTemperature('37', 1)">+</button>
+											<span class="temp-display" id="room-37-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('37', -1)">-</button>
 										</div>
-										<span class="actual-temp" id="actual-Kitchen">15°</span>
+										<span class="actual-temp" id="actual-room-37">15°</span>
 								</div>
 								
 								<!-- Bedroom 1 section. -->
 								<div class = "temp-column">
 									<h3 class = "room-header">Bedroom 1</h3>
 										<div class = "temp-control">
-											<button class = "temp-btn" onclick = "adjustTemperature('bedroom1', 1)">+</button>
-											<span class="temp-display" id="bedroom1-temp">20</span>
-											<button class = "temp-btn" onclick = "adjustTemperature('bedroom1', -1)">-</button>
+											<button class="temp-btn" onclick="changeTemperature('39', 1)">+</button>
+											<span class="temp-display" id="room-39-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('39', -1)">-</button>
 										</div>
-										<span class="actual-temp" id="actual-Bedroom1">19°</span>
+										<span class="actual-temp" id="actual-room-39">19°</span>
 								</div>
 								
 								<!-- Bedroom 2 section. -->
 								<div class = "temp-column">
 									<h3 class = "room-header">Bedroom 2</h3>
 										<div class = "temp-control">
-											<button class = "temp-btn" onclick = "adjustTemperature('bedroom2', 1)">+</button>
-											<span class="temp-display" id="bedroom2-temp">20</span>
-											<button class = "temp-btn" onclick = "adjustTemperature('bedroom2', -1)">-</button>
+											<button class="temp-btn" onclick="changeTemperature('40', 1)">+</button>
+											<span class="temp-display" id="room-40-temp">20</span>
+											<button class="temp-btn" onclick="changeTemperature('40', -1)">-</button>
 										</div>
-										<span class="actual-temp" id="actual-Bedroom2">23°</span>
+										<span class="actual-temp" id="actual-room-40">23°</span>
 								</div>
 								
 								<div class="temp-column temp-info-column">
@@ -113,12 +117,12 @@
 				</div>
 			</div>
             
-			<!-- Unsure what this script is for particularly? -CS. -->
-           <script src="../JS/home.js"></script>
+			<!-- Unsure what this script is for particularly? -CS. <script src="../JS/home.js"></script> -->
+           
         </div>
 
 		<!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
-        <script src="../JS/roomExample.js"></script>
+        <script src="../JS/heating.js"></script>
     </main>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heating</title>
+    <link rel="stylesheet" href="../CSS/rooms.css" /> 
+    <title>Smarthome System</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle"><b>Heating</b></h1>
+    </header>
+    <main>
+        <div id="page">
+            <div>
+            <div id="sidenav">
+                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                <hr>
+               
+                <a class="sidenavItems" href="Heating.html">Heating</a>
+                <hr>
+				<a id = "selected" class="sidenavItems" href="lighting.html">Lighting</a>
+				<hr>
+                <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+                <hr>
+                <a class="sidenavItems" href="security.html">Security</a>
+                <hr>
+                <a class="sidenavItems" href="settings.html">Settings</a>
+                <hr>
+				<a class="sidenavItems" href="overview.html">Home View</a>
+				<hr>
+            </div>
+            
+            </div>
+			
+			<div id="addRoomModal" style="display: none;">
+				<div id="addRoomForm">
+                    <input type="text" id="roomName" placeholder="Enter room name">
+                    <button id="createRoomButton">Create</button>
+                    <button id="cancelRoomButton">Cancel</button>
+                </div>
+            </div>
+
+				<!-- Contains everything opposite the primary buttons. -->
+				<div id="right-panel" style="margin-left: 20%;">
+					<!-- Implements the 'lights' section. -->
+					<div id="lights-section" class="dynamic-section">
+						<button id="kitchen-mainLight" class="light-btn green" onclick="toggleLights(37, 'Kitchen')">MAIN LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id="living-room-mainLight" class="light-btn red" onclick="toggleLights(38, 'Living Room')">TABLE LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id="bedroom-1-mainLight" class="light-btn green" onclick="toggleLights(39, 'Bedroom 1')">BAR LIGHTS <span class="gear-icon">⚙️</span></button>
+						<button id="bedroom-2-mainLight" class="light-btn red" onclick="toggleLights(40, 'Bedroom 2')">COUNTER LIGHTS <span class="gear-icon">⚙️</span></button>
+					</div>
+					
+	
+
+					<!-- Implements the 'oven' section. -->
+					<div id="oven-section" class="dynamic-section hidden">
+						Oven Content
+					</div>
+				</div>
+			</div>
+            
+			<!-- Unsure what this script is for particularly? -CS. <script src="../JS/home.js"></script> -->
+           
+        </div>
+
+		<!-- Incorporates all the JavaScript for the Temperature/Lights/Oven buttons. -->
+        <script src="../JS/lighting.js"></script>
+    </main>
+</body>
+</html>

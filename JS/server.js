@@ -213,16 +213,23 @@ app.delete('/houses/:houseId', async (req, res) => {
   }
 });
 
-// Add a new room
+// Add a new room and automatically generate a related temperature entry.
 app.post('/houses/houseId/rooms', authenticate, async (req, res) => {
   const house_id = req.user.house_id;
   const { name } = req.body; 
   try {
     const result = await query('INSERT INTO rooms (house_id, name) VALUES (?, ?)', [house_id, name]);
-    
+    const roomId = result.insertId // Acquires the auto-generated room ID.
+	
+	// Inserts the new temperature entry for the added room.
+	await query (
+		'INSERT INTO temperature (room_id, house_id, actual_temp, target_temp) VALUES (?, ?, ?, ?)',
+		[roomId, house_id, 20, 20]
+	)
     
     res.status(201).json({
       message: 'Room added successfully',
+	  roomId,
       name
     });
   } catch (err) {
@@ -364,6 +371,145 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
     console.error('Error updating devices:', error);
     res.status(500).send('Error updating devices.');
   }
+});
+
+// Fetch all the necessary room temperatures.
+app.get('/rooms/temperature', async (req, res) => {
+    try {
+        const rooms = await query(`
+            SELECT t.room_id, r.name AS room_name, t.target_temp, t.actual_temp
+            FROM temperature t
+            JOIN rooms r ON t.room_id = r.id
+        `);
+        console.log(rooms);
+        res.json(rooms);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+
+// Update the TARGET temperature for a specific room.
+app.put('/rooms/:roomId/temperature', async (req, res) => {
+    const { roomId } = req.params;
+    const { target_temp } = req.body;
+
+    try {
+        await query('UPDATE temperature SET target_temp = ? WHERE room_id = ?', [target_temp, roomId]);
+        res.status(200).json({ message: 'Target temperature updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Update the ACTUAL temperature for a specific room.
+app.put('/rooms/:roomId/actualTemp', async (req, res) => {
+    const { roomId } = req.params;
+    const { actual_temp } = req.body;
+
+    console.log(`Received request to update room ${roomId}: ${actual_temp}`);
+
+    try {
+        const result = await query('UPDATE temperature SET actual_temp = ? WHERE room_id = ?', [actual_temp, roomId]);
+
+        if (result.affectedRows === 0) {
+            console.warn(`No rows affected for room: ${roomId}`);
+            return res.status(404).json({ error: "Room not found or actual_temp already set!" });
+        }
+
+        console.log(`Updated ${roomId} to actualTemp: ${actual_temp}`);
+
+        res.status(200).json({ message: 'Actual temperature updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+// Acquire all the room light states that aren't kitchen-specific.
+app.get('/rooms/lights', async (req, res) => {
+    try {
+        const lights = await query(`
+            SELECT l.room_id, r.name AS room_name, l.state 
+            FROM lighting l
+            JOIN rooms r ON l.room_id = r.id
+        `);
+        console.log(lights); // Debugging process!
+        res.json(lights);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error!');
+    }
+});
+
+
+// Acquire all the kitchen-specific lights. Redundant, but kept in event of need.
+app.get('/rooms/kitchen/lights', async (req, res) => 
+{
+    try 
+	{
+        const kitchenLights = await query('SELECT roomID, tableLight, barLight, counterLight FROM tempRooms WHERE roomName = "Kitchen"');
+        res.json(kitchenLights);
+    } catch (err) 
+	{
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+app.put('/rooms/:roomId/light', async (req, res) => {
+    const { roomId } = req.params;
+    const { state } = req.body; // Expects 'true' or 'false'
+
+    try {
+        const result = await query(`
+            UPDATE lighting 
+            SET state = ? 
+            WHERE room_id = ?
+        `, [state, roomId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No matching room/light found!" });
+        }
+
+        console.log(`Updated room ${roomId} light state to ${state}`); // Debugging process!
+
+        res.status(200).json({ message: `Light for room ${roomId} updated successfully.` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Toggles kitchen-specific lights whenever a button is pressed. Redundant, but kept in event of need.
+app.put('/rooms/kitchen/lights', async (req, res) => 
+{
+    const { lightType, state } = req.body; 
+
+    if (!["tableLight", "barLight", "counterLight"].includes(lightType)) 
+	{
+        return res.status(400).json({ error: "Invalid light type" });
+    }
+
+    try 
+	{
+        const result = await query(`UPDATE tempRooms SET ${lightType} = ? WHERE roomName = "Kitchen"`, [state]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No records updated, check lightType value" });
+        }
+
+        res.status(200).json({ message: `${lightType} updated successfully` });
+    } 
+	catch (err) 
+	{
+        console.error("SQL Error:", err);
+        res.status(500).send('Server error');
+    }
 });
 
 // Start the server
