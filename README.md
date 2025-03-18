@@ -26,13 +26,6 @@ Easy Cribs is our smart home system that we are developing for F29PD. It is used
 - Ali's-version: A version of our main which Ali has been using to create the login, sign up and welcome pages of our website.
 
 
-## Testing
-
-### All the testing completed will be documented here
-
-The testing we have used on this project is ... TBC.
-
-
 ## License
 
 ### Any licensing that has been used will be documented below
