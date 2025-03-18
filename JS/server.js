@@ -51,13 +51,12 @@ app.get('/users/:email', async (req, res) => {
 });
 
 // Invite user to house
-app.patch(`/users/:email`, authenticate, async (req, res) => {
+app.patch(`/users/:email/:houseId`, async (req, res) => {
 
-  const { email } = req.params;
-  const landlord_id = req.user.id;
+  const { email, houseId } = req.params;
 
   try {
-    await query('UPDATE users SET invite = ? WHERE email = ?', [landlord_id, email])
+    await query('UPDATE users SET invite = ? WHERE email = ?', [houseId, email])
     res.send("User invited");
   } catch (err) {
     console.error(err);
@@ -66,12 +65,12 @@ app.patch(`/users/:email`, authenticate, async (req, res) => {
 });
 
 // Get Landlord name for invite
-app.get(`/users/landlordName/:landlordId`, async (req, res) => {
+app.get(`/users/landlordName/:houseId`, async (req, res) => {
 
-  const { landlordId } = req.params;
+  const { houseId } = req.params;
 
   try {
-      const [landlordName] = await query('SELECT name FROM users WHERE id = ?', [landlordId]);
+      const [landlordName] = await query('SELECT u.name FROM users u JOIN houses h ON u.id = h.landlord_id WHERE h.id = ?;', [houseId]);
       res.json(landlordName);
   } catch (err) {
     console.error(err);
@@ -80,16 +79,14 @@ app.get(`/users/landlordName/:landlordId`, async (req, res) => {
 });
 
 // Add user to house
-app.patch('/users/invite/:landlordId', authenticate, async (req, res) => {
-  const { landlordId } = req.params;
+app.patch('/users/invite/', authenticate, async (req, res) => {
+  const houseId = req.user.invite;
   const { accept } = req.body;
   const userId = req.user.id;
 
   try {
       if (accept) {
-          const [house] = await query('SELECT id FROM houses WHERE landlord_id = ?', [landlordId]);
-          if (!house) return res.status(404).send('House not found');
-          await query('UPDATE users SET house_id = ? WHERE id = ?', [house.id, userId]);
+          await query('UPDATE users SET house_id = ? WHERE id = ?', [houseId, userId]);
       }
           await query('UPDATE users SET invite = NULL WHERE id = ?', [userId]);
           const [updatedUser] = await query('SELECT * FROM users WHERE id = ?', [userId]);
@@ -182,24 +179,6 @@ app.get('/getdev/:deviceId', async (req, res) => {
   try {
     const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
 	res.json(response);
-  } catch (err) {
-    console.error('Error fetching house:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-// Fetch device information and flip state
-app.get('/togdev/:deviceId', async (req, res) => {
-  const { deviceId} = req.params; // Extract deviceId
-  try {
-    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-	if (response[0].state == 1) {
-		const temp = await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
-	}
-	else {
-		const temp = await query('UPDATE devices SET state = 1 WHERE id = ?', [deviceId]);
-	}
-    res.json(response);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
@@ -392,16 +371,15 @@ app.get('/totPower/user/month', async (req, res) => {
 });
 
 // Fetch devices with a specific state and house ID
-app.get('/devices/fault', authenticate, async (req, res) => {
+app.get(`/devices/fault`, authenticate, async (req, res) => {
 
 
   const houseId = req.user.house_id; // Access house_id directly from req.user
-
   try {
     // Query the database to get devices with the specified state and house ID
-    const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT null', [houseId]);
-
+    const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT NULL', [houseId]);
     if (devices.length === 0) {
+      console.error("No devices found with the specified state and house ID")
       return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
     }
 
@@ -414,25 +392,15 @@ app.get('/devices/fault', authenticate, async (req, res) => {
 });
 
 
-// Fetch devices with a specific state and house ID
-app.post('/fault/devices/:deviceId', authenticate, async (req, res) => {
-
+// Fault device
+app.patch('/fault/devices/:deviceId', async (req, res) => {
   const { deviceId } = req.params;
-  
-
   try {
-    // Query the database to get devices with the specified state and house ID
-    const devices = await query('UPDATE devices SET state = 0 WHERE device_id = ?', [deviceId]);
-
-    if (devices.length === 0) {
-      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
-    }
-
-    // Send the devices as a response
-    res.json(devices);
-  } catch (err) {
-    console.error('Error fetching devices:', err);
-    res.status(500).send('Server error');
+    await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
+    res.send('Device updated successfully');
+  } catch (error) {
+    console.error('Error faulting device:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

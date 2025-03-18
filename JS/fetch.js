@@ -1,5 +1,6 @@
 if (location.href.split("/").slice(-1)[0] != "energyUsage.html") {
 let currentRoomId;
+let currentHouseId;
 
 // #####################################################################
 //                          GET TOKEN
@@ -37,27 +38,6 @@ function validateEmail(email) {
     return emailPattern.test(email);
     
     }
-
-// #####################################################################
-//                          TOGGLE Device Status
-// #####################################################################
-async function togglestatus(deviceId) {
-	const token = localStorage.getItem('token');  // Retrieve token from localStorage
-	const userId = getUserFromToken().id;
-	
-	const response = await fetch(`/togdev/${deviceId}`);
-	let device = await response.json();
-	if (device[0].state == 1) {
-		await fetch(`/sessions/${deviceId}/end`, {method: 'PATCH'});
-	}
-	else {
-		await fetch(`/sessions/${deviceId}/${userId}`, {method: 'POST'});
-	}
-	
-}
-window.togglestatus = togglestatus;
-
-    
 
 // #####################################################################
 //                          FETCH ROOMS
@@ -105,6 +85,11 @@ async function fetchRooms() {
     
         // Append the button to the container
         roomContainer.appendChild(button);
+
+        const modal = document.getElementById('addRoomModal')
+        button.addEventListener("click", () => {
+            modal.style.display = 'block';
+        })
 
         // Create add new appliance button
         const devButton = document.createElement('button');
@@ -210,7 +195,6 @@ async function faultDevice() {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
             }
         });
 
@@ -228,25 +212,15 @@ async function faultDevice() {
         // Randomly select an active device
         const randomDevice = devices[Math.floor(Math.random() * devices.length)];
 
-        
-
         const deviceId = randomDevice.id;
         // Update the state of the selected device to 0 (fault)
-        const updateResponse = await fetch(`/fault/devices/${deviceId}`,  {
+        await fetch(`/fault/devices/${deviceId}`,  {
             method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-         
         });
-
-        if (!updateResponse.ok) {
-            throw new Error('Failed to update device state');
-        }
 
         // Alert the user about the faulted device
         alert(`Device ${randomDevice.name} (ID: ${randomDevice.id}) has been set to fault state.`);
+        window.location.href = 'dashboard.html';
     } catch (error) {
         console.error('Error faulting device:', error);
     }
@@ -392,6 +366,7 @@ const addHouseModal = document.getElementById("addHouseModal");
 async function fetchCurrentHouse(houseId) {
 
     try {
+        currentHouseId = houseId;
         const token = localStorage.getItem('token');  // Retrieve token from localStorage
         const houseResponse = await fetch(`/houses/${houseId}`, {
             method: 'GET',
@@ -440,7 +415,7 @@ async function fetchCurrentHouse(houseId) {
                         if (!validateEmail(tenantEmailInput)) {
                         document.getElementById("tenantEmail").value = "";
                         } 
-                        const result = await inviteTenant(tenantEmailInput);
+                        const result = await inviteTenant(tenantEmailInput, currentHouseId);
                         if (result) {
                           alert("Tenant Invited");
                         }
@@ -486,7 +461,7 @@ async function fetchCurrentHouse(houseId) {
 //                          INVITE TENANT
 // #####################################################################
 
-async function inviteTenant(tenantEmail) {
+async function inviteTenant(tenantEmail, houseId) {
     try {
         const response = await fetch(`/users/${tenantEmail}`, {
             method: 'GET',
@@ -504,11 +479,8 @@ async function inviteTenant(tenantEmail) {
     }
 
     const token = localStorage.getItem(`token`);
-    await fetch(`/users/${tenantEmail}`, {
+    await fetch(`/users/${tenantEmail}/${houseId}`, {
         method: 'PATCH',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        }
     });
     return true;
 
@@ -538,9 +510,7 @@ async function handleInvite(accept) {
     try {
         const token = localStorage.getItem('token');
         const user = getUserFromToken();
-        const landlordId = user.invite;
-
-        const response = await fetch(`/users/invite/${landlordId}`, {
+        const response = await fetch(`/users/invite/`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -830,7 +800,6 @@ function handleRoomButtonClick(event) {
 async function displayDevice(device) {
     const panel = document.getElementById('right-panel');
 
-
     try {
 
         // Clear the panel and display device info with a toggle switch
@@ -842,7 +811,7 @@ async function displayDevice(device) {
                 <p><strong>Power Usage:</strong> ${device.powerUsage} kWh</p>
                 
                 <label class="switch">
-                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked' : ''} onclick="togglestatus(${device.id});">
+                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''}>
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -855,6 +824,7 @@ async function displayDevice(device) {
         toggleSwitch.addEventListener('change', async () => {
             const newState = toggleSwitch.checked ? 1 : 0;
             deviceStatus.textContent = newState === 1 ? 'On' : 'Off';
+            device.state = newState;
 
             try {
                 await fetch(`/updateDevice/${device.id}`, {
