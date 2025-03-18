@@ -426,8 +426,8 @@ app.post('/sessions/:deviceId/:userId', authenticate, async (req, res) => {
 });
 
 //End a session
-app.patch('/sessions/:deviceId/:userId/end', authenticate, async (req, res) => {
-  const {deviceId, userId} = req.params;
+app.patch('/sessions/:deviceId/end', authenticate, async (req, res) => {
+  const deviceId = req.params;
   try {
     const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND sesend = NULL;', [deviceId]);
     
