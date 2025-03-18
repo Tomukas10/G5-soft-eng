@@ -177,9 +177,28 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
+  							console.log(deviceId);
   try {
-    const [device] = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
-    res.json(device);
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	res.json(response);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Fetch device information and flip state
+app.get('/togdev/:deviceId', async (req, res) => {
+  const { deviceId} = req.params; // Extract deviceId
+  try {
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+	if (response[0].state == 1) {
+		const temp = await query('UPDATE devices SET state = 0 WHERE id = ?', [deviceId]);
+	}
+	else {
+		const temp = await query('UPDATE devices SET state = 1 WHERE id = ?', [deviceId]);
+	}
+    res.json(response);
   } catch (err) {
     console.error('Error fetching house:', err);
     res.status(500).send('Server error');
@@ -436,15 +455,13 @@ app.patch('/rooms/:roomId/devices', async (req, res) => {
 });
 
 //Start a new session
-app.post('/sessions/:deviceId', authenticate, async (req, res) => {
-  const {deviceId} = req.params;
-  const { userId } = req.body;
+app.post('/sessions/:deviceId/:userId', async (req, res) => {
+  const {deviceId, userId} = req.params;
   try {
     const result = await query('INSERT INTO sessions (sesid, deviceid, userid, sesstart, sesend, sesError) VALUES (NULL, ?, ?, NOW(), NULL, NULL);', [deviceId, userId]);
     
     res.status(201).json({
-      message: 'Session started successfully',
-      name
+      message: 'Session started successfully'
     });
   } catch (err) {
     console.error(err);
@@ -453,14 +470,13 @@ app.post('/sessions/:deviceId', authenticate, async (req, res) => {
 });
 
 //End a session
-app.patch('/sessions/:deviceId/end', authenticate, async (req, res) => {
+app.patch('/sessions/:deviceId/end', async (req, res) => {
   const {deviceId} = req.params;
   try {
-    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND sesend = NULL;', [deviceId]);
+    const result = await query('UPDATE sessions SET sesend = NOW() WHERE deviceid = ? AND sesend IS NULL', [deviceId]);
     
     res.status(201).json({
-      message: 'Session ended successfully',
-      name
+      message: 'Session ended successfully'
     });
   } catch (err) {
     console.error(err);
