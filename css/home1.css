@@ -655,7 +655,7 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(22px);
 }
-/* ================= ACCESSIBILITY BUTTON ================= */
+/* =================== ACCESSIBILITY BUTTON =================== */
 #accessibilityBtn {
     position: fixed;
     top: 10px;
@@ -676,11 +676,7 @@ input:checked + .slider:before {
     background-color: #666;
 }
 
-#accessibilityBtn:hover {
-    background-color: #666;
-}
-
-/* Dropdown Menu */
+/* =================== DROPDOWN MENU =================== */
 #accessibilityDropdown {
     display: none;
     position: absolute;
@@ -715,13 +711,12 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Nested Dropdown */
+/* =================== NESTED DROPDOWN =================== */
 .nested-dropdown {
     position: relative;
     width: 100%;
 }
 
-/* Main Button for Nested Dropdown */
 .nested-dropdown-btn {
     background: none;
     border: none;
@@ -745,52 +740,73 @@ input:checked + .slider:before {
     border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
-/* Default Text Size */
-body {
-    font-size: 1em; /* Normal */
-}
 
-/* Slightly Larger */
-.larger-text-1-2x * {
-    font-size: 1.05em !important;
-}
-
-/* Medium Larger */
-.larger-text-1-5x * {
-    font-size: 1.1em !important;
-}
-
-/* Largest */
-.larger-text-2x * {
-    font-size: 1.15em !important;
-}
-
-/* Show submenu when hovering */
 .nested-dropdown:hover .nested-dropdown-content {
     display: block;
 }
 
-/* Fix "Add Device" button from shifting */
-#addDeviceButton {
-    position: fixed;  /* Keeps it in place */
-    bottom: 5vh;  /* Adjust as needed */
-    right: 3vw;  /* Keep it aligned */
-    z-index: 1000; /* Ensure it stays on top */
+/* =================== TEXT SIZE FIX (APPLYING TO BODY) =================== */
+html, body {
+    font-size: 16px !important;
 }
 
-/* Ensure high contrast doesn't affect its position */
-.high-contrast #addDeviceButton {
+.larger-text-1-2x {
+    font-size: 1.2rem !important;
+}
+
+.larger-text-1-5x {
+    font-size: 1.5rem !important;
+}
+
+.larger-text-2x {
+    font-size: 2rem !important;
+}
+/* =================== BOTTOM BUTTONS =================== */
+/* Fix "Fault random device" button */
+#addFaultArea {
+    position: fixed;    /* Keeps it in place */
+    bottom: 3vh;        /* Positions it at the bottom */
+    left: 3vw;          /* Keeps it on the left */
+    z-index: 1000;      /* Ensures it doesn't go behind other elements */
+    width: auto;
+    min-width: 120px;
+    padding: 10px 15px;
+    background: white;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    text-align: center;
+}
+/* Keep Add Device Button Fixed in Bottom Right */
+#addDeviceButton {
     position: fixed !important;
     bottom: 5vh !important;
     right: 3vw !important;
+    z-index: 1000 !important;
 }
-/* High Contrast Mode */
+
+/* Ensure Color Blindness Mode Does NOT Affect Position */
+.protanopia-mode #addDeviceButton,
+.deuteranopia-mode #addDeviceButton,
+.tritanopia-mode #addDeviceButton {
+    position: fixed !important;
+    bottom: 5vh !important;
+    right: 3vw !important;
+    z-index: 1000 !important;
+    filter: none !important; /* Prevents unwanted changes */
+}
+
+/* =================== HIGH CONTRAST MODE =================== */
 .high-contrast {
     background-color: black !important;
     color: yellow !important;
 }
 
-.high-contrast h1, .high-contrast h2, .high-contrast p, .high-contrast a, .high-contrast button {
+.high-contrast h1, 
+.high-contrast h2, 
+.high-contrast p, 
+.high-contrast a, 
+.high-contrast button {
     color: yellow !important;
 }
 
@@ -800,52 +816,29 @@ body {
     border: 2px solid yellow !important;
 }
 
-/* Text Size */
-.larger-text-1-2x { font-size: 1.1em !important; }
-.larger-text-1-5x { font-size: 1.25em !important; }
-.larger-text-2x { font-size: 1.4em !important; }
-
-/* Apply color blindness filters ONLY to content, NOT buttons */
+/* =================== COLOR BLINDNESS MODES (FIXED) =================== */
 .protanopia-mode #page, 
 .protanopia-mode #mainPanel, 
-.protanopia-mode .roomButton, 
-.protanopia-mode #appliances {
-    filter: contrast(1.5) hue-rotate(20deg) saturate(1.3);
+.protanopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(20deg) saturate(1.5);
 }
 
 .deuteranopia-mode #page, 
 .deuteranopia-mode #mainPanel, 
-.deuteranopia-mode .roomButton, 
-.deuteranopia-mode #appliances {
-    filter: contrast(1.4) hue-rotate(-20deg) saturate(1.3);
+.deuteranopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(-20deg) saturate(1.5);
 }
 
 .tritanopia-mode #page, 
 .tritanopia-mode #mainPanel, 
-.tritanopia-mode .roomButton, 
-.tritanopia-mode #appliances {
-    filter: contrast(1.6) hue-rotate(40deg) saturate(1.4);
+.tritanopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(40deg) saturate(1.5);
 }
 
 /* Ensure buttons, right panel, and bottom elements are NOT affected */
-.protanopia-mode #right-panel, 
-.protanopia-mode .logout-btn, 
-.protanopia-mode #addDevicearea, 
-.protanopia-mode #addNewDeviceModal {
-    filter: none !important;
-}
-
-.deuteranopia-mode #right-panel, 
-.deuteranopia-mode .logout-btn, 
-.deuteranopia-mode #addDevicearea, 
-.deuteranopia-mode #addNewDeviceModal {
-    filter: none !important;
-}
-
-.tritanopia-mode #right-panel, 
-.tritanopia-mode .logout-btn, 
-.tritanopia-mode #addDevicearea, 
-.tritanopia-mode #addNewDeviceModal {
+.protanopia-mode button, 
+.deuteranopia-mode button, 
+.tritanopia-mode button {
     filter: none !important;
 }
 
