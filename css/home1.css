@@ -777,24 +777,7 @@ html, body {
     border-radius: 5px;
     text-align: center;
 }
-/* Keep Add Device Button Fixed in Bottom Right */
-#addDeviceButton {
-    position: fixed !important;
-    bottom: 5vh !important;
-    right: 3vw !important;
-    z-index: 1000 !important;
-}
 
-/* Ensure Color Blindness Mode Does NOT Affect Position */
-.protanopia-mode #addDeviceButton,
-.deuteranopia-mode #addDeviceButton,
-.tritanopia-mode #addDeviceButton {
-    position: fixed !important;
-    bottom: 5vh !important;
-    right: 3vw !important;
-    z-index: 1000 !important;
-    filter: none !important; /* Prevents unwanted changes */
-}
 
 /* =================== HIGH CONTRAST MODE =================== */
 .high-contrast {

@@ -754,8 +754,6 @@ async function fetchDevices(roomId) {
         const appliancesContainer = document.createElement('div');
         appliancesContainer.id = 'appliances-container';
 
-        
-
         const divider = document.createElement("div");
         divider.id = 'divider';
 
