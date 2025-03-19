@@ -517,6 +517,21 @@ app.get('/rooms/temperature', authenticate, async (req, res) => {
     }
 });
 
+// Get current energy usage for a house
+app.get('/houses/:houseId/energy', async (req, res) => {
+  const { houseId } = req.params; // Get house_id from request params
+
+  try {
+      // Get the total energy usage for the house
+      const devices = await query('SELECT powerUsage FROM devices WHERE house_id = ? AND state = 1', [houseId]);
+
+      // Respond with the total energy usage
+      res.json(devices);
+  } catch (err) {
+      console.error('Error fetching energy usage:', err);
+      res.status(500).json({ error: 'Unable to fetch energy usage' });
+  }
+});
 
 // Update the TARGET temperature for a specific room.
 app.put('/rooms/:roomId/temperature', async (req, res) => {

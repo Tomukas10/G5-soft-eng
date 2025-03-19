@@ -234,7 +234,6 @@ async function faultDevice() {
 
 async function fetchHouses() {
     try {
-        const cancelButton = document.getElementById('cancelHouseButton');
         const token = localStorage.getItem('token');
         
         if (!token) {
@@ -260,7 +259,7 @@ async function fetchHouses() {
         const houses = await response.json();
 
         const mainPanel = document.getElementById('mainPanel');
-        mainPanel.innerHTML = '';
+        mainPanel.innerHTML = '<div id="houseContainer"></div>';
 
         const button = document.createElement('button');
         button.classList.add('houseButton');
@@ -285,7 +284,7 @@ async function fetchHouses() {
         button.appendChild(buttonText);
 
         // Append the button to the container
-        mainPanel.appendChild(button);
+        houseContainer.appendChild(button);
 const addHouseButton = document.getElementById('addHouseButton');
     
 const addHouseModal = document.getElementById("addHouseModal");
@@ -293,20 +292,9 @@ const addHouseModal = document.getElementById("addHouseModal");
         addHouseModal.style.display = "block"; // Show the modal
     });
 
-    cancelButton.addEventListener('click', () => {
-        addHouseModal.style.display = 'none';
-    });
 
-    const houseNameInput = document.getElementById("houseName")
-    const houseAddressInput = document.getElementById("houseAddress")
     
-    createHouseButton.addEventListener("click", async () => {
-        const houseName = houseNameInput.value.trim();
-        const address = houseAddressInput.value.trim();
-       addHouse(houseName, address);
-       houseNameInput.value = "";
-       houseAddressInput.value = "";
-    });
+
 
     // Add a button for each room
     houses.forEach(house => {
@@ -351,13 +339,37 @@ const addHouseModal = document.getElementById("addHouseModal");
         button.appendChild(icon);
         button.appendChild(houseName);
 
-        mainPanel.insertBefore(button, addHouseButton);
+        houseContainer.insertBefore(button, addHouseButton);
         
    
     });
 
     } catch (error) {
         console.error('Error fetching houses:', error);
+    }
+}
+
+// #####################################################################
+//                          CALCULATE ENERGY USAGE
+// #####################################################################
+
+async function calculateEnergyUsage(houseId) {
+    try {
+        // Query the database to get all devices with the specific house_id
+        const response = await fetch(`/houses/${houseId}/energy`, {
+            method: 'GET',
+        });
+        const devices = await response.json();
+        let total = 0;
+        // Calculate the total power usage
+       devices.forEach(device => {
+            total += (device.powerUsage); // Ensure no null/undefined values are added
+        });
+
+        return total;
+    } catch (err) {
+        console.error('Error calculating energy usage:', err);
+        throw new Error('Unable to calculate energy usage');
     }
 }
 
@@ -405,8 +417,10 @@ async function fetchCurrentHouse(houseId) {
                                 </div>
                                 <div id="divider"></div>
                                 <div id="right-panel"></div>`
-    
-        document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
+        const currentEnergyUsage = await calculateEnergyUsage(house.id);
+        document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1>
+                                                            <strong>Current Energy Usage: </strong>${currentEnergyUsage} kWh
+                                                            <br><br>
                                                             Invite tenant to house:
                                                             <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
                         <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
@@ -430,7 +444,7 @@ async function fetchCurrentHouse(houseId) {
             users.forEach( user => {
             const userTab = document.createElement("button");
             userTab.className = 'appliance';
-            userTab.innerHTML = `${user.name} <br> ${user.email}`;
+            userTab.innerHTML = `${user.name} ${user.last_name} <br> ${user.email}`;
     
             // Add the delete button
             const deleteButton = document.createElement('span');
@@ -1276,6 +1290,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     startApp();
 
     // Add Room Button Click Event
+    const houseNameInput = document.getElementById("houseName");
+    const houseAddressInput = document.getElementById("houseAddress");
+    const createHouseButton = document.getElementById("createHouseButton")
+    const cancelHouseButton = document.getElementById("cancelHouseButton")
     const createRoomButton = document.getElementById("createRoomButton");
     const cancelRoomButton = document.getElementById("cancelRoomButton");
     const cancelDeviceButton = document.getElementById("cancelDeviceButton");
@@ -1297,12 +1315,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         addNewDeviceModal.style.display = "none"; // Hide the modal
     });
 
+    cancelHouseButton.addEventListener('click', () => {
+        addHouseModal.style.display = 'none';
+    });
+
+
     createNewDeviceButton.addEventListener("click", async () => {
         const newDevice = newDeviceInput.value.trim();
         addDevice(newDevice);
         newDeviceInput.value = "";
     });
 
+    createHouseButton.addEventListener("click", async () => {
+        const houseName = houseNameInput.value.trim();
+        const address = houseAddressInput.value.trim();
+       addHouse(houseName, address);
+       houseNameInput.value = "";
+       houseAddressInput.value = "";
+    });
 
     createRoomButton.addEventListener("click", async () => {
         const roomName = roomNameInput.value.trim();

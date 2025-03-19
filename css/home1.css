@@ -151,6 +151,17 @@ header {
     max-height: 65vh;
 }
 
+#houseContainer {
+    overflow-y: auto;
+    display: flex;
+	margin-left: 7%;
+	width: 80%;
+	height: 100%;
+    flex-wrap: wrap; 
+    max-height: 65vh;
+    gap: 10px;
+}
+
 .icon {
 	width: 15vh;
 	height: 15vh;
