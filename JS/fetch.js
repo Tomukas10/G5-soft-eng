@@ -39,6 +39,31 @@ function validateEmail(email) {
     
     }
 
+
+
+// #####################################################################
+//                          TOGGLE Device Status
+// #####################################################################
+async function togglestatus(deviceId) {
+	const token = localStorage.getItem('token');  // Retrieve token from localStorage
+	const payload = JSON.parse(atob(token.split(".")[1]));
+	const userId = payload.id;
+	
+	const response = await fetch(`/togdev/${deviceId}`);
+	let device = await response.json();
+	console.log(device[0].state);
+	if (device[0].state == 1) {
+		await fetch(`/sessions/${deviceId}/end`, {method: 'PATCH'});
+	}
+	else {
+		await fetch(`/sessions/${deviceId}/${userId}`, {method: 'POST'});
+	}
+	
+}
+window.togglestatus = togglestatus;
+
+ 
+	
 // #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
@@ -827,7 +852,7 @@ async function displayDevice(device) {
                 <p><strong>Power Usage:</strong> ${device.powerUsage} kWh</p>
                 
                 <label class="switch">
-                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''}>
+                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''} onclick="togglestatus(${device.id});">
                     <span class="slider round"></span>
                 </label>
             </div>

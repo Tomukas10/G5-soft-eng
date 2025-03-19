@@ -173,6 +173,20 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 });
 
 
+// Fetch device information and not flip state (happens elsewhere)
+app.get('/togdev/:deviceId', async (req, res) => {
+  const { deviceId} = req.params; // Extract deviceId
+  try {
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+
+
+    res.json(response);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
