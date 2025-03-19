@@ -454,10 +454,10 @@ text {
 }
 
 /* Manually positions each DIV box to simulate proper lights on/off functionality in the right rooms. */
-#kitchen-mainLight { top: 57%; left: 55%; width: 25.5%; height: 38%; }
-#living-room-mainLight { top: 56%; left: 18.8%; width: 35%; height: 39%; }
-#bedroom-1-mainLight { top: 4%; left: 18.8%; width: 25.1%; height: 41%; }
-#bedroom-2-mainLight { top: 4%; left: 55%; width: 25.1%; height: 33%; }
+#Kitchen-Lights { top: 57%; left: 55%; width: 25.5%; height: 38%; }
+#Living-Room-Lights { top: 56%; left: 18.8%; width: 35%; height: 39%; }
+#Bedroom-1-Lights { top: 4%; left: 18.8%; width: 25.1%; height: 41%; }
+#Bedroom-2-Lights { top: 4%; left: 55%; width: 25.1%; height: 33%; }
 
 /* Temperature Display */
 .temperature {

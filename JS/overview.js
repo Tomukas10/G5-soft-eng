@@ -8,7 +8,6 @@ function getActualTemperature() {
 
     actualTempInterval = setInterval(async () => {
         try {
-            console.log("Running getActualTemperature() cycle..."); // Debugging steps.
             const response = await fetch('/rooms/temperature', {
                 method: 'GET',
                 headers: {
@@ -17,10 +16,8 @@ function getActualTemperature() {
         });
             const data = await response.json();
 
-            console.log("Fetched Data:", data); // Debugging steps.
 
             const updatePromises = data.map(async room => {
-                console.log(`Processing room_id: ${room.room_id}`); // Debugging steps.
 
                 
                 const actualTempDisplay = document.getElementById(`actual-room-${room.room_id}`);
@@ -32,13 +29,11 @@ function getActualTemperature() {
                 let actualTemp = parseInt(actualTempDisplay.textContent);
                 let targetTemp = room.target_temp;
 
-                console.log(`Current: ${actualTemp}, Target: ${targetTemp}`); // Debugging steps.
 
                 if (actualTemp !== targetTemp) {
                     actualTemp += actualTemp < targetTemp ? 1 : -1;
                     actualTempDisplay.textContent = actualTemp;
 
-                    console.log(`Updating DB: Room ${room.room_id} -> ${actualTemp}`); // Debugging steps.
 
                     return fetch(`/rooms/${room.room_id}/actualTemp`, {
                         method: "PUT",
@@ -59,18 +54,22 @@ function getActualTemperature() {
 // Acquire light states from the database and display them for main lights.
 async function getLights() {
     try {
-        const response = await fetch('/rooms/lights');
+        const response = await fetch('/rooms/lights/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+            }
+        });
+
         const data = await response.json();
 
-        console.log("Light data from server:", data); 
 
-        data.forEach(room => {
-            const overlayId = `${room.room_name.toLowerCase().replace(/\s+/g, '-')}-mainLight`;
-            console.log(`Processing ${room.room_name}: light state = ${room.state}`);
+        data.forEach(light => {
+            const overlayId = light.name.replace(/ /g, '-');            ;
 
             const lightOverlay = document.getElementById(overlayId);
             if (lightOverlay) {
-                lightOverlay.classList.toggle('on', room.state);
+                lightOverlay.classList.toggle('on', light.state);
             } else {
                 console.warn(`No overlay found for: ${overlayId}`);
             }
@@ -85,9 +84,8 @@ function startAutoUpdate()
 {
     setInterval(async () => 
 	{
-        console.log("Updating home view.");
         await getLights();
-    }, 3000); // Update every three seconds.
+    }, 30); // Update every three seconds.
 }
 
 // Initiates the auto-updater once the DOM has been loaded.

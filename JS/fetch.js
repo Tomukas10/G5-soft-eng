@@ -662,7 +662,7 @@ async function addDevice(DeviceName) {
             // Prepare the new device data
             const newDevice = {
                 name: DeviceName,
-                type: "device",
+                type: DeviceName.toLowerCase().includes("lights") ? 'lights' : 'device',
                 room_id: null,
                 powerUsage: 20,
                 state: 0,

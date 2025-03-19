@@ -517,6 +517,18 @@ app.get('/rooms/temperature', authenticate, async (req, res) => {
     }
 });
 
+// Fetch all the necessary lights
+app.get('/rooms/lights', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;
+    try {
+        const lights = await query(`SELECT * FROM devices WHERE type = 'lights' AND house_id = ?`, [house_id]);
+        res.json(lights);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
 // Get current energy usage for a house
 app.get('/houses/:houseId/energy', async (req, res) => {
   const { houseId } = req.params; // Get house_id from request params
