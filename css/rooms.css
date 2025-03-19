@@ -222,7 +222,7 @@ header {
 
 .temp-btn:active 
 {
-    transform: scale(0.3);
+    transform: scale(0.9);
 }
 
 .temp-display 
