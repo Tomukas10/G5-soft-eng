@@ -395,10 +395,9 @@ async function fetchCurrentHouse(houseId) {
     
         
         const mainPanel = document.getElementById("mainPanel");
-        
-        mainPanel.innerHTML = ""; // Clears the existing appliance list
     
         mainPanel.innerHTML=`
+                                <button id="back-button">Back</button>
                                 <div id="appliances-container">
                                     <h3>List of Tenants</h3>
                                 </div>
@@ -409,12 +408,13 @@ async function fetchCurrentHouse(houseId) {
                                                             Invite tenant to house:
                                                             <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
                         <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
-    
+                    const backButton = document.getElementById('back-button');
+                    backButton.addEventListener("click", async () => {
+                        fetchHouses();
+                    });
                     inviteTenantButton.addEventListener("click", async () => {
                         const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
-                        if (!validateEmail(tenantEmailInput)) {
                         document.getElementById("tenantEmail").value = "";
-                        } 
                         const result = await inviteTenant(tenantEmailInput, currentHouseId);
                         if (result) {
                           alert("Tenant Invited");

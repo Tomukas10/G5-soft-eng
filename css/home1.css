@@ -306,6 +306,33 @@ header {
     margin-bottom: 10px;
 }
 
+#back-button {
+    position: relative;
+    margin-top: 10px;
+    margin-left: 10px;
+    background-color: white; /* Default greyed-out */
+    border-radius: 15px;
+    border: white;
+    width: 7vw;
+    height: 7vh;
+	margin-right: 6%;
+    font-size: 2.5vh;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+#back-button:hover {
+    background-color: #ddd;
+}
+
 #accessibilityBtn {
     position: relative;
     margin-top: 10px;
@@ -435,6 +462,14 @@ nav:hover > .navItems:hover{
     justify-content: center;
     z-index: 1000;
 }
+
+#addFaultArea {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+
 
 /* Modal Content */
 .addForm {
