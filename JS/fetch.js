@@ -1279,7 +1279,7 @@ async function startApp() {
             fetchRooms();
 
             document.getElementById('selected').addEventListener("click", () => {
-                document.getElementById('homeTitle').innerHTML = 'Dashboard';
+                document.getElementById('homeTitle').innerHTML = textContent = `Welcome, ${user.name} ${user.last_name}`;
                 fetchRooms();
             })
         } else if (user.invite === null) {

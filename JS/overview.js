@@ -26,13 +26,14 @@ function getActualTemperature() {
                     return;
                 }
 
+                actualTempDisplay.textContent = room.actual_temp + `°C`;
                 let actualTemp = parseInt(actualTempDisplay.textContent);
                 let targetTemp = room.target_temp;
-
+                console.log(room.actual_temp);
 
                 if (actualTemp !== targetTemp) {
                     actualTemp += actualTemp < targetTemp ? 1 : -1;
-                    actualTempDisplay.textContent = actualTemp;
+                    actualTempDisplay.textContent = actualTemp + `°C`;
 
 
                     return fetch(`/rooms/${room.room_id}/actualTemp`, {
