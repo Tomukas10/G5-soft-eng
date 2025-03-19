@@ -5,12 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../CSS/home1.css">
     <link rel="stylesheet" href="../CSS/energyUsage.css"> 
-	
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Title</title>
+    
+        <!-- Stylesheet -->
+        <link id="main" rel="stylesheet" href="../CSS/home1.css" />
+    
+        <!-- Accessibility Script -->
+        <script src="../JS/accessibility.js" defer></script>
+    </head>
+    
     <title>Energy Usage</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	
 </head>
 <body>
+    <!-- Accessibility Button -->
+    <button id="accessibilityBtn" aria-label="Toggle Accessibility Menu">Accessibility</button>
+
+    <!-- Dropdown Menu -->
+    <div id="accessibilityDropdown" class="dropdown-content">
+        <button id="toggleContrast">High Contrast</button>
+
+        <!-- Nested Dropdown for Text Size -->
+<div class="nested-dropdown">
+    <button class="nested-dropdown-btn">Text Size →</button>
+    <div class="nested-dropdown-content">
+        <button id="textSize-1-2x">Text 1.2x</button>
+        <button id="textSize-1-5x">Text 1.5x</button>
+        <button id="textSize-2x">Text 2x</button>
+        <button id="textSize-reset">Reset Text Size</button> <!-- NEW BUTTON -->
+    </div>
+</div>
+
+
+        <!-- Color Blindness Mode -->
+        <div class="nested-dropdown">
+            <button class="nested-dropdown-btn">Color Blind Mode →</button>
+            <div class="nested-dropdown-content">
+                <button id="colorBlind-protanopia">Protanopia</button>
+                <button id="colorBlind-deuteranopia">Deuteranopia</button>
+                <button id="colorBlind-tritanopia">Tritanopia</button>
+                <button id="resetAccessibility">Reset</button>
+            </div>
+        </div>
+    </div>
     <header>
         <h1 id="homeTitle"><b>Energy Usage Graph</b></h1>
     </header>
