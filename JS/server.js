@@ -670,6 +670,36 @@ app.put('/rooms/kitchen/lights', async (req, res) =>
     }
 });
 
+const { updateLeaderboard } = require('./leaderboard');
+
+// Fetches the leaderboard details from the leaderboard table.
+app.get('/leaderboard', async (req, res) => 
+	{
+    try 
+	{
+        const leaderboard = await query
+		(`
+            SELECT * FROM leaderboard
+            ORDER BY total_energy ASC, rank ASC
+        `);
+        res.json(leaderboard);
+    } catch (err) {
+        console.error("Error fetching the leaderboard!", err);
+        res.status(500).json({ error: "Failed to fetch the leaderboard!" });
+    }
+});
+
+// Updates the leaderboard for the latest values.
+app.get('/updateLeaderboard', async (req, res) => {
+    try {
+        await updateLeaderboard();
+        res.status(200).json({ message: "Leaderboard updated successfully!" });
+    } catch (err) {
+        console.error("Error updating leaderboard:", err);
+        res.status(500).json({ error: "Failed to update leaderboard." });
+    }
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
