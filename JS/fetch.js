@@ -230,7 +230,7 @@ async function faultDevice() {
         const devices = await response.json();
 
         if (devices.length === 0) {
-            console.log('No active devices found.');
+            alert('No active devices found.');
             return;
         }
 

@@ -392,11 +392,6 @@ app.get(`/devices/fault`, authenticate, async (req, res) => {
   try {
     // Query the database to get devices with the specified state and house ID
     const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT NULL', [houseId]);
-    if (devices.length === 0) {
-      console.error("No devices found with the specified state and house ID")
-      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
-    }
-
     // Send the devices as a response
     res.json(devices);
   } catch (err) {
