@@ -5,10 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lighting</title>
     <link rel="stylesheet" href="../CSS/rooms.css" /> 
+<script src="../JS/accessibility.js" defer></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Title</title>
+    
+        <!-- Stylesheet -->
+        <link id="main" rel="stylesheet" href="../CSS/home1.css" />
+    
+        <!-- Accessibility Script -->
+        <script src="../JS/accessibility.js" defer></script>
+    </head>
+    
+    <title>Smarthome System</title>
 </head>
 <body>
+    <body id="body"> 
+        <!-- Accessibility Button -->
+        <button id="accessibilityBtn">Accessibility</button>
+    
+        <!-- Dropdown Menu -->
+        <div id="accessibilityDropdown">
+            <button id="toggleContrast">High Contrast</button>
+    
+        <!-- Nested Dropdown for Text Size -->
+        <div class="nested-dropdown">
+            <button class="nested-dropdown-btn">Text Size →</button>
+            <div class="nested-dropdown-content">
+                <button id="textSize-1-2x">Text 1.2x</button>
+                <button id="textSize-1-5x">Text 1.5x</button>
+                <button id="textSize-2x">Text 2x</button>
+                <button id="textSize-reset">Reset Text Size</button> <!-- NEW BUTTON -->
+            </div>
+        </div>
+    
+            <!-- Color Blind Mode -->
+            <div class="nested-dropdown">
+                <button class="nested-dropdown-btn">Color Blind Mode →</button>
+                <div class="nested-dropdown-content">
+                    <button id="colorMode-protanopia">Protanopia</button>
+                    <button id="colorMode-deuteranopia">Deuteranopia</button>
+                    <button id="colorMode-tritanopia">Tritanopia</button>
+                    <button id="colorMode-reset">Reset</button>
+                </div>
+            </div>
+        </div>
+    
     <header>
-        <h1 id="homeTitle">Lighting</h1>
+        <h1 id="homeTitle"><b>Heating</b></h1>
     </header>
     <main>
         <div id="page">
