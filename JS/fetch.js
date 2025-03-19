@@ -1365,6 +1365,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const deviceInput = document.getElementById('deviceName');
 
+    document.getElementById('logout').addEventListener("click", () => {
+        localStorage.removeItem('token');
+    })
+
     // Attach event listener to the Add Device button
     document.getElementById('confirmDeviceButton').addEventListener('click', () => {
         assignDeviceToRoom(currentRoomId);
