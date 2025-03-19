@@ -39,6 +39,31 @@ function validateEmail(email) {
     
     }
 
+
+
+// #####################################################################
+//                          TOGGLE Device Status
+// #####################################################################
+async function togglestatus(deviceId) {
+	const token = localStorage.getItem('token');  // Retrieve token from localStorage
+	const payload = JSON.parse(atob(token.split(".")[1]));
+	const userId = payload.id;
+	
+	const response = await fetch(`/togdev/${deviceId}`);
+	let device = await response.json();
+	console.log(device[0].state);
+	if (device[0].state == 1) {
+		await fetch(`/sessions/${deviceId}/end`, {method: 'PATCH'});
+	}
+	else {
+		await fetch(`/sessions/${deviceId}/${userId}`, {method: 'POST'});
+	}
+	
+}
+window.togglestatus = togglestatus;
+
+ 
+	
 // #####################################################################
 //                          FETCH ROOMS
 // #####################################################################
@@ -205,7 +230,7 @@ async function faultDevice() {
         const devices = await response.json();
 
         if (devices.length === 0) {
-            console.log('No active devices found.');
+            alert('No active devices found.');
             return;
         }
 
@@ -234,7 +259,6 @@ async function faultDevice() {
 
 async function fetchHouses() {
     try {
-        const cancelButton = document.getElementById('cancelHouseButton');
         const token = localStorage.getItem('token');
         
         if (!token) {
@@ -255,10 +279,12 @@ async function fetchHouses() {
             throw new Error(`Failed to fetch houses: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
+       
+        
         const houses = await response.json();
 
         const mainPanel = document.getElementById('mainPanel');
-        mainPanel.innerHTML = '';
+        mainPanel.innerHTML = '<div id="houseContainer"></div>';
 
         const button = document.createElement('button');
         button.classList.add('houseButton');
@@ -276,14 +302,14 @@ async function fetchHouses() {
 
         //add logout button
         const logout = document.getElementById("logout");
-        logout.style.display = "block";
+        logout.style.display = "none";
         
         // Append the spans to the button
         button.appendChild(plusSign);
         button.appendChild(buttonText);
 
         // Append the button to the container
-        mainPanel.appendChild(button);
+        houseContainer.appendChild(button);
 const addHouseButton = document.getElementById('addHouseButton');
     
 const addHouseModal = document.getElementById("addHouseModal");
@@ -291,20 +317,9 @@ const addHouseModal = document.getElementById("addHouseModal");
         addHouseModal.style.display = "block"; // Show the modal
     });
 
-    cancelButton.addEventListener('click', () => {
-        addHouseModal.style.display = 'none';
-    });
 
-    const houseNameInput = document.getElementById("houseName")
-    const houseAddressInput = document.getElementById("houseAddress")
     
-    createHouseButton.addEventListener("click", async () => {
-        const houseName = houseNameInput.value.trim();
-        const address = houseAddressInput.value.trim();
-       addHouse(houseName, address);
-       houseNameInput.value = "";
-       houseAddressInput.value = "";
-    });
+
 
     // Add a button for each room
     houses.forEach(house => {
@@ -349,13 +364,37 @@ const addHouseModal = document.getElementById("addHouseModal");
         button.appendChild(icon);
         button.appendChild(houseName);
 
-        mainPanel.insertBefore(button, addHouseButton);
+        houseContainer.insertBefore(button, addHouseButton);
         
    
     });
 
     } catch (error) {
         console.error('Error fetching houses:', error);
+    }
+}
+
+// #####################################################################
+//                          CALCULATE ENERGY USAGE
+// #####################################################################
+
+async function calculateEnergyUsage(houseId) {
+    try {
+        // Query the database to get all devices with the specific house_id
+        const response = await fetch(`/houses/${houseId}/energy`, {
+            method: 'GET',
+        });
+        const devices = await response.json();
+        let total = 0;
+        // Calculate the total power usage
+       devices.forEach(device => {
+            total += (device.powerUsage); // Ensure no null/undefined values are added
+        });
+
+        return total;
+    } catch (err) {
+        console.error('Error calculating energy usage:', err);
+        throw new Error('Unable to calculate energy usage');
     }
 }
 
@@ -395,26 +434,28 @@ async function fetchCurrentHouse(houseId) {
     
         
         const mainPanel = document.getElementById("mainPanel");
-        
-        mainPanel.innerHTML = ""; // Clears the existing appliance list
     
         mainPanel.innerHTML=`
+                                <button id="back-button">Back</button>
                                 <div id="appliances-container">
                                     <h3>List of Tenants</h3>
                                 </div>
                                 <div id="divider"></div>
                                 <div id="right-panel"></div>`
-    
-        document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1><br><br>
+        const currentEnergyUsage = await calculateEnergyUsage(house.id);
+        document.getElementById("right-panel").innerHTML=`<h1>${house.address}</h1>
+                                                            <strong>Current Energy Usage: </strong>${currentEnergyUsage} kWh
+                                                            <br><br>
                                                             Invite tenant to house:
                                                             <input type="text" id="tenantEmail" class="inputBox" placeholder="Tenant Email">
                         <button id="inviteTenantButton" class="confirmButton">Invite</button>`;
-    
+                    const backButton = document.getElementById('back-button');
+                    backButton.addEventListener("click", async () => {
+                        fetchHouses();
+                    });
                     inviteTenantButton.addEventListener("click", async () => {
                         const tenantEmailInput = document.getElementById("tenantEmail").value.trim().toLowerCase();
-                        if (!validateEmail(tenantEmailInput)) {
                         document.getElementById("tenantEmail").value = "";
-                        } 
                         const result = await inviteTenant(tenantEmailInput, currentHouseId);
                         if (result) {
                           alert("Tenant Invited");
@@ -428,7 +469,7 @@ async function fetchCurrentHouse(houseId) {
             users.forEach( user => {
             const userTab = document.createElement("button");
             userTab.className = 'appliance';
-            userTab.innerHTML = `${user.name} <br> ${user.email}`;
+            userTab.innerHTML = `${user.name} ${user.last_name} <br> ${user.email}`;
     
             // Add the delete button
             const deleteButton = document.createElement('span');
@@ -646,7 +687,7 @@ async function addDevice(DeviceName) {
             // Prepare the new device data
             const newDevice = {
                 name: DeviceName,
-                type: "device",
+                type: DeviceName.toLowerCase().includes("lights") ? 'lights' : 'device',
                 room_id: null,
                 powerUsage: 20,
                 state: 0,
@@ -712,8 +753,6 @@ async function fetchDevices(roomId) {
 
         const appliancesContainer = document.createElement('div');
         appliancesContainer.id = 'appliances-container';
-
-        
 
         const divider = document.createElement("div");
         divider.id = 'divider';
@@ -811,7 +850,7 @@ async function displayDevice(device) {
                 <p><strong>Power Usage:</strong> ${device.powerUsage} kWh</p>
                 
                 <label class="switch">
-                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''}>
+                    <input type="checkbox" id="toggleSwitch" ${device.state === 1 ? 'checked': ''} onclick="togglestatus(${device.id});">
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -1228,6 +1267,7 @@ async function startApp() {
     const mainPanel = document.getElementById('mainPanel');
     const sideNav = document.getElementById('sidenavContainer');
     console.log(user);
+    
 
     if (user) {
         document.getElementById("homeTitle").textContent = `Welcome, ${user.name} ${user.last_name}`;
@@ -1273,6 +1313,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     startApp();
 
     // Add Room Button Click Event
+    const houseNameInput = document.getElementById("houseName");
+    const houseAddressInput = document.getElementById("houseAddress");
+    const createHouseButton = document.getElementById("createHouseButton")
+    const cancelHouseButton = document.getElementById("cancelHouseButton")
     const createRoomButton = document.getElementById("createRoomButton");
     const cancelRoomButton = document.getElementById("cancelRoomButton");
     const cancelDeviceButton = document.getElementById("cancelDeviceButton");
@@ -1294,12 +1338,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         addNewDeviceModal.style.display = "none"; // Hide the modal
     });
 
+    cancelHouseButton.addEventListener('click', () => {
+        addHouseModal.style.display = 'none';
+    });
+
+
     createNewDeviceButton.addEventListener("click", async () => {
         const newDevice = newDeviceInput.value.trim();
         addDevice(newDevice);
         newDeviceInput.value = "";
     });
 
+    createHouseButton.addEventListener("click", async () => {
+        const houseName = houseNameInput.value.trim();
+        const address = houseAddressInput.value.trim();
+       addHouse(houseName, address);
+       houseNameInput.value = "";
+       houseAddressInput.value = "";
+    });
 
     createRoomButton.addEventListener("click", async () => {
         const roomName = roomNameInput.value.trim();
@@ -1315,19 +1371,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         addDeviceModal.style.display = 'none';
     });
 
-    function swapCSS() {
-        const linkElement = document.getElementById("main");
-        if (linkElement.href = "../css/home1.css") {
-            linkElement.href = "../css/accessability.css";
-        } else if (linkElement.href = "../css/accessability.css") {
-            linkElement.href = "../css/home1.css";
-        }
-    }
-    
-    const swap = document.getElementById('swap');
-    swap.addEventListener("click", function(event) {
-        swapCSS(); 
-    });
+
 
 
  

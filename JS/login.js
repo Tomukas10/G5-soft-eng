@@ -1,3 +1,11 @@
+function validateEmail(email) {
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    return emailPattern.test(email);
+    
+    }
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // Ensure all elements exist before using them
@@ -58,6 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const role = roleSelect.value; 
     
         if (isSignup) {
+            if(!validateEmail(email)){
+                alert("Invalid Email");
+                return;
+            }
             if (password !== confirmPassword) {
                 alert("Passwords do not match!");
                 return;

@@ -151,6 +151,17 @@ header {
     max-height: 65vh;
 }
 
+#houseContainer {
+    overflow-y: auto;
+    display: flex;
+	margin-left: 7%;
+	width: 80%;
+	height: 100%;
+    flex-wrap: wrap; 
+    max-height: 65vh;
+    gap: 10px;
+}
+
 .icon {
 	width: 15vh;
 	height: 15vh;
@@ -306,6 +317,33 @@ header {
     margin-bottom: 10px;
 }
 
+#back-button {
+    position: relative;
+    margin-top: 10px;
+    margin-left: 10px;
+    background-color: white; /* Default greyed-out */
+    border-radius: 15px;
+    border: white;
+    width: 7vw;
+    height: 7vh;
+	margin-right: 6%;
+    font-size: 2.5vh;
+    font-weight: bold;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: black;
+	display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+#back-button:hover {
+    background-color: #ddd;
+}
+
 #accessibilityBtn {
     position: relative;
     margin-top: 10px;
@@ -435,6 +473,14 @@ nav:hover > .navItems:hover{
     justify-content: center;
     z-index: 1000;
 }
+
+#addFaultArea {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+
 
 /* Modal Content */
 .addForm {
@@ -609,51 +655,50 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(22px);
 }
-#accessibilityContainer {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-}
-
+/* =================== ACCESSIBILITY BUTTON =================== */
 #accessibilityBtn {
-    padding: 8px 15px;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 10px 15px;
     font-size: 14px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #444;
     color: white;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease-in-out;
+    z-index: 1000;
+    min-width: 120px;
+    text-align: center;
 }
 
 #accessibilityBtn:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: #666;
 }
 
+/* =================== DROPDOWN MENU =================== */
 #accessibilityDropdown {
     display: none;
     position: absolute;
     top: 40px;
-    left: 0;
-    background: rgba(50, 50, 50, 0.9);
-    border-radius: 8px;
-    padding: 8px;
-    width: 180px;
+    left: 10px;
+    background: rgba(50, 50, 50, 0.95);
+    border-radius: 6px;
+    padding: 10px;
+    width: 200px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 1100;
 }
 
 #accessibilityDropdown.show {
     display: block;
 }
 
+/* Buttons inside the dropdown */
 #accessibilityDropdown button {
     display: block;
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     font-size: 14px;
     color: white;
     background: none;
@@ -666,18 +711,118 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Accessibility Modes */
+/* =================== NESTED DROPDOWN =================== */
+.nested-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.nested-dropdown-btn {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px;
+    width: 100%;
+    color: white;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Nested Dropdown Content */
+.nested-dropdown-content {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: #333;
+    min-width: 140px;
+    z-index: 1200;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.nested-dropdown:hover .nested-dropdown-content {
+    display: block;
+}
+
+/* =================== TEXT SIZE FIX (APPLYING TO BODY) =================== */
+html, body {
+    font-size: 16px !important;
+}
+
+.larger-text-1-2x {
+    font-size: 1.2rem !important;
+}
+
+.larger-text-1-5x {
+    font-size: 1.5rem !important;
+}
+
+.larger-text-2x {
+    font-size: 2rem !important;
+}
+/* =================== BOTTOM BUTTONS =================== */
+/* Fix "Fault random device" button */
+#addFaultArea {
+    position: fixed;    /* Keeps it in place */
+    bottom: 3vh;        /* Positions it at the bottom */
+    left: 3vw;          /* Keeps it on the left */
+    z-index: 1000;      /* Ensures it doesn't go behind other elements */
+    width: auto;
+    min-width: 120px;
+    padding: 10px 15px;
+    background: white;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    text-align: center;
+}
+
+
+/* =================== HIGH CONTRAST MODE =================== */
 .high-contrast {
     background-color: black !important;
     color: yellow !important;
 }
 
-.larger-text {
-    font-size: 20px !important;
+.high-contrast h1, 
+.high-contrast h2, 
+.high-contrast p, 
+.high-contrast a, 
+.high-contrast button {
+    color: yellow !important;
 }
 
-.dyslexia-friendly {
-    font-family: "Comic Sans MS", Arial, sans-serif !important;
+.high-contrast .roomButton {
+    background-color: black !important;
+    color: yellow !important;
+    border: 2px solid yellow !important;
+}
+
+/* =================== COLOR BLINDNESS MODES (FIXED) =================== */
+.protanopia-mode #page, 
+.protanopia-mode #mainPanel, 
+.protanopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(20deg) saturate(1.5);
+}
+
+.deuteranopia-mode #page, 
+.deuteranopia-mode #mainPanel, 
+.deuteranopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(-20deg) saturate(1.5);
+}
+
+.tritanopia-mode #page, 
+.tritanopia-mode #mainPanel, 
+.tritanopia-mode .roomButton {
+    filter: contrast(2) hue-rotate(40deg) saturate(1.5);
+}
+
+/* Ensure buttons, right panel, and bottom elements are NOT affected */
+.protanopia-mode button, 
+.deuteranopia-mode button, 
+.tritanopia-mode button {
+    filter: none !important;
 }
 
 

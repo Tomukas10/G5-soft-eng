@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../CSS/leaderboard.css" /> 
+    <title>Leaderboard</title>
+</head>
+<body>
+    <header>
+        <h1 id="homeTitle" ><b>Leaderboard!</b></h1>
+    </header>
+<main>
+  <div id="page">
+    <div>
+    <div id="sidenav">
+        <a class="sidenavItems" href="dashboard.html" >Home</a>
+        <hr>
+        <a class="sidenavItems" href="Heating.html">Heating</a>
+        <hr>
+		<a class="sidenavItems" href="lighting.html">Lighting</a>
+		<hr>
+        <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
+        <hr>
+        <a class="sidenavItems" href="security.html">Security</a>
+        <hr>
+        <a id="selected" class="sidenavItems" href="leaderboard.html" style="opacity: 100%;">Leaderboard</a>
+        <hr>
+        </div>
+        <a class="logout-btn" href="login.html">Log Out</a>
+    </div>
+	
+	<div id="leaderboard-container">
+		<table id="leaderboard-table">
+			<thead>
+				<tr>
+					<th>Users</th>
+					<th>House Name</th>
+					<th>Total Energy</th>
+					<th>Rank</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Data will be printed here straight from the DB using leaderboard.JS functions. -->
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Incorporates all the JavaScript to obtain & printout & automatically schedule leaderboard updates. -->
+	<script src="../JS/leaderboardTable.js"></script>
+</main>
+</body>
+</html>

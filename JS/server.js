@@ -173,6 +173,20 @@ app.get('/houses/:houseId/users', authenticate, async (req, res) => {
 });
 
 
+// Fetch device information and not flip state (happens elsewhere)
+app.get('/togdev/:deviceId', async (req, res) => {
+  const { deviceId} = req.params; // Extract deviceId
+  try {
+    const response = await query('SELECT * FROM devices WHERE id = ?;', [deviceId]);
+
+
+    res.json(response);
+  } catch (err) {
+    console.error('Error fetching house:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 // Fetch device information
 app.get('/getdev/:deviceId', async (req, res) => {
   const { deviceId } = req.params; // Extract deviceId
@@ -378,11 +392,6 @@ app.get(`/devices/fault`, authenticate, async (req, res) => {
   try {
     // Query the database to get devices with the specified state and house ID
     const devices = await query('SELECT * FROM devices WHERE state = 1 AND house_id = ? AND room_id IS NOT NULL', [houseId]);
-    if (devices.length === 0) {
-      console.error("No devices found with the specified state and house ID")
-      return res.status(404).json({ error: 'No devices found with the specified state and house ID' });
-    }
-
     // Send the devices as a response
     res.json(devices);
   } catch (err) {
@@ -517,6 +526,33 @@ app.get('/rooms/temperature', authenticate, async (req, res) => {
     }
 });
 
+// Fetch all the necessary lights
+app.get('/rooms/lights', authenticate, async (req, res) => {
+  const house_id = req.user.house_id;
+    try {
+        const lights = await query(`SELECT * FROM devices WHERE type = 'lights' AND house_id = ?`, [house_id]);
+        res.json(lights);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// Get current energy usage for a house
+app.get('/houses/:houseId/energy', async (req, res) => {
+  const { houseId } = req.params; // Get house_id from request params
+
+  try {
+      // Get the total energy usage for the house
+      const devices = await query('SELECT powerUsage FROM devices WHERE house_id = ? AND state = 1', [houseId]);
+
+      // Respond with the total energy usage
+      res.json(devices);
+  } catch (err) {
+      console.error('Error fetching energy usage:', err);
+      res.status(500).json({ error: 'Unable to fetch energy usage' });
+  }
+});
 
 // Update the TARGET temperature for a specific room.
 app.put('/rooms/:roomId/temperature', async (req, res) => {
@@ -631,6 +667,36 @@ app.put('/rooms/kitchen/lights', async (req, res) =>
 	{
         console.error("SQL Error:", err);
         res.status(500).send('Server error');
+    }
+});
+
+const { updateLeaderboard } = require('./leaderboard');
+
+// Fetches the leaderboard details from the leaderboard table.
+app.get('/leaderboard', async (req, res) => 
+	{
+    try 
+	{
+        const leaderboard = await query
+		(`
+            SELECT * FROM leaderboard
+            ORDER BY total_energy ASC, rank ASC
+        `);
+        res.json(leaderboard);
+    } catch (err) {
+        console.error("Error fetching the leaderboard!", err);
+        res.status(500).json({ error: "Failed to fetch the leaderboard!" });
+    }
+});
+
+// Updates the leaderboard for the latest values.
+app.get('/updateLeaderboard', async (req, res) => {
+    try {
+        await updateLeaderboard();
+        res.status(200).json({ message: "Leaderboard updated successfully!" });
+    } catch (err) {
+        console.error("Error updating leaderboard:", err);
+        res.status(500).json({ error: "Failed to update leaderboard." });
     }
 });
 

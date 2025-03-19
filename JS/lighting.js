@@ -1,150 +1,79 @@
-           console.log("heating.js has loaded!");
-
-		   document.addEventListener("DOMContentLoaded", async () => 
-		   {
-				// Fetch the necessary data from the database when the page loads.
-				await getLights();
-				
-				getActualTemperature();
-				// Checks to make sure the relevant buttons exist before adding event listeners.
-				const kitchenTempButton = document.getElementById("kitchenTemperature");
-				if (kitchenTempButton) kitchenTempButton.addEventListener("click", () => showSection("temperature"));
-
-				const kitchenLightsButton = document.getElementById("kitchenLights");
-				if (kitchenLightsButton) kitchenLightsButton.addEventListener("click", () => showSection("lights"));
-
-				const kitchenOvenButton = document.getElementById("kitchenOven");
-				if (kitchenOvenButton) kitchenOvenButton.addEventListener("click", () => showSection("oven"));
-
-                // Add Room Button Click Event
-                const addRoomButton = document.getElementById("addRoomButton");
-                const addRoomModal = document.getElementById("addRoomModal");
-                const createRoomButton = document.getElementById("createRoomButton");
-                const cancelRoomButton = document.getElementById("cancelRoomButton");
-                const roomNameInput = document.getElementById("roomName");
-
-                addRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "block"; // Show the modal
-                });
-
-                cancelRoomButton.addEventListener("click", () => {
-                    addRoomModal.style.display = "none"; // Hide the modal
-                    roomNameInput.value = ""; // Clear input
-                });
-
-                createRoomButton.addEventListener("click", () => {
-                    const roomName = roomNameInput.value.trim();
-                    if (roomName) {
-                        // Create a new room element
-                        const newRoom = document.createElement("div");
-                        newRoom.innerHTML = `
-                            <img class="icon" src="../images/bedroom.png">
-                            <h4>${roomName}</h4>
-                        `;
-                        document.getElementById("boxes").insertBefore(newRoom, addRoomButton);
-                        addRoomModal.style.display = "none"; // Hide the modal
-                        roomNameInput.value = ""; // Clear input
-                    } else {
-                        alert("Please enter a room name.");
-                    }
-                });
-				
-
-				document.getElementById("kitchenTemperature").addEventListener("click", () => showSection("temperature"));
-				document.getElementById("kitchenLights").addEventListener("click", () => showSection("lights"));
-				document.getElementById("kitchenOven").addEventListener("click", () => showSection("oven"));
-			});
-
-			// Handles the 'invisible' property of each section.
-			function showSection(section) 
-			{
-			// Hide all the sections until they're clicked by default.
-				document.querySelectorAll(".dynamic-section").forEach(div => 
-				{
-					div.classList.add("hidden");
-				});
-
-			// Show the section that has been clicked.
-				const targetSection = document.getElementById(section + "-section");
-				if (targetSection) 
-				{
-					targetSection.classList.remove("hidden");
-				}
-
-			// Resets all the buttons to an inactive state.
-				document.querySelectorAll(".appliance").forEach(button => 
-				{
-					button.classList.remove("active");
-				});
-
-				// If a button is clicked, it becomes active.
-				const activeButton = document.getElementById(`kitchen${section.charAt(0).toUpperCase() + section.slice(1)}`);
-				if (activeButton) 
-				{
-					activeButton.classList.add("active");
-				}
-			}
+			const token = localStorage.getItem('token');
 			
 			// Fetches the lights and their respective states from the DB.
 			async function getLights() {
-			    try {
-			        const response = await fetch('/rooms/lights');
-			        if (!response.ok) {
-			            throw new Error(`HTTP error! Status: ${response.status}`);
-			        }
-
-			        const lights = await response.json();
-			        console.log("Fetched Light Data:", lights); // Part of the debugging process.
-
-			        lights.forEach(room => {
-			            const lightButtonId = `${room.room_name.toLowerCase().replace(/\s+/g, '-')}-mainLight`;
-			            const lightButton = document.getElementById(lightButtonId);
-
-			            if (!lightButton) {
-			                console.warn(`No lightButton found for room: ${room.room_name} (ID: ${room.room_id})`);
-			                return;
-			            }
-
-			            // Updates the button colours dependent upon states.
-			            lightButton.classList.toggle('green', room.state);
-			            lightButton.classList.toggle('red', !room.state);
-			        });
-			    } catch (error) {
-			        console.error("Error fetching light states!", error);
-			    }
+				try {
+					const lightSection = document.getElementById('lights-section');
+					lightSection.innerHTML = ''; // Clear previous lights
+			
+					const response = await fetch('/rooms/lights/', {
+						method: 'GET',
+						headers: {
+							'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+						}
+					});
+			
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+			
+					const lights = await response.json();
+					console.log("Fetched Light Data:", lights); // Debugging output.
+			
+					// Create buttons for each light
+					lights.forEach(light => {
+						// Create a new button for each light
+						const lightButton = document.createElement('button');
+						lightButton.id = `light-${light.id}`;
+						lightButton.className = `light-btn ${light.state ? 'green' : 'red'}`;
+						lightButton.textContent = light.name;
+						lightButton.setAttribute('data-id', light.id);
+			
+						// Add click event listener for toggling
+						lightButton.addEventListener('click', async () => {
+							await toggleLights(light.id, lightButton);
+						});
+			
+						// Append the button to the light section
+						lightSection.appendChild(lightButton);
+					});
+			
+				} catch (error) {
+					console.error("Error fetching light states!", error);
+				}
 			}
 
 		
 			// Handles toggling the light on and off with each button press.
-			async function toggleLights(roomId, roomName) {
-			    const lightButtonId = `${roomName.toLowerCase().replace(/\s+/g, '-')}-mainLight`;
-			    const lightButton = document.getElementById(lightButtonId);
-
-			    if (!lightButton) {
-			        console.warn(`No button found for room: ${roomName} (ID: ${roomId})`);
-			        return;
-			    }
-
-			    // Toggles a new state with each button press.
-			    const newState = !lightButton.classList.contains('green');
-
-			    try {
-			        const response = await fetch(`/rooms/${roomId}/light`, {
-			            method: "PUT",
-			            headers: { "Content-Type": "application/json" },
-			            body: JSON.stringify({ state: newState })
-			        });
-
-			        if (response.ok) {
-			            console.log(`Light for Room ${roomId} updated to ${newState}`); // Part of the debugging process.
-			            lightButton.classList.toggle('green', newState);
-			            lightButton.classList.toggle('red', !newState);
-			        } else {
-			            console.error("Failed to update the light state.");
-			        }
-			    } catch (error) {
-			        console.error("Error toggling the lights!", error);
-			    }
+			async function toggleLights(lightId, button) {
+				try {
+					// Determine the new state (toggle the current button class)
+					const isLightOn = button.classList.contains('green');
+					const newState = isLightOn ? 0 : 1; // Toggle the state
+			
+					// Send the updated state to the server
+					const response = await fetch(`/updateDevice/${lightId}`, {
+						method: 'PATCH',
+						headers: {
+							'Authorization': `Bearer ${token}`,
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ state: newState })
+					});
+			
+					if (!response.ok) {
+						throw new Error('Failed to update device state');
+					}
+			
+					// Toggle the button color based on the new state
+					button.classList.toggle('green', newState === 1);
+					button.classList.toggle('red', newState === 0);
+					button.classList.toggle('active', newState === 1);
+			
+				} catch (error) {
+					console.error('Error updating device state:', error);
+					alert('Failed to update device. Please try again.');
+				}
 			}
 
 			// Initially waits for the JS to load before implementing the getLights function, starting it off.

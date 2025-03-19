@@ -454,10 +454,10 @@ text {
 }
 
 /* Manually positions each DIV box to simulate proper lights on/off functionality in the right rooms. */
-#kitchen-mainLight { top: 57%; left: 55%; width: 25.5%; height: 38%; }
-#living-room-mainLight { top: 56%; left: 18.8%; width: 35%; height: 39%; }
-#bedroom-1-mainLight { top: 4%; left: 18.8%; width: 25.1%; height: 41%; }
-#bedroom-2-mainLight { top: 4%; left: 55%; width: 25.1%; height: 33%; }
+#Kitchen-Lights { top: 57%; left: 55%; width: 25.5%; height: 38%; }
+#Living-Room-Lights { top: 56%; left: 18.8%; width: 35%; height: 39%; }
+#Bedroom-1-Lights { top: 4%; left: 18.8%; width: 25.1%; height: 41%; }
+#Bedroom-2-Lights { top: 4%; left: 55%; width: 25.1%; height: 33%; }
 
 /* Temperature Display */
 .temperature {
@@ -468,10 +468,10 @@ text {
 }
 
 /* Manually positions the temperatures in the right rooms. */
-#actual-room-37 { top: 68%; left: 62%; }
-#actual-room-38 { top: 60%; left: 32%; }
-#actual-room-39 { top: 8%; left: 27%; }
-#actual-room-40 { top: 8%; left: 65%; }
+#actual-room-58 { top: 68%; left: 62%; }
+#actual-room-61 { top: 60%; left: 32%; }
+#actual-room-62 { top: 8%; left: 27%; }
+#actual-room-63 { top: 8%; left: 65%; }
 
 
 /* Handles the opacity based on the value stored in the DB, simulating on/off functionality. */

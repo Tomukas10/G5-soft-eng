@@ -7,36 +7,6 @@ const token = localStorage.getItem('token');
 				
 				getActualTemperature();
 			});
-
-			// Handles the 'invisible' property of each section.
-			function showSection(section) 
-			{
-			// Hide all the sections until they're clicked by default.
-				document.querySelectorAll(".dynamic-section").forEach(div => 
-				{
-					div.classList.add("hidden");
-				});
-
-			// Show the section that has been clicked.
-				const targetSection = document.getElementById(section + "-section");
-				if (targetSection) 
-				{
-					targetSection.classList.remove("hidden");
-				}
-
-			// Resets all the buttons to an inactive state.
-				document.querySelectorAll(".appliance").forEach(button => 
-				{
-					button.classList.remove("active");
-				});
-
-				// If a button is clicked, it becomes active.
-				const activeButton = document.getElementById(`kitchen${section.charAt(0).toUpperCase() + section.slice(1)}`);
-				if (activeButton) 
-				{
-					activeButton.classList.add("active");
-				}
-			}
 			
 			// Fetches temperature from the database.
 			async function getTemperatures() {

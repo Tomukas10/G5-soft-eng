@@ -3,11 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heating</title>
+    <title>Lighting</title>
     <link rel="stylesheet" href="../CSS/rooms.css" /> 
+<script src="../JS/accessibility.js" defer></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Title</title>
+    
+        <!-- Stylesheet -->
+        <link id="main" rel="stylesheet" href="../CSS/home1.css" />
+    
+        <!-- Accessibility Script -->
+        <script src="../JS/accessibility.js" defer></script>
+    </head>
+    
     <title>Smarthome System</title>
 </head>
 <body>
+    <body id="body"> 
+        <!-- Accessibility Button -->
+        <button id="accessibilityBtn">Accessibility</button>
+    
+        <!-- Dropdown Menu -->
+        <div id="accessibilityDropdown">
+            <button id="toggleContrast">High Contrast</button>
+    
+        <!-- Nested Dropdown for Text Size -->
+        <div class="nested-dropdown">
+            <button class="nested-dropdown-btn">Text Size →</button>
+            <div class="nested-dropdown-content">
+                <button id="textSize-1-2x">Text 1.2x</button>
+                <button id="textSize-1-5x">Text 1.5x</button>
+                <button id="textSize-2x">Text 2x</button>
+                <button id="textSize-reset">Reset Text Size</button> <!-- NEW BUTTON -->
+            </div>
+        </div>
+    
+            <!-- Color Blind Mode -->
+            <div class="nested-dropdown">
+                <button class="nested-dropdown-btn">Color Blind Mode →</button>
+                <div class="nested-dropdown-content">
+                    <button id="colorMode-protanopia">Protanopia</button>
+                    <button id="colorMode-deuteranopia">Deuteranopia</button>
+                    <button id="colorMode-tritanopia">Tritanopia</button>
+                    <button id="colorMode-reset">Reset</button>
+                </div>
+            </div>
+        </div>
+    
     <header>
         <h1 id="homeTitle"><b>Heating</b></h1>
     </header>
@@ -15,21 +59,19 @@
         <div id="page">
             <div>
             <div id="sidenav">
-                <a class="sidenavItems" href="dashboard.html" style="opacity: 100%;">Home</a>
+                <a class="sidenavItems" href="dashboard.html" >Home</a>
                 <hr>
                
                 <a class="sidenavItems" href="Heating.html">Heating</a>
                 <hr>
-				<a id = "selected" class="sidenavItems" href="lighting.html">Lighting</a>
+				<a id = "selected" class="sidenavItems" href="lighting.html" style="opacity: 100%;">Lighting</a>
 				<hr>
                 <a class="sidenavItems" href="energyUsage.html">Energy Usage</a>
                 <hr>
                 <a class="sidenavItems" href="security.html">Security</a>
                 <hr>
-                <a class="sidenavItems" href="settings.html">Settings</a>
-                <hr>
-				<a class="sidenavItems" href="overview.html">Home View</a>
-				<hr>
+				<a class="sidenavItems" href="leaderboard.html">Leaderboard</a>
+				
             </div>
             
             </div>
@@ -46,10 +88,10 @@
 				<div id="right-panel" style="margin-left: 20%;">
 					<!-- Implements the 'lights' section. -->
 					<div id="lights-section" class="dynamic-section">
-						<button id="kitchen-mainLight" class="light-btn green" onclick="toggleLights(37, 'Kitchen')">MAIN LIGHTS <span class="gear-icon">⚙️</span></button>
-						<button id="living-room-mainLight" class="light-btn red" onclick="toggleLights(38, 'Living Room')">LIVING ROOM <span class="gear-icon">⚙️</span></button>
-						<button id="bedroom-1-mainLight" class="light-btn green" onclick="toggleLights(39, 'Bedroom 1')">BEDROOM 1 <span class="gear-icon">⚙️</span></button>
-						<button id="bedroom-2-mainLight" class="light-btn red" onclick="toggleLights(40, 'Bedroom 2')">BEDROOM 2 <span class="gear-icon">⚙️</span></button>
+						<button id="kitchen-mainLight" class="light-btn green" onclick="toggleLights(37, 'Kitchen')">KITCHEN</button>
+						<button id="living-room-mainLight" class="light-btn red" onclick="toggleLights(38, 'Living Room')">LIVING ROOM</button>
+						<button id="bedroom-1-mainLight" class="light-btn green" onclick="toggleLights(39, 'Bedroom 1')">BEDROOM 1</button>
+						<button id="bedroom-2-mainLight" class="light-btn red" onclick="toggleLights(40, 'Bedroom 2')">BEDROOM 2</button>
 					</div>
 					
 	
