@@ -3,17 +3,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const dropdown = document.getElementById("accessibilityDropdown");
 
     if (!button || !dropdown) {
-        console.error("⚠️ Accessibility button or dropdown not found.");
+        console.error(" Accessibility button or dropdown not found.");
         return;
     }
 
-    // ✅ Toggle dropdown visibility
+    // Show/Hide Dropdown
     button.addEventListener("click", (event) => {
         event.stopPropagation();
         dropdown.classList.toggle("show");
     });
 
-    // ✅ Hide dropdown when clicking outside
+    // Close Dropdown when Clicking Outside
     document.addEventListener("click", (event) => {
         if (!button.contains(event.target) && !dropdown.contains(event.target)) {
             dropdown.classList.remove("show");
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.stopPropagation();
     });
 
-    // ✅ High Contrast Mode
+    // =========== HIGH CONTRAST MODE ===========
     const contrastBtn = document.getElementById("toggleContrast");
     if (contrastBtn) {
         contrastBtn.addEventListener("click", () => {
@@ -37,64 +37,75 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add("high-contrast");
     }
 
-    // ✅ Text Size Options
+    // =========== TEXT SIZE (Matches Your Nested Dropdown) ===========
     const textSizes = {
-        "default": "",
         "1.2x": "larger-text-1-2x",
         "1.5x": "larger-text-1-5x",
         "2x": "larger-text-2x"
     };
 
-    Object.keys(textSizes).forEach(size => {
-        const btn = document.getElementById(`textSize-${size.replace('.', '-')}`);
-        if (btn) {
-            btn.addEventListener("click", () => {
-                Object.values(textSizes).forEach(className => document.body.classList.remove(className));
-                if (size !== "default") {
-                    document.body.classList.add(textSizes[size]);
-                }
-                localStorage.setItem("textSize", size);
-            });
+    function updateTextSize(size) {
+        Object.values(textSizes).forEach(className => document.body.classList.remove(className));
+        if (size !== "reset") {
+            document.body.classList.add(textSizes[size]);
+            localStorage.setItem("textSize", size);
+        } else {
+            localStorage.removeItem("textSize");
         }
+    }
+
+    document.querySelectorAll(".nested-dropdown-content button").forEach(button => {
+        button.addEventListener("click", () => {
+            const size = button.id.replace("textSize-", "").replace("-", ".");
+            updateTextSize(size);
+            location.reload(); //Ensures text size updates instantly
+        });
     });
 
     const savedTextSize = localStorage.getItem("textSize");
     if (savedTextSize && textSizes[savedTextSize]) {
         document.body.classList.add(textSizes[savedTextSize]);
     }
-
-    // ✅ Color Blind Mode
+        // =========== COLOR BLINDNESS MODE ===========
     const colorBlindModes = {
-        "protanopia": "protanopia-filter",
-        "deuteranopia": "deuteranopia-filter",
-        "tritanopia": "tritanopia-filter"
+        "protanopia": "protanopia-mode",
+        "deuteranopia": "deuteranopia-mode",
+        "tritanopia": "tritanopia-mode"
     };
+
+    function applyColorBlindMode(mode) {
+        Object.values(colorBlindModes).forEach(className => document.body.classList.remove(className));
+        if (mode in colorBlindModes) {
+            document.body.classList.add(colorBlindModes[mode]);
+            localStorage.setItem("colorBlindMode", mode);
+        } else {
+            localStorage.removeItem("colorBlindMode");
+        }
+    }
 
     Object.keys(colorBlindModes).forEach(mode => {
         const btn = document.getElementById(`colorBlind-${mode}`);
         if (btn) {
-            btn.addEventListener("click", () => {
-                Object.values(colorBlindModes).forEach(className => document.body.classList.remove(className));
-                document.body.classList.add(colorBlindModes[mode]);
-                localStorage.setItem("colorBlindMode", colorBlindModes[mode]);
-            });
+            btn.addEventListener("click", () => applyColorBlindMode(mode));
         }
     });
 
-    const savedColorBlindMode = localStorage.getItem("colorBlindMode");
-    if (savedColorBlindMode) {
-        document.body.classList.add(savedColorBlindMode);
-    }
-
-    // ✅ Reset Accessibility Settings
-    const resetBtn = document.getElementById("resetAccessibility");
-    if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
+    const resetColorBlindBtn = document.getElementById("resetAccessibility");
+    if (resetColorBlindBtn) {
+        resetColorBlindBtn.addEventListener("click", () => {
+            localStorage.removeItem("colorBlindMode");
             localStorage.removeItem("highContrast");
             localStorage.removeItem("textSize");
-            localStorage.removeItem("colorBlindMode");
-            document.body.classList.remove("high-contrast", "larger-text-1-2x", "larger-text-1-5x", "larger-text-2x", ...Object.values(colorBlindModes));
+
+            Object.values(colorBlindModes).forEach(className => document.body.classList.remove(className));
+            document.body.classList.remove("high-contrast", "larger-text-1-2x", "larger-text-1-5x", "larger-text-2x");
+
             location.reload();
         });
+    }
+
+    const savedColorBlindMode = localStorage.getItem("colorBlindMode");
+    if (savedColorBlindMode) {
+        applyColorBlindMode(savedColorBlindMode);
     }
 });
