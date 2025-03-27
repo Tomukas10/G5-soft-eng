@@ -43,3 +43,4 @@ License: We do not have any specified license, meaning it is not explicitly open
 - @Afraser8765 - Adam Fraser
 - @mv2025 - Mridul Verma
 - @AliBara2004 - Ali Bara
+- Connor Shields
